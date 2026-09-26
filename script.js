@@ -152,7 +152,7 @@ function atualizarCronometroHorarios() {
         const emPausa = h.pausa && horasDecimais >= h.pausa.inicio && horasDecimais < h.pausa.fim;
 
         mensagem = emPausa
-            ? `Academia em <strong>Pausa para almoço</strong>. Reabriremos às <strong>${formatarHora(proximoHoje.hora)}</strong>.`
+            ? `Academia em <strong>pausa para almoço</strong>. Reabriremos às <strong>${formatarHora(proximoHoje.hora)}</strong>.`
             : `Academia fechada no momento. Abrirá <strong>hoje</strong> às <strong>${formatarHora(proximoHoje.hora)}</strong>.`;
     } else {
         let offset = 1;
