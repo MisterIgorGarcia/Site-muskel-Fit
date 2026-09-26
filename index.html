@@ -1,28 +1,27 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Muskel Fit - Academia</title>
-    <link rel="stylesheet" href="style.css"> <!-- CSS externalizado -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"> <!-- Font Awesome (Para importar icones do ZAP, Instagram e outros)-->
-</head>
-<body>
+    <!DOCTYPE html>
+    <html lang="pt-br">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Muskel Fit - Academia</title>
+        <link rel="stylesheet" href="style.css"> <!-- CSS externalizado -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"> <!-- Font Awesome (Para importar icones do ZAP, Instagram e outros)-->
+    </head>
+    <body>
     <!-- ===================== CABEÇALHO ===================== -->
     <header id="cabecalho">
         <h1><span class="spanm">M</span>USKEL <span class="spanfit">FIT</span></h1>
-
         <!-- Botão hambúrguer (só aparece no celular) -->
         <button id="btn-menu" class="btn-menu" aria-label="Abrir menu" aria-expanded="false">
             <span class="linha"></span>
             <span class="linha"></span>
             <span class="linha"></span>
         </button>
-
         <!-- <nav> é o elemento certo pra agrupar links de navegação do site -->
         <nav id="menu-nav">
             <ul>
                 <li><a href="#localizacao">Localização e Contato</a></li>
+                <li><a href="#sobre">Diferenciais</a></li>
                 <li><a href="#planos">Planos</a></li>
                 <li><a href="#horario">Horarios</a></li>
             </ul>
@@ -50,17 +49,15 @@
             <div class="hero-botoes">
                 <button class="btn-amarelo"
                         onclick="document.getElementById('planos').scrollIntoView({ behavior: 'smooth' })">
-                    <i class="fa-solid fa-money-bill-wave"></i> Ver Planos
+                    <i class="fa-solid fa-clipboard"></i> Realizar sua matricula
                 </button>
             </div>
         </div>
     </section>
-
     <!-- ===================== Localização com Embed do Google Maps ===================== -->
     <section id="localizacao" class="secao">
         <div class="mapa-texto">
             <h2>Onde nós estamos</h2>
-
             <ul class="info-localizacao">
                 <!-- Endereço clicavel pro maps -->
                 <li>
@@ -73,7 +70,6 @@
                         </div>
                     </a>
                 </li>
-
                 <!-- Instagram -->
                 <li>
                     <a href="https://instagram.com/muskelfitacademia" target="_blank" rel="noopener"
@@ -85,7 +81,6 @@
                         </div>
                     </a>
                 </li>
-
                 <!-- WhatsApp -->
                 <li>
                     <a href="https://wa.me/5512991859267" target="_blank" rel="noopener"
@@ -99,7 +94,6 @@
                 </li>
             </ul>
         </div>
-
         <div class="mapa-container">
             <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3684.099254547189!2d-44.96073919999999!3d-22.575390799999997!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x9df42a8c58ee2b%3A0xac4055826333eeb9!2sR.%20Cap.%20Avelino%20Bastos%2C%20800%20-%20Centro%2C%20Cruzeiro%20-%20SP%2C%2012701-440!5e0!3m2!1spt-BR!2sbr!4v1790379711660!5m2!1spt-BR!2sbr"
                     style="border:0;" allowfullscreen="" loading="lazy"
@@ -109,45 +103,39 @@
     <hr class="separador">
     <!-- ===================== SEÇÃO SOBRE ===================== -->
     <section id="sobre" class="secao">
-        <h2>Sobre a <span class="destaque">Muskel Fit</span></h2>
+        <h1>Sobre a <span class="destaque">Muskel Fit</span></h1>
         <p>
             Fundada com o objetivo de unir treino sério e ambiente acolhedor, a Muskel Fit
             oferece equipamentos modernos, professores qualificados e uma comunidade que valoriza a sua evolução.
         </p>
-
+        <br>
         <h2 class="titulo-espacado">Por que escolher <span class="destaque">Muskel Fit</span>?</h2>
-
         <div class="card-sobre-grupo">
             <div class="card-sobre">
                 <div class="card-icone"><i class="fas fa-coffee"></i></div>
                 <h3>Cafezinho grátis</h3>
                 <p>Todo aluno tem direito a um copinho de café para dar aquele ânimo antes ou depois de treinar. Energia garantida!</p>
             </div>
-
             <div class="card-sobre">
                 <div class="card-icone"><i class="fas fa-mobile-alt"></i></div>
                 <h3>Seu treino no celular</h3>
                 <p>Exercícios montados de acordo com a sua necessidade e enviados em vídeo direto no seu celular, para você não ter nenhuma dúvida de como executá-los.</p>
             </div>
-
             <div class="card-sobre">
                 <div class="card-icone"><i class="fas fa-file-medical-alt"></i></div>
                 <h3>Avaliação Física</h3>
                 <p>Exame completo para que seu médico ou nutricionista possa acompanhar de perto e com precisão toda a sua evolução.</p>
             </div>
-
             <div class="card-sobre">
                 <div class="card-icone"><i class="fa-solid fa-star"></i></div>
                 <h3>Aparelhos novos</h3>
                 <p>Sempre estamos investindo em equipamentos novos, de alta tecnologia e de máxima qualidade!</p>
             </div>
-
             <div class="card-sobre">
                 <div class="card-icone"><i class="fas fa-handshake"></i></div>
                 <h3>Gympass &amp; Totalpass</h3>
                 <p>Parcerias integradas para você treinar quando e como quiser. Aceitamos as maiores plataformas de benefícios corporativos.</p>
             </div>
-
             <div class="card-sobre">
                 <div class="card-icone"><i class="fa-solid fa-clock"></i></div>
                 <h3>Sempre disponível</h3>
@@ -158,7 +146,7 @@
     <hr class="separador">
     <!-- ===================== SEÇÃO PLANOS ===================== -->
     <!-- Cada "card" abaixo representa um plano diferente de assinatura -->
-    <section id="planos" class="secao secao-escura">
+    <section id="planos" class="secao">
         <h2>NOSSOS PLANOS</h2>
 
         <!-- Uso uma div pra cada card de plano, assim fica fácil estilizar em grid no CSS -->
@@ -303,7 +291,7 @@
     </section>
     <hr class="separador">
     <!-- ===================== SEÇÃO HORÁRIOS ===================== -->
-    <section id="horario" class="secao secao-escura">
+    <section id="horario" class="secao">
         <h2>NOSSOS HORÁRIOS</h2>
         <p class="subtitulo-horario">Confira quando a <span class="destaque">Muskel Fit</span> está aberta pra você treinar.</p>
 
@@ -344,7 +332,7 @@
         </div>
     </section>
     <!-- ===================== RODAPÉ ===================== -->
-    <footer id="contato">
+    <footer id="contato" class="secao-escura">
         <div class="footer-conteudo">
             <!-- Coluna 1: marca + descrição curta -->
             <div class="footer-coluna">
@@ -370,9 +358,9 @@
                 <h4>Navegação</h4>
                 <ul>
                     <li><a href="#localizacao">Localização e Contato</a></li>
+                    <li><a href="#sobre">Diferenciais</a></li>
                     <li><a href="#planos">Planos</a></li>
                     <li><a href="#horario">Horários</a></li>
-                    <li><a href="#sobre">Sobre</a></li>
                 </ul>
             </div>
             <!-- Coluna 3: contato -->
