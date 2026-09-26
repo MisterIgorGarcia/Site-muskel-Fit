@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Muskel Fit - Academia</title>
+    <link rel="stylesheet" href="style.css"> <!-- CSS externalizado -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"> <!-- Font Awesome (Para importar icones do ZAP e Instagram)-->
+</head>
+<body>
+
+    <!-- ===================== CABEÇALHO ===================== -->
+    <header id="cabecalho">
+        <h1><span class="spanm">M</span>USKEL <span class="spanfit">FIT</span></h1>
+
+        <!-- Botão hambúrguer (só aparece no celular) -->
+        <button id="btn-menu" class="btn-menu" aria-label="Abrir menu" aria-expanded="false">
+            <span class="linha"></span>
+            <span class="linha"></span>
+            <span class="linha"></span>
+        </button>
+
+        <!-- <nav> é o elemento certo pra agrupar links de navegação do site -->
+        <nav id="menu-nav">
+            <ul>
+                <li><a href="#localizacao">Localização e Contato</a></li>
+                <li><a href="#planos">Planos</a></li>
+                <li><a href="#horario">Horarios</a></li>
+            </ul>
+        </nav>
+    </header>
+    <!-- ===================== SEÇÃO HERO (BANNER PRINCIPAL) ===================== -->
+    <!-- Essa é a primeira coisa grande que o usuário vê ao entrar no site -->
+    <section class="hero">
+        <div class="hero-imagem">
+            <img src="imagens/avatar.png" alt="Aluno treinando na Muskel Fit">
+        </div>
+
+        <div class="hero-texto">
+            <div id="statusatualhtml" class="status-atual">
+                <span class="bolinha"></span>
+                <span id="texto-bolinha">ABERTO AGORA</span>
+            </div>
+
+            <h2>Transforme seu corpo. <br>Transforme sua vida.</h2>
+
+            <p>Na Muskel Fit você treina com estrutura completa e acompanhamento profissional.</p>
+            <p>A academia perfeita para você alcançar a sua melhor versão em Cruzeiro - SP.</p>
+
+            <!-- Container dos botões (novo, para organizar melhor no celular) -->
+            <div class="hero-botoes">
+                <button class="btn-amarelo"
+                        onclick="document.getElementById('planos').scrollIntoView({ behavior: 'smooth' })">
+                    <i class="fa-solid fa-money-bill-wave"></i> Ver Planos
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===================== Localização com Embed do Google Maps ===================== -->
+    <section id="localizacao" class="secao">
+        <div class="mapa-texto">
+            <h2>Onde nós estamos</h2>
+
+            <ul class="info-localizacao">
+                <!-- Endereço clicavel pro maps -->
+                <li>
+                    <a href="https://www.google.com/maps/search/?api=1&query=R.+Cap.+Avelino+Bastos,+800+-+Cruzeiro,+São+Paulo"
+                       target="_blank" rel="noopener" class="bloco-info">
+                        <i class="fa-solid fa-location-dot"></i>
+                        <div>
+                            <strong>Endereço</strong>
+                            <span>R. Cap. Avelino Bastos, 800 - Centro, em cima da Drogaria São Paulo. Cruzeiro - SP.</span>
+                        </div>
+                    </a>
+                </li>
+
+                <!-- Instagram -->
+                <li>
+                    <a href="https://instagram.com/muskelfitacademia" target="_blank" rel="noopener"
+                       class="bloco-info bloco-instagram">
+                        <i class="fa-brands fa-instagram"></i>
+                        <div>
+                            <strong>Instagram</strong>
+                            <span>@muskelfitacademia</span>
+                        </div>
+                    </a>
+                </li>
+
+                <!-- WhatsApp -->
+                <li>
+                    <a href="https://wa.me/5512991859267" target="_blank" rel="noopener"
+                       class="bloco-info bloco-whatsapp">
+                        <i class="fa-brands fa-whatsapp"></i>
+                        <div>
+                            <strong>WhatsApp</strong>
+                            <span>(12) 99185-9267</span>
+                        </div>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="mapa-container">
+            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3684.099254547189!2d-44.96073919999999!3d-22.575390799999997!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x9df42a8c58ee2b%3A0xac4055826333eeb9!2sR.%20Cap.%20Avelino%20Bastos%2C%20800%20-%20Centro%2C%20Cruzeiro%20-%20SP%2C%2012701-440!5e0!3m2!1spt-BR!2sbr!4v1790379711660!5m2!1spt-BR!2sbr"
+                    style="border:0;" allowfullscreen="" loading="lazy"
+                    referrerpolicy="strict-origin-when-cross-origin"></iframe>
+        </div>
+    </section>
+
+    <!-- ===================== SEÇÃO SOBRE ===================== -->
+    <section id="sobre" class="secao">
+        <h2>Sobre a <span class="destaque">Muskel Fit</span></h2>
+        <p>
+            Fundada com o objetivo de unir treino sério e ambiente acolhedor, a Muskel Fit
+            oferece equipamentos modernos, professores qualificados e uma comunidade que valoriza a sua evolução.
+        </p>
+
+        <h2 class="titulo-espacado">Por que escolher <span class="destaque">Muskel Fit</span>?</h2>
+
+        <div class="card-sobre-grupo">
+            <div class="card-sobre">
+                <div class="card-icone"><i class="fas fa-coffee"></i></div>
+                <h3>Cafezinho grátis</h3>
+                <p>Todo aluno tem direito a um copinho de café para dar aquele ânimo antes ou depois de treinar. Energia garantida!</p>
+            </div>
+
+            <div class="card-sobre">
+                <div class="card-icone"><i class="fas fa-mobile-alt"></i></div>
+                <h3>Seu treino no celular</h3>
+                <p>Exercícios montados de acordo com a sua necessidade e enviados em vídeo direto no seu celular, para você não ter nenhuma dúvida de como executá-los.</p>
+            </div>
+
+            <div class="card-sobre">
+                <div class="card-icone"><i class="fas fa-file-medical-alt"></i></div>
+                <h3>Avaliação Física</h3>
+                <p>Exame completo para que seu médico ou nutricionista possa acompanhar de perto e com precisão toda a sua evolução.</p>
+            </div>
+
+            <div class="card-sobre">
+                <div class="card-icone"><i class="fa-solid fa-star"></i></div>
+                <h3>Aparelhos novos</h3>
+                <p>Sempre estamos investindo em equipamentos novos, de alta tecnologia e de máxima qualidade!</p>
+            </div>
+
+            <div class="card-sobre">
+                <div class="card-icone"><i class="fas fa-handshake"></i></div>
+                <h3>Gympass &amp; Totalpass</h3>
+                <p>Parcerias integradas para você treinar quando e como quiser. Aceitamos as maiores plataformas de benefícios corporativos.</p>
+            </div>
+
+            <div class="card-sobre">
+                <div class="card-icone"><i class="fa-solid fa-clock"></i></div>
+                <h3>Sempre disponível</h3>
+                <p>Treine quando quiser. A Muskel Fit fica aberta todos os dias da semana, incluindo feriados, de manhã até de noite. Sem desculpa, sem pausa, sem perder o ritmo.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===================== SEÇÃO PLANOS ===================== -->
+    <!-- Cada "card" abaixo representa um plano diferente de assinatura -->
+    <section id="planos" class="secao secao-escura">
+        <h2>NOSSOS PLANOS</h2>
+
+        <!-- Uso uma div pra cada card de plano, assim fica fácil estilizar em grid no CSS -->
+        <!-- ---- Planos comuns ---- -->
+        <div class="cards-planos">
+            <h3 class="titulo-grupo-planos">Planos Comuns — Para apenas uma pessoa</h3>
+
+            <div class="card">
+                <h3><i class="fa-solid fa-user"></i> Mensal</h3>
+                <p class="preco">R$ 90,00<span>/mês</span></p>
+                <ul>
+                    <li>✔ Acesso à musculação</li>
+                    <li>✔ Avaliação física</li>
+                </ul>
+                <button class="btn-amarelo">Escolher</button>
+            </div>
+
+            <div class="card">
+                <h3><i class="fa-solid fa-user"></i> Semestral</h3>
+                <p class="preco">R$ 259,90<span>/6 meses</span></p>
+                <ul>
+                    <li>✔ Acesso à musculação</li>
+                    <li>✔ Avaliação física</li>
+                </ul>
+                <button class="btn-amarelo">Escolher</button>
+            </div>
+
+            <div class="card">
+                <h3><i class="fa-solid fa-user"></i> Anual</h3>
+                <p class="preco">R$ 899,90<span>/ano</span></p>
+                <ul>
+                    <li>✔ Acesso à musculação</li>
+                    <li>✔ Avaliação física</li>
+                </ul>
+                <button class="btn-amarelo">Escolher</button>
+            </div>
+        </div>
+
+        <!-- ---- Planos família ---- -->
+        <div class="cards-planos">
+            <h3 class="titulo-grupo-planos">Planos Família — Para a sua família treinar junto</h3>
+
+            <div class="card">
+                <h3><i class="fa-solid fa-user"></i><i class="fa-solid fa-user"></i><br>2 Pessoas</h3>
+                <p class="preco">R$ 150,00<span>/mês<br>(75 por pessoa)</span></p>
+                <ul>
+                    <li><i class="fa-solid fa-triangle-exclamation"></i> O pagamento precisa ser feito de uma vez só por mês</li>
+                    <li>✔ Acesso à musculação</li>
+                    <li>✔ Avaliação física</li>
+                </ul>
+                <button class="btn-amarelo">Escolher</button>
+            </div>
+
+            <div class="card">
+                <h3><i class="fa-solid fa-user"></i><i class="fa-solid fa-user"></i><i class="fa-solid fa-user"></i><br>3 Pessoas</h3>
+                <p class="preco">R$ 200,00<span>/mês<br>(67 por pessoa)</span></p>
+                <ul>
+                    <li><i class="fa-solid fa-triangle-exclamation"></i> O pagamento precisa ser feito de uma vez só por mês</li>
+                    <li>✔ Acesso à musculação</li>
+                    <li>✔ Avaliação física</li>
+                </ul>
+                <button class="btn-amarelo">Escolher</button>
+            </div>
+
+            <div class="card">
+                <h3><i class="fa-solid fa-user"></i><i class="fa-solid fa-user"></i><i class="fa-solid fa-user"></i><i class="fa-solid fa-user"></i><br>4 Pessoas</h3>
+                <p class="preco">R$ 250,00<span>/mês<br>(62 por pessoa)</span></p>
+                <ul>
+                    <li><i class="fa-solid fa-triangle-exclamation"></i> O pagamento precisa ser feito de uma vez só por mês</li>
+                    <li>✔ Acesso à musculação</li>
+                    <li>✔ Avaliação física</li>
+                </ul>
+                <button class="btn-amarelo">Escolher</button>
+            </div>
+
+            <div class="card">
+                <h3><i class="fa-solid fa-user"></i><i class="fa-solid fa-user"></i><i class="fa-solid fa-user"></i><i class="fa-solid fa-user"></i><i class="fa-solid fa-user"></i><br>5 Pessoas</h3>
+                <p class="preco">R$ 300,00<span>/mês<br>(60 por pessoa)</span></p>
+                <ul>
+                    <li><i class="fa-solid fa-triangle-exclamation"></i> O pagamento precisa ser feito de uma vez só por mês</li>
+                    <li>✔ Acesso à musculação</li>
+                    <li>✔ Avaliação física</li>
+                </ul>
+                <button class="btn-amarelo">Escolher</button>
+            </div>
+        </div>
+
+        <!-- ---- Planos especiais ---- -->
+        <div class="cards-planos">
+            <h3 class="titulo-grupo-planos">Planos Especiais — Diversos planos extras</h3>
+
+            <div class="card">
+                <h3><i class="fa-solid fa-child"></i> Plano Adolescente</h3>
+                <p class="preco">R$ 75,00<span>/mês</span></p>
+                <ul>
+                    <li><i class="fa-solid fa-triangle-exclamation"></i> Precisa ter até 16 anos</li>
+                    <li>✔ Acesso à musculação</li>
+                    <li>✔ Avaliação física</li>
+                </ul>
+                <button class="btn-amarelo">Escolher</button>
+            </div>
+
+            <div class="card">
+                <h3><i class="fa-solid fa-person-cane"></i> Plano Idoso</h3>
+                <p class="preco">R$ 75,00<span>/mês</span></p>
+                <ul>
+                    <li><i class="fa-solid fa-triangle-exclamation"></i> Precisa ter mais de 60 anos</li>
+                    <li>✔ Acesso à musculação</li>
+                    <li>✔ Avaliação física</li>
+                </ul>
+                <button class="btn-amarelo">Escolher</button>
+            </div>
+
+            <div class="card">
+                <h3><i class="fa-solid fa-calendar-days"></i> Plano 3x na Semana</h3>
+                <p class="preco">R$ 75,00<span>/mês</span></p>
+                <ul>
+                    <li><i class="fa-solid fa-triangle-exclamation"></i> Acesso 3x por semana</li>
+                    <li>✔ Acesso à musculação</li>
+                    <li>✔ Avaliação física</li>
+                </ul>
+                <button class="btn-amarelo">Escolher</button>
+            </div>
+
+            <div class="card">
+                <h3><i class="fa-solid fa-chalkboard-user"></i> Plano Professor</h3>
+                <p class="preco">R$ 75,00<span>/mês</span></p>
+                <ul>
+                    <li><i class="fa-solid fa-triangle-exclamation"></i> Apenas para professores</li>
+                    <li>✔ Acesso à musculação</li>
+                    <li>✔ Avaliação física</li>
+                </ul>
+                <button class="btn-amarelo">Escolher</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===================== SEÇÃO HORÁRIOS ===================== -->
+    <section id="horario" class="secao secao-escura">
+        <h2>NOSSOS HORÁRIOS</h2>
+        <p class="subtitulo-horario">Confira quando a <span class="destaque">Muskel Fit</span> está aberta pra você treinar.</p>
+
+        <!-- ---------- Card do cronômetro ---------- -->
+        <div class="horario-status-card" id="horario-status-card">
+            <div class="horario-cronometro">
+                <i class="fa-regular fa-clock"></i>
+                <span id="cronometro">00:00:00</span>
+            </div>
+            <p id="cronometro-texto">Carregando...</p>
+        </div>
+
+        <!-- ---------- Cards dos dias ---------- -->
+        <div class="cards-horario">
+
+            <div class="card-horario" data-dia="1,2,3,4,5">
+                <div class="horario-icone"><i class="fa-solid fa-dumbbell"></i></div>
+                <h3>Segunda a Sexta</h3>
+                <p class="horario-linha"><i class="fa-regular fa-clock"></i> 05h — 22h</p>
+                <span class="horario-tag aberto">Aberto todo o dia</span>
+            </div>
+
+            <div class="card-horario" data-dia="6">
+                <div class="horario-icone"><i class="fa-solid fa-sun"></i></div>
+                <h3>Sábado</h3>
+                <p class="horario-linha"><i class="fa-regular fa-clock"></i> 07h — 12h</p>
+                <p class="horario-linha"><i class="fa-regular fa-clock"></i> 14h — 18h</p>
+                <span class="horario-tag atencao">Pausa no almoço</span>
+            </div>
+
+            <div class="card-horario" data-dia="0">
+                <div class="horario-icone"><i class="fa-solid fa-mug-hot"></i></div>
+                <h3>Domingo</h3>
+                <p class="horario-linha"><i class="fa-regular fa-clock"></i> 08h — 13h</p>
+                <span class="horario-tag folga">Meio período</span>
+            </div>
+
+        </div>
+    </section>
+    <!-- ===================== RODAPÉ ===================== -->
+    <footer id="contato">
+        <div class="footer-conteudo">
+            <!-- Coluna 1: marca + descrição curta -->
+            <div class="footer-coluna">
+                <h3 class="footer-logo">
+                    <span class="spanm">M</span>USKEL <span class="spanfit">FIT</span>
+                </h3>
+                <p class="footer-descricao">
+                    Treine com estrutura completa e acompanhamento profissional
+                    em Cruzeiro – SP.
+                </p>
+
+                <div class="footer-redes">
+                    <a href="https://instagram.com/muskelfitacademia" target="_blank" rel="noopener" aria-label="Instagram">
+                        <i class="fa-brands fa-instagram"></i>
+                    </a>
+                    <a href="https://wa.me/5512991859267" target="_blank" rel="noopener" aria-label="WhatsApp">
+                        <i class="fa-brands fa-whatsapp"></i>
+                    </a>
+                </div>
+            </div>
+            <!-- Coluna 2: links rápidos -->
+            <div class="footer-coluna">
+                <h4>Navegação</h4>
+                <ul>
+                    <li><a href="#localizacao">Localização e Contato</a></li>
+                    <li><a href="#planos">Planos</a></li>
+                    <li><a href="#horario">Horários</a></li>
+                    <li><a href="#sobre">Sobre</a></li>
+                </ul>
+            </div>
+            <!-- Coluna 3: contato -->
+            <div class="footer-coluna">
+                <h4>Contato</h4>
+                <ul class="footer-contato">
+                    <li>
+                        <i class="fa-solid fa-location-dot"></i>
+                        R. Cap. Avelino Bastos, 800 – Centro
+                    </li>
+                    <li>
+                        <i class="fa-solid fa-phone"></i>
+                        (12) 99185-9267
+                    </li>
+                    <li>
+                        <i class="fa-regular fa-clock"></i>
+                        Seg–Sex 5h–22h · Sáb 7h–12h/14h-18h · Dom 8h–13h
+                    </li>
+                </ul>
+
+                <a href="https://wa.me/5512991859267?text=Ol%C3%A1%21%20Gostaria%20de%20me%20matricular%20na%20Muskel%20Fit."
+                target="_blank" rel="noopener"
+                class="btn-footer-whats">
+                    <i class="fa-brands fa-whatsapp"></i> Falar no WhatsApp
+                </a>
+            </div>
+        </div>
+        <!-- Faixa inferior: copyright -->
+        <div class="footer-base">
+            <p>&copy; 2026 Muskel Fit — Todos os direitos reservados</p>
+            <p>CNPJ 00.000.000/0001-00</p>
+            <p>Prof°esp. Wagner - CREF: 176089-G/SP</p>
+            <p class="footer-creditos">
+                Desenvolvido por <a href="https://seusite.com" target="_blank" rel="noopener">Igor Desing</a>
+            </p>
+        </div>
+
+    </footer>
+
+    <!-- Botão flutuante: voltar ao topo -->
+    <button id="btn-topo" aria-label="Voltar ao topo">
+        <i class="fa-solid fa-arrow-up"></i>
+    </button>
+
+    <script src="script.js"></script>
+</body>
+</html>
