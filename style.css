@@ -398,6 +398,7 @@ iframe {
 .bloco-info {
     display: flex;
     align-items: center;
+    text-align: center;
     gap: 14px;
     background-color: #1a1a1a;
     border-radius: 10px;
