@@ -47,7 +47,7 @@ O projeto foi construído com **HTML, CSS e JavaScript puros**, sem frameworks o
 | **Vercel** | Plataforma de hospedagem e deploy contínuo. |
 
 ---
-
+```
 ## 📁 Estrutura do Projeto
 Site-muskel-Fit/
 ├── index.html # Página principal do site
@@ -57,3 +57,4 @@ Site-muskel-Fit/
 └── imagens/
     ├── avatar.png # Avatar/logo da academia
     └── preview.jpg # Imagem de preview para compartilhamento
+```
