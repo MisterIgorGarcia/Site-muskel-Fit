@@ -142,7 +142,7 @@ function atualizarCronometroHorarios() {
         proximoEventoData.setHours(fimAtual, 0, 0, 0);
 
         mensagem = ehPausa
-            ? `Academia <strong>aberta</strong>. Pausa às <strong>${formatarHora(fimAtual)}</strong>.`
+            ? `Academia <strong>aberta</strong>. Pausa para almoço às <strong>${formatarHora(fimAtual)}</strong>.`
             : `Academia <strong>aberta</strong>. Fecharemos às <strong>${formatarHora(fimAtual)}</strong>.`;
     } else if (proximoHoje) {
         proximoEventoData = new Date(agora);

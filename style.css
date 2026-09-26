@@ -175,6 +175,14 @@ iframe {
     }
 }
 
+/* ===================== LINHA SEPARADORA ===================== */
+.separador {
+    border: none;                       /* tira o estilo padrão do navegador */
+    height: 1px;                        /* altura da linha */
+    background-color: rgba(255, 255, 255, 0.123); /* branco bem opaco */
+    max-width: 1100px;                  /* mesma largura do conteúdo do site */
+    margin: 60px auto;                  /* 60px de espaço em cima e embaixo, centralizado */
+}
 /* ===================== BADGE DE STATUS ===================== */
 .status-atual {
     display: inline-flex;
