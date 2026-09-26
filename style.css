@@ -443,7 +443,7 @@ iframe {
 .bloco-whatsapp:hover  { border-color: #25D366; }
 .bloco-endereco:hover  { border-color: var(--cor-secundaria); }
 
-/* ---------- Container do Google Maps ---------- */
+/* ---------- Container do Google Maps, obrigatorio se não quebra o mapa ---------- */
 .mapa-container {
     flex: 1 1 600px;
     max-width: 700px;
@@ -501,7 +501,7 @@ iframe {
     color:var(--cor-secundaria)
 }
 .card-sobre-grupo {
-    display: flex;            /* cards lado a lado */
+    display: flex;             /* flex pra colocar os cards lado a lado */
     flex-wrap: wrap;          /* quebra linha se não couber (celular) */
     justify-content: center;
     gap: 30px;
@@ -539,7 +539,7 @@ iframe {
 
 /* ===================== SEÇÃO DE PLANOS ===================== */
 .cards-planos {
-    display: flex;            /* cards lado a lado */
+    display: flex;            /* flex pra colocar os cards lado a lado */
     flex-wrap: wrap;          /* quebra linha se não couber (celular) */
     justify-content: center;
     gap: 30px;
@@ -719,7 +719,7 @@ iframe {
     }
 }
 
-/* ===================== CARD DO CRONÔMETRO (adicional) ===================== */
+/* ===================== CARD DO CRONÔMETRO ===================== */
 .horario-status-card {
     background-color: #1a1a1a;
     border: 1px solid rgba(34, 197, 94, 0.4); /* começa verde */
@@ -1030,7 +1030,7 @@ footer {
     }
 }
 
-/* ===================== RESPONSIVIDADE ===================== */
+/* ===================== RESPONSIVIDADE GERAL ===================== */
 /* Ajustes para tablets e celulares grandes */
 @media (max-width: 768px) {
     #cabecalho {
@@ -1137,4 +1137,3 @@ footer {
         font-size: 1.3rem;
     }
 }
-/* ===================== ANIMAÇÃO ===================== */
