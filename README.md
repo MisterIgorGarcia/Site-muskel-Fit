@@ -1,4 +1,4 @@
-# 🏋️ Muskel Fit - Academia
+<h1 align='center'># 🏋️ Muskel Fit - Academia</h1>
 
 <div align="center">
 
