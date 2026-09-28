@@ -1,3 +1,5 @@
+//ESSE ARQUIVO CONTROLA DIVERSOS DETALHES DE QOL DO SITE, COMO FORMATAÇÃO DE FUNCIONALIDADES
+
 export function formatarHora(h) {
     return String(h).padStart(2, '0') + ':00';
 }

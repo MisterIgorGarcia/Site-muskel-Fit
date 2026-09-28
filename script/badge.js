@@ -1,3 +1,5 @@
+//ESTE ARQUIVO CONTROLA TODA FUNCIONALIDADE DAS BADGES DE ABERTO OU FECHADO DO SITE//
+
 import { HORARIOS_BADGE } from './config.js';
 
 export function atualizarBadge() {
