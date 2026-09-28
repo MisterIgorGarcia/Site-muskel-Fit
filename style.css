@@ -23,7 +23,7 @@ body {
     background-color: var(--cor-primaria); /* fundo preto em todo o site */
     color: var(--cor-texto-claro);
     line-height: 1.5;
-    overflow-x: hidden;
+    overflow-x: clip; /* ⬅️ ALTERADO: era "hidden". "clip" evita quebrar position: sticky nos filhos */
 }
 
 img,
@@ -118,7 +118,9 @@ iframe {
 @media (max-width: 768px) {
 
     #cabecalho {
-        position: relative; /* pra posicionar o menu dropdown */
+        position: sticky; /* ⬅️ ALTERADO: era "relative". Gruda no topo ao rolar */
+        top: 0;           /* ⬅️ ADICIONADO: necessário pro sticky funcionar */
+        z-index: 1000;    /* ⬅️ ADICIONADO: fica por cima das outras seções */
         flex-direction: row; /* logo e botão na mesma linha */
         justify-content: space-between;
         align-items: center;
