@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pré-Matrícula — Muskel Fit</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+
+<section class="secao">
+    <h2>Pré-Matrícula</h2>
+    <p class="subtitulo-horario">
+        Preencha seus dados, escolha o plano e finalize pelo WhatsApp.
+    </p>
+
+    <form id="form-matricula" class="form-matricula" novalidate>
+
+        <div class="campo">
+            <label for="nome">Nome completo *</label>
+            <input type="text" id="nome" name="nome" required autocomplete="name">
+        </div>
+
+        <div class="campo">
+            <label for="nascimento">Data de nascimento *</label>
+            <input type="date" id="nascimento" name="nascimento" required>
+        </div>
+
+        <div class="campo">
+            <label for="telefone">Telefone fixo</label>
+            <input type="tel" id="telefone" name="telefone"
+                   placeholder="(12) 3000-0000" autocomplete="tel">
+        </div>
+
+        <div class="campo">
+            <label for="celular">Celular (WhatsApp) *</label>
+            <input type="tel" id="celular" name="celular"
+                   placeholder="(12) 99999-9999" required autocomplete="tel">
+        </div>
+
+        <div class="campo">
+            <label for="plano">Plano desejado *</label>
+            <select id="plano" name="plano" required>
+                <option value="">Selecione um plano...</option>
+                <option>Mensal — R$ 90,00</option>
+                <option>Trimestral — R$ 85,00</option>
+                <option>Semestral — R$ 80,00</option>
+                <option>Anual — R$ 75,00</option>
+                <option>Família 2 pessoas — R$ 150,00</option>
+                <option>Família 3 pessoas — R$ 200,00</option>
+                <option>Plano Adolescente — R$ 75,00</option>
+                <option>Plano Idoso — R$ 75,00</option>
+                <option>Plano 3x na Semana — R$ 75,00</option>
+                <option>Plano Professor — R$ 75,00</option>
+            </select>
+        </div>
+
+        <fieldset class="campo campo-radio">
+            <legend>Forma de pagamento *</legend>
+            <label>
+                <input type="radio" name="pagamento" value="PIX" required>
+                <i class="fa-brands fa-pix"></i> PIX
+            </label>
+            <label>
+                <input type="radio" name="pagamento" value="Débito">
+                <i class="fa-solid fa-credit-card"></i> Débito
+            </label>
+            <label>
+                <input type="radio" name="pagamento" value="Crédito">
+                <i class="fa-solid fa-credit-card"></i> Crédito
+            </label>
+        </fieldset>
+
+        <button type="submit" class="btn-amarelo">
+            <i class="fa-brands fa-whatsapp"></i> Enviar pré-matrícula
+        </button>
+    </form>
+
+    <!-- Painel que aparece depois do envio -->
+    <div id="painel-pagamento" class="painel-pagamento" hidden></div>
+</section>
+
+<script src="prematricula.js"></script>
+</body>
+</html>

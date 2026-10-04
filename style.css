@@ -950,6 +950,139 @@ footer {
     transform: scale(1.04);
 }
 
+/* ===================== FORMULÁRIO DE PRÉ-MATRÍCULA ===================== */
+.form-matricula {
+    max-width: 520px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    background-color: var(--cor-card);
+    padding: 35px 30px;
+    border-radius: 15px;
+    border: 2px solid transparent;
+}
+
+.form-matricula .campo {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    text-align: left;
+}
+
+.form-matricula label {
+    font-size: 0.9rem;
+    font-weight: bold;
+    color: var(--cor-texto-claro);
+}
+
+.form-matricula input,
+.form-matricula select {
+    background-color: #1a1a1a;
+    border: 1px solid #333;
+    color: var(--cor-texto-claro);
+    padding: 12px 14px;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-family: inherit;
+    transition: border-color 0.2s;
+    width: 100%;
+}
+
+.form-matricula input:focus,
+.form-matricula select:focus {
+    outline: none;
+    border-color: var(--cor-secundaria);
+}
+
+.campo-radio {
+    border: none;
+    padding: 0;
+}
+
+.campo-radio legend {
+    font-size: 0.9rem;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.campo-radio label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    background-color: #1a1a1a;
+    border: 1px solid #333;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-right: 8px;
+    font-weight: normal;
+    transition: border-color 0.2s, background-color 0.2s;
+}
+
+.campo-radio label:hover {
+    border-color: var(--cor-secundaria);
+}
+
+.campo-radio input:checked + i,
+.campo-radio label:has(input:checked) {
+    color: var(--cor-secundaria);
+    border-color: var(--cor-secundaria);
+    background-color: rgba(255, 214, 10, 0.08);
+}
+
+.painel-pagamento {
+    max-width: 520px;
+    margin: 30px auto 0;
+    background-color: var(--cor-card);
+    border: 2px solid var(--cor-secundaria);
+    border-radius: 15px;
+    padding: 30px;
+    text-align: center;
+}
+
+.painel-pagamento h3 {
+    color: var(--cor-secundaria);
+    margin-bottom: 15px;
+    font-size: 1.3rem;
+}
+
+.qrcode-pix {
+    margin: 20px auto;
+    background: #fff;
+    padding: 10px;
+    border-radius: 10px;
+    width: fit-content;
+}
+
+.pix-copia-cola {
+    display: flex;
+    gap: 8px;
+    margin: 15px 0;
+}
+
+.pix-copia-cola input {
+    flex: 1;
+    background: #1a1a1a;
+    border: 1px solid #333;
+    color: #999;
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    font-family: monospace;
+}
+
+.aviso-pix {
+    font-size: 0.85rem;
+    color: #999;
+    margin-top: 15px;
+}
+
+@media (max-width: 600px) {
+    .form-matricula { padding: 25px 20px; }
+    .campo-radio label { width: 100%; margin: 0 0 8px; justify-content: flex-start; }
+}
+
 /* ---------- Faixa inferior ---------- */
 .footer-base {
     border-top: 1px solid #1a1a1a;

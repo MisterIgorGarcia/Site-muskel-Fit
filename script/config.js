@@ -18,7 +18,7 @@ export const NOMES_DIAS = [
     'quinta-feira', 'sexta-feira', 'sábado'
 ];
 
-// Horários usados apenas pela BADGE (independentes do cronômetro)
+// Cards e Horários usados apenas pela BADGE (independentes do cronômetro)
 export const HORARIOS_BADGE = {
     semana: { abre: 5, fecha: 22 },       // Seg–Sex
     sabado: { manha: [6, 12], tarde: [14, 18] },
