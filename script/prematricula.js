@@ -1,16 +1,20 @@
 /* ===================== CONFIGURAÇÃO ===================== */
-// ⚠️ EDITE AQUI — troque pelos dados reais
+// ⚠️ EDITE AQUI — troque pelos dados reais da academia
 const CONFIG = {
-    whatsapp: '5512991859267',          // número da academia (com DDI+DDD)
-    pixChave: '12.345.678/0001-90',     // sua chave PIX (CNPJ, telefone, email ou aleatória)
-    pixNome:  'MUSKEL FIT ACADEMIA',    // nome do beneficiário (sem acentos)
-    pixCidade: 'CRUZEIRO',              // cidade do beneficiário (sem acentos)
+    whatsapp:  '5512991859267',              // número da academia (com DDI+DDD)
+    pixChave:  '12.345.678/0001-90',         // sua chave PIX (CNPJ, telefone, email ou aleatória)
+    pixNome:   'MUSKEL FIT ACADEMIA',        // nome do beneficiário (sem acentos)
+    pixCidade: 'CRUZEIRO',                   // cidade do beneficiário (sem acentos)
     // Link de pagamento do gateway (Mercado Pago, InfinitePay, etc.)
-    // Deixe vazio se ainda não tiver
+    // Deixe como está se ainda não tiver — o painel mostra mensagem alternativa
     linkCartao: 'https://mpago.la/SEU_LINK_AQUI'
 };
 
 /* ===================== HELPERS ===================== */
+
+/**
+ * Formata um número digitado para o padrão brasileiro (12) 99999-9999
+ */
 function formatarTelefone(valor) {
     const nums = valor.replace(/\D/g, '');
     if (nums.length <= 10) {
@@ -19,27 +23,33 @@ function formatarTelefone(valor) {
     return nums.replace(/(\d{2})(\d{5})(\d{0,4})/, '($1) $2-$3').trim();
 }
 
+/**
+ * Valida a data de nascimento. Retorna mensagem de erro ou null se OK.
+ */
 function validarNascimento(dataStr) {
+    if (!dataStr) return 'Informe sua data de nascimento.';
+
     const data = new Date(dataStr);
     if (isNaN(data)) return 'Data inválida.';
+
     const hoje = new Date();
     let idade = hoje.getFullYear() - data.getFullYear();
     const m = hoje.getMonth() - data.getMonth();
     if (m < 0 || (m === 0 && hoje.getDate() < data.getDate())) idade--;
 
-    if (idade < 12) return 'É necessário ter pelo menos 12 anos.';
+    if (idade < 12)  return 'É necessário ter pelo menos 12 anos.';
     if (idade > 120) return 'Data de nascimento inválida.';
     return null;
 }
 
-/* Máscara automática nos campos de telefone */
-['telefone', 'celular'].forEach(id => {
-    const el = document.getElementById(id);
-    if (!el) return;
-    el.addEventListener('input', e => {
-        e.target.value = formatarTelefone(e.target.value);
-    });
-});
+/**
+ * Extrai o valor em reais de uma string tipo "Mensal — R$ 90,00"
+ */
+function extrairValor(plano) {
+    const match = plano.match(/R\$\s*([\d.,]+)/);
+    if (!match) return 0;
+    return parseFloat(match[1].replace(/\./g, '').replace(',', '.'));
+}
 
 /* ===================== GERA PIX (EMV) ===================== */
 // Gera o payload "copia e cola" do PIX seguindo o padrão EMV do Banco Central
@@ -53,8 +63,17 @@ function gerarPayloadPix(chave, nome, cidade, valor = 0, txid = '***') {
     const chaveFmt = tlv('01', chave);
     const merchantAccount = tlv('26', gui + chaveFmt);
 
-    const nomeFmt = nome.substring(0, 25).toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-    const cidadeFmt = cidade.substring(0, 15).toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    const nomeFmt = nome
+        .substring(0, 25)
+        .toUpperCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '');
+
+    const cidadeFmt = cidade
+        .substring(0, 15)
+        .toUpperCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '');
 
     let payload =
         tlv('00', '01') +
@@ -80,66 +99,21 @@ function gerarPayloadPix(chave, nome, cidade, valor = 0, txid = '***') {
     return payload + crc.toString(16).toUpperCase().padStart(4, '0');
 }
 
-/* ===================== SUBMIT DO FORM ===================== */
-document.getElementById('form-matricula').addEventListener('submit', (e) => {
-    e.preventDefault();
-
-    const fd = new FormData(e.target);
-    const dados = {
-        nome:       (fd.get('nome') || '').trim(),
-        nascimento: fd.get('nascimento'),
-        telefone:   (fd.get('telefone') || '').trim() || '—',
-        celular:    (fd.get('celular') || '').trim(),
-        plano:      fd.get('plano'),
-        pagamento:  fd.get('pagamento')
-    };
-
-    // Validação
-    const erroNasc = validarNascimento(dados.nascimento);
-    if (erroNasc) { alert(erroNasc); return; }
-
-    if (!dados.nome || !dados.celular || !dados.plano || !dados.pagamento) {
-        alert('Preencha todos os campos obrigatórios (*).');
-        return;
-    }
-
-    if (dados.celular.replace(/\D/g, '').length < 10) {
-        alert('Celular inválido. Use o formato (12) 99999-9999.');
-        return;
-    }
-
-    // Formata a data como DD/MM/AAAA
-    const [a, m, d] = dados.nascimento.split('-');
-    const dataFmt = `${d}/${m}/${a}`;
-
-    // Monta a mensagem pra WhatsApp
-    const msg =
-        `*PRÉ-MATRÍCULA — Muskel Fit*\n\n` +
-        `*Nome:* ${dados.nome}\n` +
-        `*Nascimento:* ${dataFmt}\n` +
-        `*Telefone:* ${dados.telefone}\n` +
-        `*Celular:* ${dados.celular}\n` +
-        `*Plano:* ${dados.plano}\n` +
-        `*Pagamento:* ${dados.pagamento}\n\n` +
-        `Aguardo contato para confirmar!`;
-
-    // Abre o WhatsApp
-    window.open(`https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(msg)}`, '_blank');
-
-    // Mostra o painel de pagamento
-    mostrarPainelPagamento(dados);
-});
-
 /* ===================== PAINEL DE PAGAMENTO ===================== */
 function mostrarPainelPagamento(dados) {
     const painel = document.getElementById('painel-pagamento');
+    if (!painel) return;
+
     painel.hidden = false;
     painel.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
     if (dados.pagamento === 'PIX') {
         const valor = extrairValor(dados.plano);
         const payload = gerarPayloadPix(
-            CONFIG.pixChave, CONFIG.pixNome, CONFIG.pixCidade, valor
+            CONFIG.pixChave,
+            CONFIG.pixNome,
+            CONFIG.pixCidade,
+            valor
         );
 
         painel.innerHTML = `
@@ -157,23 +131,22 @@ function mostrarPainelPagamento(dados) {
             </p>
         `;
 
-        // Renderiza o QR Code (usa API pública do Google Charts — sem instalar nada)
+        // Renderiza o QR Code (API pública — sem instalar nada)
         const qr = document.getElementById('qrcode-pix');
         const img = document.createElement('img');
         img.src = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(payload)}`;
         img.alt = 'QR Code PIX';
         qr.appendChild(img);
 
-    } else {
-        // Débito ou Crédito
-        if (!CONFIG.linkCartao || CONFIG.linkCartao.includes('SEU_LINK')) {
-            painel.innerHTML = `
-                <h3><i class="fa-solid fa-credit-card"></i> Pagamento com cartão</h3>
-                <p>Nossa equipe enviará o link de pagamento pelo WhatsApp.</p>
-            `;
-            return;
-        }
+    } else if (!CONFIG.linkCartao || CONFIG.linkCartao.includes('SEU_LINK')) {
+        // Ainda não configurou o link do gateway
+        painel.innerHTML = `
+            <h3><i class="fa-solid fa-credit-card"></i> Pagamento com cartão</h3>
+            <p>Nossa equipe enviará o link de pagamento pelo WhatsApp.</p>
+        `;
 
+    } else {
+        // Débito ou Crédito com link configurado
         painel.innerHTML = `
             <h3><i class="fa-solid fa-credit-card"></i> Pagamento com ${dados.pagamento}</h3>
             <p>Clique no botão abaixo para ir para o checkout seguro:</p>
@@ -187,15 +160,121 @@ function mostrarPainelPagamento(dados) {
     }
 }
 
-function extrairValor(plano) {
-    const match = plano.match(/R\$\s*([\d.,]+)/);
-    if (!match) return 0;
-    return parseFloat(match[1].replace(/\./g, '').replace(',', '.'));
+/* ===================== COPIAR PIX ===================== */
+// Exposto no window porque é chamado via onclick no HTML gerado
+window.copiarPix = async function () {
+    const input = document.getElementById('pix-input');
+    if (!input) return;
+
+    try {
+        // API moderna (funciona em HTTPS — Vercel serve em HTTPS ✅)
+        await navigator.clipboard.writeText(input.value);
+        alert('Código PIX copiado! Cole no app do seu banco.');
+    } catch {
+        // Fallback pra navegadores antigos ou contexto não-seguro (file://)
+        input.select();
+        document.execCommand('copy');
+        alert('Código PIX copiado!');
+    }
+};
+
+/* ===================== PRÉ-SELEÇÃO VIA URL ===================== */
+/**
+ * Procura uma opção no <select> que contenha o texto da URL e a seleciona.
+ * Útil para links tipo: prematricula.html?plano=Mensal&modalidade=Crossfit
+ */
+function preSelecionarPorURL(selectId, valorURL) {
+    if (!valorURL) return;
+    const select = document.getElementById(selectId);
+    if (!select) return;
+
+    [...select.options].forEach(opt => {
+        if (opt.textContent.toLowerCase().includes(valorURL.toLowerCase())) {
+            opt.selected = true;
+        }
+    });
 }
 
-window.copiarPix = function () {
-    const input = document.getElementById('pix-input');
-    input.select();
-    document.execCommand('copy');
-    alert('Código PIX copiado! Cole no app do seu banco.');
-};
+/* ===================== INICIALIZAÇÃO ===================== */
+// Só roda o resto se o formulário existir na página (guard clause)
+const form = document.getElementById('form-matricula');
+
+if (form) {
+
+    /* Máscara automática nos campos de telefone */
+    ['telefone', 'celular'].forEach(id => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.addEventListener('input', e => {
+            e.target.value = formatarTelefone(e.target.value);
+        });
+    });
+
+    /* Pré-seleção via URL (?plano=...&modalidade=...&unidade=...) */
+    const params = new URLSearchParams(window.location.search);
+    preSelecionarPorURL('plano',      params.get('plano'));
+    preSelecionarPorURL('modalidade', params.get('modalidade'));
+    preSelecionarPorURL('unidade',    params.get('unidade'));
+
+    /* Submit do formulário */
+    form.addEventListener('submit', (e) => {
+        e.preventDefault();
+
+        const fd = new FormData(e.target);
+        const dados = {
+            nome:       (fd.get('nome') || '').trim(),
+            nascimento: fd.get('nascimento'),
+            telefone:   (fd.get('telefone') || '').trim() || '—',
+            celular:    (fd.get('celular') || '').trim(),
+            plano:      fd.get('plano'),
+            modalidade: fd.get('modalidade'),
+            unidade:    fd.get('unidade'),
+            pagamento:  fd.get('pagamento')
+        };
+
+        // -------- Validação --------
+        const erroNasc = validarNascimento(dados.nascimento);
+        if (erroNasc) { alert(erroNasc); return; }
+
+        if (!dados.nome || !dados.celular || !dados.plano || !dados.pagamento) {
+            alert('Preencha todos os campos obrigatórios (*).');
+            return;
+        }
+
+        if (!dados.modalidade || !dados.unidade) {
+            alert('Selecione a modalidade e a unidade.');
+            return;
+        }
+
+        if (dados.celular.replace(/\D/g, '').length < 10) {
+            alert('Celular inválido. Use o formato (12) 99999-9999.');
+            return;
+        }
+
+        // -------- Formata data como DD/MM/AAAA --------
+        const [a, m, d] = dados.nascimento.split('-');
+        const dataFmt = `${d}/${m}/${a}`;
+
+        // -------- Monta mensagem pro WhatsApp --------
+        const msg =
+            `*PRÉ-MATRÍCULA — Muskel Fit*\n\n` +
+            `*Nome:* ${dados.nome}\n` +
+            `*Nascimento:* ${dataFmt}\n` +
+            `*Telefone:* ${dados.telefone}\n` +
+            `*Celular:* ${dados.celular}\n` +
+            `*Plano:* ${dados.plano}\n` +
+            `*Modalidade:* ${dados.modalidade}\n` +
+            `*Unidade:* ${dados.unidade}\n` +
+            `*Pagamento:* ${dados.pagamento}\n\n` +
+            `Aguardo contato para confirmar!`;
+
+        // -------- Abre WhatsApp --------
+        window.open(
+            `https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(msg)}`,
+            '_blank'
+        );
+
+        // -------- Mostra painel de pagamento --------
+        mostrarPainelPagamento(dados);
+    });
+}

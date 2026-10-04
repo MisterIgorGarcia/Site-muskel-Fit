@@ -330,6 +330,7 @@ iframe {
     justify-content: center;
     gap: 8px;
     text-align: center;
+    text-decoration: none; 
 }
 /* Em telas menores que 600px, o menu e o header viram coluna ao invés de linha */
 @keyframes flutuar { /*usa a variavel flutuar e como keyframe*/
@@ -950,139 +951,6 @@ footer {
     transform: scale(1.04);
 }
 
-/* ===================== FORMULÁRIO DE PRÉ-MATRÍCULA ===================== */
-.form-matricula {
-    max-width: 520px;
-    margin: 0 auto;
-    display: flex;
-    flex-direction: column;
-    gap: 18px;
-    background-color: var(--cor-card);
-    padding: 35px 30px;
-    border-radius: 15px;
-    border: 2px solid transparent;
-}
-
-.form-matricula .campo {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    text-align: left;
-}
-
-.form-matricula label {
-    font-size: 0.9rem;
-    font-weight: bold;
-    color: var(--cor-texto-claro);
-}
-
-.form-matricula input,
-.form-matricula select {
-    background-color: #1a1a1a;
-    border: 1px solid #333;
-    color: var(--cor-texto-claro);
-    padding: 12px 14px;
-    border-radius: 8px;
-    font-size: 1rem;
-    font-family: inherit;
-    transition: border-color 0.2s;
-    width: 100%;
-}
-
-.form-matricula input:focus,
-.form-matricula select:focus {
-    outline: none;
-    border-color: var(--cor-secundaria);
-}
-
-.campo-radio {
-    border: none;
-    padding: 0;
-}
-
-.campo-radio legend {
-    font-size: 0.9rem;
-    font-weight: bold;
-    margin-bottom: 8px;
-}
-
-.campo-radio label {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 16px;
-    background-color: #1a1a1a;
-    border: 1px solid #333;
-    border-radius: 8px;
-    cursor: pointer;
-    margin-right: 8px;
-    font-weight: normal;
-    transition: border-color 0.2s, background-color 0.2s;
-}
-
-.campo-radio label:hover {
-    border-color: var(--cor-secundaria);
-}
-
-.campo-radio input:checked + i,
-.campo-radio label:has(input:checked) {
-    color: var(--cor-secundaria);
-    border-color: var(--cor-secundaria);
-    background-color: rgba(255, 214, 10, 0.08);
-}
-
-.painel-pagamento {
-    max-width: 520px;
-    margin: 30px auto 0;
-    background-color: var(--cor-card);
-    border: 2px solid var(--cor-secundaria);
-    border-radius: 15px;
-    padding: 30px;
-    text-align: center;
-}
-
-.painel-pagamento h3 {
-    color: var(--cor-secundaria);
-    margin-bottom: 15px;
-    font-size: 1.3rem;
-}
-
-.qrcode-pix {
-    margin: 20px auto;
-    background: #fff;
-    padding: 10px;
-    border-radius: 10px;
-    width: fit-content;
-}
-
-.pix-copia-cola {
-    display: flex;
-    gap: 8px;
-    margin: 15px 0;
-}
-
-.pix-copia-cola input {
-    flex: 1;
-    background: #1a1a1a;
-    border: 1px solid #333;
-    color: #999;
-    padding: 10px;
-    border-radius: 8px;
-    font-size: 0.8rem;
-    font-family: monospace;
-}
-
-.aviso-pix {
-    font-size: 0.85rem;
-    color: #999;
-    margin-top: 15px;
-}
-
-@media (max-width: 600px) {
-    .form-matricula { padding: 25px 20px; }
-    .campo-radio label { width: 100%; margin: 0 0 8px; justify-content: flex-start; }
-}
-
 /* ---------- Faixa inferior ---------- */
 .footer-base {
     border-top: 1px solid #1a1a1a;
@@ -1283,4 +1151,145 @@ footer {
     .card .preco {
         font-size: 1.3rem;
     }
+}
+
+
+/*==================================================================PAGINA DE PRE MATRICULA====================================================================================*/
+
+
+/* ===================== FORMULÁRIO DE PRÉ-MATRÍCULA ===================== */
+/* Reaproveita .card, .btn-amarelo, .secao, .destaque do CSS atual */
+
+.form-matricula {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    max-width: 520px;
+    margin: 0 auto;
+    text-align: left;
+}
+
+.form-matricula .campo {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.form-matricula label {
+    font-size: 0.9rem;
+    font-weight: bold;
+    color: var(--cor-texto-claro);
+}
+
+.form-matricula input[type="text"],
+.form-matricula input[type="date"],
+.form-matricula input[type="tel"],
+.form-matricula select {
+    background-color: #1a1a1a;
+    border: 1px solid #333;
+    color: var(--cor-texto-claro);
+    padding: 12px 14px;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-family: inherit;
+    width: 100%;
+    transition: border-color 0.2s;
+}
+
+.form-matricula input:focus,
+.form-matricula select:focus {
+    outline: none;
+    border-color: var(--cor-secundaria);
+}
+
+/* Radio buttons */
+.campo-radio {
+    border: none;
+    padding: 0;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.campo-radio legend {
+    font-size: 0.9rem;
+    font-weight: bold;
+    margin-bottom: 10px;
+    width: 100%;
+    color: var(--cor-texto-claro);
+}
+
+.campo-radio label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    background-color: #1a1a1a;
+    border: 2px solid #333;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: normal;
+    transition: border-color 0.2s, background-color 0.2s;
+}
+
+.campo-radio label:hover { border-color: var(--cor-secundaria); }
+.campo-radio input[type="radio"] { display: none; }
+.campo-radio label:has(input:checked) {
+    border-color: var(--cor-secundaria);
+    background-color: rgba(255, 214, 10, 0.1);
+    color: var(--cor-secundaria);
+}
+
+/* Painel de pagamento */
+.painel-pagamento {
+    margin: 30px auto 0;
+    max-width: 520px;
+    padding: 30px 25px;
+    background-color: var(--cor-card);
+    border: 2px solid var(--cor-secundaria);
+    border-radius: 15px;
+    text-align: center;
+}
+
+.painel-pagamento h3 {
+    color: var(--cor-secundaria);
+    margin-bottom: 15px;
+}
+
+.qrcode-pix {
+    background: #fff;
+    padding: 10px;
+    border-radius: 10px;
+    width: fit-content;
+    margin: 20px auto;
+}
+
+.pix-copia-cola {
+    display: flex;
+    gap: 8px;
+    margin: 15px 0;
+    flex-wrap: wrap;
+}
+
+.pix-copia-cola input {
+    flex: 1;
+    min-width: 200px;
+    background: #1a1a1a;
+    border: 1px solid #333;
+    color: #999;
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 0.78rem;
+    font-family: monospace;
+}
+
+.aviso-pix {
+    font-size: 0.85rem;
+    color: #999;
+    margin-top: 15px;
+}
+
+@media (max-width: 600px) {
+    .campo-radio label { width: 100%; justify-content: center; }
+    .pix-copia-cola { flex-direction: column; }
 }

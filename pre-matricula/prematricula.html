@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pré-Matrícula — Muskel Fit</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="../style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body>
@@ -49,10 +49,34 @@
                 <option>Anual — R$ 75,00</option>
                 <option>Família 2 pessoas — R$ 150,00</option>
                 <option>Família 3 pessoas — R$ 200,00</option>
+                <option>Família 4 pessoas — R$ 250,00</option>
+                <option>Família 5 pessoas — R$ 300,00</option>
                 <option>Plano Adolescente — R$ 75,00</option>
                 <option>Plano Idoso — R$ 75,00</option>
                 <option>Plano 3x na Semana — R$ 75,00</option>
                 <option>Plano Professor — R$ 75,00</option>
+            </select>
+        </div>
+
+        <div class="campo">
+            <label for="modalidade">Modalidade *</label>
+            <select id="modalidade" name="modalidade" required>
+                <option value="">Selecione a modalidade...</option>
+                <option>Crossfit</option>
+                <option>Musculação</option>
+                <option>Fit Dance</option>
+                <option>Spinning</option>
+                <option>Jump</option>
+            </select>
+        </div>
+
+        <div class="campo">
+            <label for="unidade">Unidade *</label>
+            <select id="unidade" name="unidade" required>
+                <option value="">Selecione a unidade...</option>
+                <option>Cruzeiro - SP</option>
+                <option>Queluz - SP</option>
+                <option>Engenheiro Passos (Resende - RJ)</option>
             </select>
         </div>
 
@@ -81,6 +105,6 @@
     <div id="painel-pagamento" class="painel-pagamento" hidden></div>
 </section>
 
-<script src="prematricula.js"></script>
+<script src="../script/prematricula.js"></script>
 </body>
 </html>
