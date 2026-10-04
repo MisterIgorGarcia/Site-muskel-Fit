@@ -1,74 +1,11 @@
 /* ===================== CONFIGURAÇÃO ===================== */
-// ⚠️ EDITE AQUI — cole os links do Mercado Pago em cada combinação abaixo.
-// A chave é o NOME CURTO do plano (como aparece no <select> do HTML).
-// A URL de retorno deve ser configurada em CADA link no painel do MP como:
-//   https://muskelfit-academia.vercel.app/pre-matricula/prematricula.html?status=success
+// Os links do Mercado Pago NÃO ficam mais aqui.
+// Agora o pagamento é criado pela API (/api/criar-pagamento), que já define
+// a URL de retorno: .../prematricula.html?status=success
+// Os preços e o Access Token ficam no servidor (arquivo api/criar-pagamento.js).
 
 const CONFIG = {
-    whatsapp: '5512991859267',    // número da academia (com DDI+DDD)
-
-    links: {
-        'Mensal': {
-            PIX:     'https://mpago.la/27joqJB',
-            'Débito':  'COLE_AQUI_O_LINK_DEBITO_DO_MENSAL',
-            'Crédito': 'COLE_AQUI_O_LINK_CREDITO_DO_MENSAL'
-        },
-        'Trimestral': {
-            PIX:     'https://mpago.li/2SBYtMR',
-            'Débito':  'COLE_AQUI_O_LINK_DEBITO_DO_TRIMESTRAL',
-            'Crédito': 'COLE_AQUI_O_LINK_CREDITO_DO_TRIMESTRAL'
-        },
-        'Semestral': {
-            PIX:     'https://mpago.li/2Rb1dJD',
-            'Débito':  'COLE_AQUI_O_LINK_DEBITO_DO_SEMESTRAL',
-            'Crédito': 'COLE_AQUI_O_LINK_CREDITO_DO_SEMESTRAL'
-        },
-        'Anual': {
-            PIX:     'https://mpago.li/2T7UUKk',
-            'Débito':  'COLE_AQUI_O_LINK_DEBITO_DO_ANUAL',
-            'Crédito': 'COLE_AQUI_O_LINK_CREDITO_DO_ANUAL'
-        },
-        'Família 2 pessoas': {
-            PIX:     'https://mpago.li/1iaLeWm',
-            'Débito':  'COLE_AQUI_O_LINK_DEBITO_DA_FAMILIA_2',
-            'Crédito': 'COLE_AQUI_O_LINK_CREDITO_DA_FAMILIA_2'
-        },
-        'Família 3 pessoas': {
-            PIX:     'https://mpago.li/1yhV9Hv',
-            'Débito':  'COLE_AQUI_O_LINK_DEBITO_DA_FAMILIA_3',
-            'Crédito': 'COLE_AQUI_O_LINK_CREDITO_DA_FAMILIA_3'
-        },
-        'Família 4 pessoas': {
-            PIX:     'https://mpago.li/17aPy32',
-            'Débito':  'COLE_AQUI_O_LINK_DEBITO_DA_FAMILIA_4',
-            'Crédito': 'COLE_AQUI_O_LINK_CREDITO_DA_FAMILIA_4'
-        },
-        'Família 5 pessoas': {
-            PIX:     'https://mpago.li/31DpGvL',
-            'Débito':  'COLE_AQUI_O_LINK_DEBITO_DA_FAMILIA_5',
-            'Crédito': 'COLE_AQUI_O_LINK_CREDITO_DA_FAMILIA_5'
-        },
-        'Adolescente': {
-            PIX:     ' https://mpago.la/1J2aoxw',
-            'Débito':  'COLE_AQUI_O_LINK_DEBITO_DO_ADOLESCENTE',
-            'Crédito': 'COLE_AQUI_O_LINK_CREDITO_DO_ADOLESCENTE'
-        },
-        'Idoso': {
-            PIX:     ' https://mpago.la/1J2aoxw',
-            'Débito':  'COLE_AQUI_O_LINK_DEBITO_DO_IDOSO',
-            'Crédito': 'COLE_AQUI_O_LINK_CREDITO_DO_IDOSO'
-        },
-        '3x na Semana': {
-            PIX:     ' https://mpago.la/1J2aoxw',
-            'Débito':  'COLE_AQUI_O_LINK_DEBITO_DO_3X',
-            'Crédito': 'COLE_AQUI_O_LINK_CREDITO_DO_3X'
-        },
-        'Professor': {
-            PIX:     ' https://mpago.la/1J2aoxw',
-            'Débito':  'COLE_AQUI_O_LINK_DEBITO_DO_PROFESSOR',
-            'Crédito': 'COLE_AQUI_O_LINK_CREDITO_DO_PROFESSOR'
-        }
-    }
+    whatsapp: '5512991859267'    // número da academia (com DDI+DDD)
 };
 
 /* ===================== HELPERS ===================== */
@@ -119,50 +56,55 @@ function preSelecionarPorURL(selectId, valorURL) {
 }
 
 /**
- * Encontra o link certo baseado no texto do plano + forma de pagamento.
- * O texto do plano no HTML é tipo "Mensal — R$ 90,00", então procuramos
- * uma chave do CONFIG que esteja contida nele (ex: "Mensal").
+ * Deixa o botão "Ir para o pagamento" em modo "Aguarde..." (ou volta ao normal).
  */
-function encontrarLink(planoTexto, formaPagamento) {
-    const chaves = Object.keys(CONFIG.links);
+function definirCarregando(carregando) {
+    const botao = document.querySelector('#form-matricula button[type="submit"]');
+    if (!botao) return;
 
-    const chaveEncontrada = chaves.find(chave =>
-        planoTexto.toLowerCase().includes(chave.toLowerCase())
-    );
+    // guarda o conteúdo original do botão na primeira vez
+    if (!botao.dataset.textoOriginal) botao.dataset.textoOriginal = botao.innerHTML;
 
-    if (!chaveEncontrada) {
-        console.warn('Plano não encontrado no CONFIG:', planoTexto);
-        return null;
-    }
-
-    const link = CONFIG.links[chaveEncontrada][formaPagamento];
-
-    // Verifica se ainda é placeholder
-    if (!link || link.includes('COLE_AQUI')) {
-        return null;
-    }
-
-    return link;
+    botao.disabled = carregando;
+    botao.innerHTML = carregando ? 'Aguarde...' : botao.dataset.textoOriginal;
 }
 
+// Se o cliente voltar do Mercado Pago pelo botão "voltar" do navegador,
+// o botão não pode ficar travado em "Aguarde...".
+window.addEventListener('pageshow', () => definirCarregando(false));
+
 /* ===================== REDIRECIONAMENTO PRO PAGAMENTO ===================== */
-function redirecionarParaPagamento(dados) {
-    const link = encontrarLink(dados.plano, dados.pagamento);
+async function redirecionarParaPagamento(dados) {
+    definirCarregando(true);
 
-    // Se o link não estiver configurado, avisa o usuário
-    if (!link) {
+    try {
+        // Pede à nossa API para criar o pagamento no Mercado Pago
+        const resposta = await fetch('/api/criar-pagamento', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ plano: dados.plano, pagamento: dados.pagamento })
+        });
+
+        const resultado = await resposta.json();
+
+        if (!resposta.ok || !resultado.url) {
+            throw new Error(resultado.erro || 'Resposta inválida da API');
+        }
+
+        // Salva os dados do formulário para recuperar após o retorno do MP
+        localStorage.setItem('dadosMatricula', JSON.stringify(dados));
+
+        // Redireciona o usuário para o checkout do Mercado Pago
+        window.location.href = resultado.url;
+
+    } catch (erro) {
+        console.error('Erro ao criar pagamento:', erro);
+        definirCarregando(false);
         alert(
-            'O pagamento do plano "' + dados.plano + '" via ' + dados.pagamento +
-            ' ainda não está disponível. Fale com a academia pelo WhatsApp.'
+            'Não foi possível iniciar o pagamento agora. ' +
+            'Tente novamente em instantes ou fale com a academia pelo WhatsApp.'
         );
-        return;
     }
-
-    // Salva os dados do formulário para recuperar após o retorno do MP
-    localStorage.setItem('dadosMatricula', JSON.stringify(dados));
-
-    // Redireciona o usuário para o link do Mercado Pago
-    window.location.href = link;
 }
 
 /* ===================== INICIALIZAÇÃO ===================== */
@@ -220,7 +162,7 @@ if (form) {
             return;
         }
 
-        // -------- Redireciona pro Mercado Pago --------
+        // -------- Cria o pagamento e redireciona pro Mercado Pago --------
         redirecionarParaPagamento(dados);
     });
 }
@@ -228,10 +170,12 @@ if (form) {
 /* ===================== RETORNO DO MERCADO PAGO ===================== */
 // Roda quando a página carrega. Se a URL tiver ?status=success,
 // significa que o cliente voltou do Mercado Pago após pagar.
+// (O Mercado Pago também acrescenta na URL o seu próprio "status=approved"
+//  e o payment_id, por isso aceitamos os dois valores.)
 const urlParams = new URLSearchParams(window.location.search);
 const statusPagamento = urlParams.get('status');
 
-if (statusPagamento === 'success') {
+if (statusPagamento === 'success' || statusPagamento === 'approved') {
 
     const formEl = document.getElementById('form-matricula');
     const painelConfirmacao = document.getElementById('painel-confirmacao');
