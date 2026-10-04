@@ -97,12 +97,25 @@
         </fieldset>
 
         <button type="submit" class="btn-amarelo">
-            <i class="fa-brands fa-whatsapp"></i> Enviar pré-matrícula
+            <i class="fa-solid fa-lock"></i> Ir para o pagamento
         </button>
     </form>
 
-    <!-- Painel que aparece depois do envio -->
+    <!-- Painel de pagamento (usado só como fallback) -->
     <div id="painel-pagamento" class="painel-pagamento" hidden></div>
+
+    <!-- Painel de CONFIRMAÇÃO — aparece após o pagamento aprovado -->
+    <div id="painel-confirmacao" class="painel-pagamento" hidden>
+        <h3><i class="fa-solid fa-circle-check"></i> Pagamento aprovado!</h3>
+        <p>Seus dados estão prontos. Clique abaixo para enviar ao WhatsApp:</p>
+        <button type="button" id="btn-enviar-whatsapp" class="btn-amarelo">
+            <i class="fa-brands fa-whatsapp"></i> Enviar no WhatsApp
+        </button>
+        <p class="aviso-pix">
+            A academia vai confirmar sua matrícula após verificar o pagamento.
+        </p>
+    </div>
+
 </section>
 
 <script src="../script/prematricula.js"></script>
