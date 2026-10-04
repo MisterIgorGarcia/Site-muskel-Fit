@@ -1,14 +1,74 @@
 /* ===================== CONFIGURAÇÃO ===================== */
-// ⚠️ EDITE AQUI — troque pelos dados reais da academia
+// ⚠️ EDITE AQUI — cole os links do Mercado Pago em cada combinação abaixo.
+// A chave é o NOME CURTO do plano (como aparece no <select> do HTML).
+// A URL de retorno deve ser configurada em CADA link no painel do MP como:
+//   https://muskelfit-academia.vercel.app/pre-matricula/prematricula.html?status=success
+
 const CONFIG = {
     whatsapp: '5512991859267',    // número da academia (com DDI+DDD)
 
-    // ---- Links do Mercado Pago (um por forma de pagamento) ----
-    // Ao criar cada link, configure a URL de retorno no painel do MP como:
-    //   https://SEU_DOMINIO/pre-matricula/prematricula.html?status=success
-    linkPix:     'https://mpago.li/2ciJmzR',             // ✅ já tem
-    linkDebito:  'https://mpago.li/SEU_LINK_DEBITO',     // ⬅️ criar no MP
-    linkCredito: 'https://mpago.li/SEU_LINK_CREDITO'     // ⬅️ criar no MP
+    links: {
+        'Mensal': {
+            PIX:     'https://mpago.la/27joqJB',
+            'Débito':  'COLE_AQUI_O_LINK_DEBITO_DO_MENSAL',
+            'Crédito': 'COLE_AQUI_O_LINK_CREDITO_DO_MENSAL'
+        },
+        'Trimestral': {
+            PIX:     'https://mpago.li/2SBYtMR',
+            'Débito':  'COLE_AQUI_O_LINK_DEBITO_DO_TRIMESTRAL',
+            'Crédito': 'COLE_AQUI_O_LINK_CREDITO_DO_TRIMESTRAL'
+        },
+        'Semestral': {
+            PIX:     'https://mpago.li/2Rb1dJD',
+            'Débito':  'COLE_AQUI_O_LINK_DEBITO_DO_SEMESTRAL',
+            'Crédito': 'COLE_AQUI_O_LINK_CREDITO_DO_SEMESTRAL'
+        },
+        'Anual': {
+            PIX:     'https://mpago.li/2T7UUKk',
+            'Débito':  'COLE_AQUI_O_LINK_DEBITO_DO_ANUAL',
+            'Crédito': 'COLE_AQUI_O_LINK_CREDITO_DO_ANUAL'
+        },
+        'Família 2 pessoas': {
+            PIX:     'https://mpago.li/1iaLeWm',
+            'Débito':  'COLE_AQUI_O_LINK_DEBITO_DA_FAMILIA_2',
+            'Crédito': 'COLE_AQUI_O_LINK_CREDITO_DA_FAMILIA_2'
+        },
+        'Família 3 pessoas': {
+            PIX:     'https://mpago.li/1yhV9Hv',
+            'Débito':  'COLE_AQUI_O_LINK_DEBITO_DA_FAMILIA_3',
+            'Crédito': 'COLE_AQUI_O_LINK_CREDITO_DA_FAMILIA_3'
+        },
+        'Família 4 pessoas': {
+            PIX:     'https://mpago.li/17aPy32',
+            'Débito':  'COLE_AQUI_O_LINK_DEBITO_DA_FAMILIA_4',
+            'Crédito': 'COLE_AQUI_O_LINK_CREDITO_DA_FAMILIA_4'
+        },
+        'Família 5 pessoas': {
+            PIX:     'https://mpago.li/31DpGvL',
+            'Débito':  'COLE_AQUI_O_LINK_DEBITO_DA_FAMILIA_5',
+            'Crédito': 'COLE_AQUI_O_LINK_CREDITO_DA_FAMILIA_5'
+        },
+        'Adolescente': {
+            PIX:     ' https://mpago.la/1J2aoxw',
+            'Débito':  'COLE_AQUI_O_LINK_DEBITO_DO_ADOLESCENTE',
+            'Crédito': 'COLE_AQUI_O_LINK_CREDITO_DO_ADOLESCENTE'
+        },
+        'Idoso': {
+            PIX:     ' https://mpago.la/1J2aoxw',
+            'Débito':  'COLE_AQUI_O_LINK_DEBITO_DO_IDOSO',
+            'Crédito': 'COLE_AQUI_O_LINK_CREDITO_DO_IDOSO'
+        },
+        '3x na Semana': {
+            PIX:     ' https://mpago.la/1J2aoxw',
+            'Débito':  'COLE_AQUI_O_LINK_DEBITO_DO_3X',
+            'Crédito': 'COLE_AQUI_O_LINK_CREDITO_DO_3X'
+        },
+        'Professor': {
+            PIX:     ' https://mpago.la/1J2aoxw',
+            'Débito':  'COLE_AQUI_O_LINK_DEBITO_DO_PROFESSOR',
+            'Crédito': 'COLE_AQUI_O_LINK_CREDITO_DO_PROFESSOR'
+        }
+    }
 };
 
 /* ===================== HELPERS ===================== */
@@ -58,21 +118,43 @@ function preSelecionarPorURL(selectId, valorURL) {
     });
 }
 
+/**
+ * Encontra o link certo baseado no texto do plano + forma de pagamento.
+ * O texto do plano no HTML é tipo "Mensal — R$ 90,00", então procuramos
+ * uma chave do CONFIG que esteja contida nele (ex: "Mensal").
+ */
+function encontrarLink(planoTexto, formaPagamento) {
+    const chaves = Object.keys(CONFIG.links);
+
+    const chaveEncontrada = chaves.find(chave =>
+        planoTexto.toLowerCase().includes(chave.toLowerCase())
+    );
+
+    if (!chaveEncontrada) {
+        console.warn('Plano não encontrado no CONFIG:', planoTexto);
+        return null;
+    }
+
+    const link = CONFIG.links[chaveEncontrada][formaPagamento];
+
+    // Verifica se ainda é placeholder
+    if (!link || link.includes('COLE_AQUI')) {
+        return null;
+    }
+
+    return link;
+}
+
 /* ===================== REDIRECIONAMENTO PRO PAGAMENTO ===================== */
 function redirecionarParaPagamento(dados) {
-    // Mapeia forma de pagamento → link do MP
-    const links = {
-        'PIX':     CONFIG.linkPix,
-        'Débito':  CONFIG.linkDebito,
-        'Crédito': CONFIG.linkCredito
-    };
+    const link = encontrarLink(dados.plano, dados.pagamento);
 
-    const link = links[dados.pagamento];
-
-    // Se o link ainda não foi configurado, avisa
-    if (!link || link.includes('SEU_LINK')) {
-        alert('O pagamento via ' + dados.pagamento +
-              ' ainda não está disponível. Fale com a academia pelo WhatsApp.');
+    // Se o link não estiver configurado, avisa o usuário
+    if (!link) {
+        alert(
+            'O pagamento do plano "' + dados.plano + '" via ' + dados.pagamento +
+            ' ainda não está disponível. Fale com a academia pelo WhatsApp.'
+        );
         return;
     }
 
@@ -162,7 +244,6 @@ if (statusPagamento === 'success') {
         const dadosSalvosRaw = localStorage.getItem('dadosMatricula');
 
         if (!dadosSalvosRaw) {
-            // Usuário caiu aqui sem ter preenchido o form (ex: link direto)
             painelConfirmacao.hidden = false;
             painelConfirmacao.querySelector('h3').innerHTML =
                 '<i class="fa-solid fa-triangle-exclamation"></i> Dados não encontrados';
@@ -204,7 +285,7 @@ if (statusPagamento === 'success') {
                 );
             });
 
-            // Limpa o localStorage (já foi usado)
+            // Limpa o localStorage
             localStorage.removeItem('dadosMatricula');
         }
     }
