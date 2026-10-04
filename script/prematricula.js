@@ -214,7 +214,7 @@ if (statusPagamento === 'success' || statusPagamento === 'approved') {
                 `*Modalidade:* ${dados.modalidade}\n` +
                 `*Unidade:* ${dados.unidade}\n` +
                 `*Pagamento:* ${dados.pagamento}\n` +
-                `*Status:* ✅ Pagamento aprovado\n\n` +
+                `*Status:* Aguardando confirmação de pagamento\n\n` +
                 `Aguardo contato para confirmar a matrícula!`;
 
             // Mostra o painel de confirmação
