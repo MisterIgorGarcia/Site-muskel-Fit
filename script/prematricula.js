@@ -62,7 +62,6 @@ function definirCarregando(carregando) {
     const botao = document.querySelector('#form-matricula button[type="submit"]');
     if (!botao) return;
 
-    // guarda o conteúdo original do botão na primeira vez
     if (!botao.dataset.textoOriginal) botao.dataset.textoOriginal = botao.innerHTML;
 
     botao.disabled = carregando;
@@ -168,20 +167,25 @@ if (form) {
 }
 
 /* ===================== RETORNO DO MERCADO PAGO ===================== */
-// Roda quando a página carrega. Se a URL tiver ?status=success,
-// significa que o cliente voltou do Mercado Pago após pagar.
-// (O Mercado Pago também acrescenta na URL o seu próprio "status=approved"
-//  e o payment_id, por isso aceitamos os dois valores.)
+// Roda quando a página carrega. Se a URL tiver ?status=..., tratamos o retorno.
+// O MP pode retornar 3 status:
+//   - success ou approved  → pagamento aprovado
+//   - pending              → pagamento em processamento (comum no PIX)
+//   - failure              → pagamento recusado
 const urlParams = new URLSearchParams(window.location.search);
 const statusPagamento = urlParams.get('status');
 
-if (statusPagamento === 'success' || statusPagamento === 'approved') {
+const STATUS_VALIDOS = ['success', 'approved', 'pending', 'failure'];
+
+if (STATUS_VALIDOS.includes(statusPagamento)) {
 
     const formEl = document.getElementById('form-matricula');
     const painelConfirmacao = document.getElementById('painel-confirmacao');
     const btnWhats = document.getElementById('btn-enviar-whatsapp');
+    const tituloEl = painelConfirmacao?.querySelector('h3');
+    const textoEl = painelConfirmacao?.querySelector('p');
 
-    if (!formEl || !painelConfirmacao || !btnWhats) {
+    if (!formEl || !painelConfirmacao || !btnWhats || !tituloEl || !textoEl) {
         console.warn('Elementos do retorno não encontrados.');
     } else {
         // Recupera os dados salvos antes do redirecionamento
@@ -189,9 +193,9 @@ if (statusPagamento === 'success' || statusPagamento === 'approved') {
 
         if (!dadosSalvosRaw) {
             painelConfirmacao.hidden = false;
-            painelConfirmacao.querySelector('h3').innerHTML =
+            tituloEl.innerHTML =
                 '<i class="fa-solid fa-triangle-exclamation"></i> Dados não encontrados';
-            painelConfirmacao.querySelector('p').textContent =
+            textoEl.textContent =
                 'Não conseguimos recuperar seus dados. Preencha o formulário novamente.';
             btnWhats.style.display = 'none';
         } else {
@@ -199,6 +203,31 @@ if (statusPagamento === 'success' || statusPagamento === 'approved') {
 
             // Esconde o formulário
             formEl.style.display = 'none';
+
+            // Define título, texto e status conforme o retorno do MP
+            let icone, titulo, textoStatus;
+
+            if (statusPagamento === 'failure') {
+                icone = 'fa-solid fa-circle-xmark';
+                titulo = 'Pagamento não aprovado';
+                textoStatus = '❌ Pagamento não aprovado';
+                textoEl.textContent =
+                    'O pagamento não foi aprovado. Você pode tentar novamente ou entrar em contato com a academia pelo WhatsApp.';
+            } else if (statusPagamento === 'pending') {
+                icone = 'fa-solid fa-hourglass-half';
+                titulo = 'Pagamento em processamento';
+                textoStatus = '⏳ Pagamento em processamento';
+                textoEl.textContent =
+                    'Seu pagamento está em processamento. Envie seus dados no WhatsApp para a academia confirmar.';
+            } else {
+                icone = 'fa-solid fa-circle-check';
+                titulo = 'Pagamento aprovado!';
+                textoStatus = '✅ Pagamento aprovado';
+                textoEl.textContent =
+                    'Seus dados estão prontos. Clique abaixo para enviar ao WhatsApp:';
+            }
+
+            tituloEl.innerHTML = `<i class="${icone}"></i> ${titulo}`;
 
             // Monta a mensagem pro WhatsApp
             const [a, m, d] = dados.nascimento.split('-');
@@ -214,20 +243,26 @@ if (statusPagamento === 'success' || statusPagamento === 'approved') {
                 `*Modalidade:* ${dados.modalidade}\n` +
                 `*Unidade:* ${dados.unidade}\n` +
                 `*Pagamento:* ${dados.pagamento}\n` +
-                `*Status:* Aguardando confirmação de pagamento\n\n` +
+                `*Status:* ${textoStatus}\n\n` +
                 `Aguardo contato para confirmar a matrícula!`;
 
             // Mostra o painel de confirmação
             painelConfirmacao.hidden = false;
             painelConfirmacao.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
-            // Configura o botão do WhatsApp
-            btnWhats.addEventListener('click', () => {
-                window.open(
-                    `https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(msg)}`,
-                    '_blank'
-                );
-            });
+            // Mostra ou esconde o botão do WhatsApp (no failure, esconde)
+            if (statusPagamento === 'failure') {
+                btnWhats.style.display = 'none';
+                const aviso = painelConfirmacao.querySelector('.aviso-pix');
+                if (aviso) aviso.textContent = 'Tente novamente ou fale com a academia.';
+            } else {
+                btnWhats.addEventListener('click', () => {
+                    window.open(
+                        `https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(msg)}`,
+                        '_blank'
+                    );
+                });
+            }
 
             // Limpa o localStorage
             localStorage.removeItem('dadosMatricula');

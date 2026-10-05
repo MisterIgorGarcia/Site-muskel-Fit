@@ -18,24 +18,24 @@ const PAGINA_RETORNO = 'https://muskelfit-academia.vercel.app/pre-matricula/prem
 // A chave é o nome curto do plano (o mesmo texto que aparece no <select>).
 // Os preços ficam AQUI (e não no navegador) para ninguém conseguir alterar o valor.
 const PLANOS = {
-    'Mensal': 90,
-    'Trimestral': 85,
-    'Semestral': 80,
-    'Anual': 75,
+    'Mensal':            90,
+    'Trimestral':        85,
+    'Semestral':         80,
+    'Anual':             75,
     'Família 2 pessoas': 150,
     'Família 3 pessoas': 200,
     'Família 4 pessoas': 250,
     'Família 5 pessoas': 300,
-    'Adolescente': 75,
-    'Idoso': 75,
-    '3x na Semana': 75,
-    'Professor': 75
+    'Adolescente':       75,
+    'Idoso':             75,
+    '3x na Semana':      75,
+    'Professor':         75
 };
 
 // Forma de pagamento do formulário -> tipo correspondente no Mercado Pago
 const TIPO_MP = {
-    'PIX': 'bank_transfer',
-    'Débito': 'debit_card',
+    'PIX':     'bank_transfer',
+    'Débito':  'debit_card',
     'Crédito': 'credit_card'
 };
 
@@ -85,9 +85,11 @@ module.exports = async function handler(req, res) {
                     currency_id: 'BRL'
                 }],
 
-                // ✅ AQUI está o "retorno": para onde o cliente volta após pagar
+                // ✅ URLs de retorno: cobrimos os 3 cenários possíveis
                 back_urls: {
-                    success: `${PAGINA_RETORNO}?status=success`
+                    success: `${PAGINA_RETORNO}?status=success`,
+                    pending: `${PAGINA_RETORNO}?status=pending`,
+                    failure: `${PAGINA_RETORNO}?status=failure`
                 },
                 auto_return: 'approved',
 
