@@ -18,6 +18,7 @@ const PAGINA_RETORNO = 'https://muskelfit-academia.vercel.app/pre-matricula/prem
 // A chave é o nome curto do plano (o mesmo texto que aparece no <select>).
 // Os preços ficam AQUI (e não no navegador) para ninguém conseguir alterar o valor.
 const PLANOS = {
+    'Teste':             1,      // ⬅️ ADICIONE ESTA LINHA (temporária)
     'Mensal':            90,
     'Trimestral':        85,
     'Semestral':         80,
