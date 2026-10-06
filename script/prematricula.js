@@ -3,7 +3,6 @@ const CONFIG = {
     whatsapp: '5512991859267'    // número da academia (com DDI+DDD)
 };
 
-const CAMINHO_CATALOGO = '../pre-matricula/catalogos/catalogo.json';
 
 // Estrutura atualizada: { unidades: { "Nome": { modalidades: { "NomeModalidade": { planos: [] } } } } }
 let CATALOGO = null;   
@@ -46,7 +45,8 @@ window.addEventListener('pageshow', () => definirCarregando(false));
 
 async function carregarCatalogo() {
     if (CATALOGO) return CATALOGO;
-    const resp = await fetch(CAMINHO_CATALOGO, { cache: 'no-cache' });
+    // Agora busca da API que lê o Edge Config, em vez do arquivo JSON local
+    const resp = await fetch('/api/catalogo', { cache: 'no-cache' });
     if (!resp.ok) throw new Error('Falha ao carregar catálogo de planos.');
     CATALOGO = await resp.json();
     return CATALOGO;

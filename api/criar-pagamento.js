@@ -11,12 +11,14 @@
 //
 // Por que o preço NÃO está mais neste arquivo?
 // Agora cada unidade tem suas próprias modalidades, e cada modalidade tem seus planos e preços.
-// Tudo fica em pre-matricula/catalogos/catalogo.json — a MESMA fonte que o site usa.
-// Assim nunca existe divergência entre o valor mostrado e o valor cobrado.
+// Tudo fica no Vercel Edge Config — a MESMA fonte que o site usa.
+// Assim nunca existe divergência entre o valor mostrado e o valor cobrado,
+// e os preços podem ser alterados pelo painel da Vercel sem precisar de um novo deploy.
 
 /* ===================== CONFIGURAÇÃO ===================== */
 
-const catalogo = require('../pre-matricula/catalogos/catalogo.json'); // Conecta ao JSON
+// Importa a função oficial para ler os dados do Edge Config (Banco de dados online)
+const { get } = require('@vercel/edge-config');
 
 // Página para onde o cliente volta depois de pagar
 const PAGINA_RETORNO = 'https://muskelfit-academia.vercel.app/pre-matricula/prematricula.html';
@@ -43,6 +45,15 @@ module.exports = async function handler(req, res) {
     try {
         // O formulário agora envia: unidade, modalidade, planoId e pagamento
         const { unidade, modalidade, planoId, pagamento } = req.body || {};
+
+        // --- BUSCA O CATÁLOGO NO EDGE CONFIG ---
+        // A chave foi salva no painel da Vercel como 'unidades'
+        const catalogo = await get('unidades');
+        
+        if (!catalogo) {
+            console.error('Catálogo não encontrado no Edge Config.');
+            return res.status(500).json({ erro: 'Catálogo indisponível no momento' });
+        }
 
         // --- Procura a unidade no catálogo ---
         const unidadeCfg = catalogo.unidades?.[unidade];
