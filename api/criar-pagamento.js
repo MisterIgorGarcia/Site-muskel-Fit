@@ -18,7 +18,15 @@
 
 // Catálogo único de unidades, planos e modalidades.
 // Para adicionar/alterar planos, edite o arquivo config/catalogo.json.
-const catalogo = require('../pre-matricula/catalogos/catalogo.json'); //conecta ao JSON, caminho dele
+const path = require('path');
+const fs = require('fs');
+
+// Constrói o caminho absoluto usando o diretório atual do projeto (process.cwd())
+const catalogoPath = path.join(process.cwd(), 'pre-matricula', 'catalogos', 'catalogo.json');
+// Lê o arquivo e transforma em objeto JSON
+const catalogo = JSON.parse(fs.readFileSync(catalogoPath, 'utf8'));
+
+//const catalogo = require('../pre-matricula/catalogos/catalogo.json'); //conecta ao JSON, caminho dele// COMENTADO, SO ALTERE SE FOR TIRAR DO VERCEL//
 
 // Página para onde o cliente volta depois de pagar
 const PAGINA_RETORNO = 'https://muskelfit-academia.vercel.app/pre-matricula/prematricula.html'; //retorna o usuario para esta pagina
