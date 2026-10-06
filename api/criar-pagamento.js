@@ -18,7 +18,7 @@
 
 // Catálogo único de unidades, planos e modalidades.
 // Para adicionar/alterar planos, edite o arquivo config/catalogo.json.
-const catalogo = require('../config/catalogo.json'); //conecta ao JSON, caminho dele
+const catalogo = require('../pre-matricula/catalogos/catalogo.json'); //conecta ao JSON, caminho dele
 
 // Página para onde o cliente volta depois de pagar
 const PAGINA_RETORNO = 'https://muskelfit-academia.vercel.app/pre-matricula/prematricula.html'; //retorna o usuario para esta pagina
