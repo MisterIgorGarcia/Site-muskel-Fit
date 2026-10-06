@@ -1,0 +1,7 @@
+{
+  "functions": {
+    "api/criar-pagamento.js": {
+      "includeFiles": "pre-matricula/catalogos/catalogo.json"
+    }
+  }
+}
