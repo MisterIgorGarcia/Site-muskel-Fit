@@ -5,7 +5,8 @@ const CONFIG = {
 
 const CAMINHO_CATALOGO = '../pre-matricula/catalogos/catalogo.json';
 
-let CATALOGO = null;   // { unidades: { "Nome": { modalidades: [], planos: [] } } }
+// Estrutura atualizada: { unidades: { "Nome": { modalidades: { "NomeModalidade": { planos: [] } } } } }
+let CATALOGO = null;   
 
 /* ===================== HELPERS ===================== */
 
@@ -72,25 +73,42 @@ function preencherUnidades() {
     preencherSelect(sel, nomes, 'Selecione a unidade...', n => n, n => n);
 }
 
-/** Preenche plano + modalidade com base na unidade escolhida. */
-function preencherOpcoesDaUnidade(nomeUnidade) {
-    const planoEl = document.getElementById('plano');
+/** Preenche as modalidades com base na unidade escolhida. */
+function preencherModalidadesDaUnidade(nomeUnidade) {
     const modalEl = document.getElementById('modalidade');
+    const planoEl = document.getElementById('plano');
     const unidade = CATALOGO.unidades[nomeUnidade];
 
+    // Sempre limpa e desabilita os planos ao trocar de unidade
+    preencherSelect(planoEl, [], 'Selecione a modalidade primeiro...', p => p.id, p => p.texto);
+    planoEl.disabled = true;
+
     if (!unidade) {
-        preencherSelect(planoEl, [], 'Selecione a unidade primeiro...', p => p.id, p => p.texto);
         preencherSelect(modalEl, [], 'Selecione a unidade primeiro...', m => m, m => m);
-        planoEl.disabled = true;
         modalEl.disabled = true;
         return;
     }
 
-    preencherSelect(planoEl, unidade.planos,      'Selecione um plano...',      p => p.id, p => p.texto);
-    preencherSelect(modalEl, unidade.modalidades, 'Selecione a modalidade...',  m => m,    m => m);
-
-    planoEl.disabled = false;
+    // Pega as chaves do objeto de modalidades (ex: "Crossfit", "Musculação")
+    const modalidades = Object.keys(unidade.modalidades);
+    preencherSelect(modalEl, modalidades, 'Selecione a modalidade...', m => m, m => m);
     modalEl.disabled = false;
+}
+
+/** Preenche os planos com base na unidade E modalidade escolhidas. */
+function preencherPlanosDaModalidade(nomeUnidade, nomeModalidade) {
+    const planoEl = document.getElementById('plano');
+    const unidade = CATALOGO.unidades[nomeUnidade];
+
+    if (!unidade || !nomeModalidade || !unidade.modalidades[nomeModalidade]) {
+        preencherSelect(planoEl, [], 'Selecione a modalidade primeiro...', p => p.id, p => p.texto);
+        planoEl.disabled = true;
+        return;
+    }
+
+    const planos = unidade.modalidades[nomeModalidade].planos;
+    preencherSelect(planoEl, planos, 'Selecione um plano...', p => p.id, p => p.texto);
+    planoEl.disabled = false;
 }
 
 function selecionarPorCorrespondencia(selectEl, valor) {
@@ -109,15 +127,15 @@ function selecionarPorCorrespondencia(selectEl, valor) {
 
 async function redirecionarParaPagamento(dados) {
     definirCarregando(true);
-    //tratamento de excessao
     try {
         const resposta = await fetch('/api/criar-pagamento', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                unidade:   dados.unidade,
-                planoId:   dados.planoId,
-                pagamento: dados.pagamento
+                unidade:    dados.unidade,
+                modalidade: dados.modalidade, // <-- ADICIONADO: Enviando a modalidade para o backend
+                planoId:    dados.planoId,
+                pagamento:  dados.pagamento
             })
         });
 
@@ -140,7 +158,7 @@ async function redirecionarParaPagamento(dados) {
     }
 }
 
-/* ===================== INICIALIZAÇÃO (só quando NÃO é retorno do MP) ===================== */
+/* ===================== INICIALIZAÇÃO ===================== */
 
 async function iniciarFormulario() {
     const form = document.getElementById('form-matricula');
@@ -165,18 +183,32 @@ async function iniciarFormulario() {
         });
     });
 
-    const unidadeEl = document.getElementById('unidade');
+    const unidadeEl    = document.getElementById('unidade');
+    const modalidadeEl = document.getElementById('modalidade');
+    const planoEl      = document.getElementById('plano');
 
-    // Pré-seleção via URL (?unidade=...&plano=...&modalidade=...)
+    // Pré-seleção via URL (?unidade=...&modalidade=...&plano=...)
     const params = new URLSearchParams(window.location.search);
+    
+    // 1. Seleciona a Unidade
     selecionarPorCorrespondencia(unidadeEl, params.get('unidade'));
-    preencherOpcoesDaUnidade(unidadeEl.value);
-    selecionarPorCorrespondencia(document.getElementById('plano'),      params.get('plano'));
-    selecionarPorCorrespondencia(document.getElementById('modalidade'), params.get('modalidade'));
+    
+    // 2. Popula e Seleciona a Modalidade
+    preencherModalidadesDaUnidade(unidadeEl.value);
+    selecionarPorCorrespondencia(modalidadeEl, params.get('modalidade'));
+    
+    // 3. Popula e Seleciona o Plano
+    preencherPlanosDaModalidade(unidadeEl.value, modalidadeEl.value);
+    selecionarPorCorrespondencia(planoEl, params.get('plano'));
 
-    // Trocou de unidade → repopula plano/modalidade
+    // Trocou de unidade → repopula modalidades e limpa planos
     unidadeEl.addEventListener('change', () => {
-        preencherOpcoesDaUnidade(unidadeEl.value);
+        preencherModalidadesDaUnidade(unidadeEl.value);
+    });
+
+    // Trocou de modalidade → repopula planos
+    modalidadeEl.addEventListener('change', () => {
+        preencherPlanosDaModalidade(unidadeEl.value, modalidadeEl.value);
     });
 
     // Submit
@@ -193,7 +225,7 @@ async function iniciarFormulario() {
         const planoId    = fd.get('plano');
         const pagamento  = fd.get('pagamento');
 
-        // -------- Validações --------
+        // -------- Validações Básicas --------
         const erroNasc = validarNascimento(nascimento);
         if (erroNasc) { alert(erroNasc); return; }
 
@@ -214,20 +246,24 @@ async function iniciarFormulario() {
         const unidadeCfg = CATALOGO.unidades[unidade];
         if (!unidadeCfg) { alert('Unidade inválida.'); return; }
 
-        const planoObj = unidadeCfg.planos.find(p => p.id === planoId);
-        if (!planoObj) {
-            alert('O plano selecionado não está disponível nesta unidade.');
-            return;
+        // Verifica se a modalidade existe dentro da unidade
+        const modalidadeCfg = unidadeCfg.modalidades[modalidade];
+        if (!modalidadeCfg) { 
+            alert('A modalidade selecionada não está disponível nesta unidade.'); 
+            return; 
         }
-        if (!unidadeCfg.modalidades.includes(modalidade)) {
-            alert('A modalidade selecionada não está disponível nesta unidade.');
+
+        // Verifica se o plano existe dentro da modalidade
+        const planoObj = modalidadeCfg.planos.find(p => p.id === planoId);
+        if (!planoObj) {
+            alert('O plano selecionado não está disponível nesta modalidade.');
             return;
         }
 
         const dados = {
             nome, nascimento, telefone, celular,
             unidade,
-            modalidade,
+            modalidade, // <-- Salva a modalidade nos dados para o WhatsApp
             planoId:    planoObj.id,
             planoTitulo: planoObj.texto,
             preco:      planoObj.preco,

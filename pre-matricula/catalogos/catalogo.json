@@ -1,39 +1,133 @@
 {
   "unidades": {
     "Cruzeiro - SP": {
-      "modalidades": ["Crossfit", "Musculação", "Fit Dance", "Spinning", "Jump"],
-      "planos": [
-        { "id": "mensal",      "nome": "Mensal",             "preco": 90,  "texto": "Mensal — R$ 90,00" },
-        { "id": "trimestral",  "nome": "Trimestral",         "preco": 255, "texto": "Trimestral — R$ 255,00 (85,00 p/mês)" },
-        { "id": "semestral",   "nome": "Semestral",          "preco": 480, "texto": "Semestral — R$ 480,00 (80,00 p/mês)" },
-        { "id": "anual",       "nome": "Anual",              "preco": 900, "texto": "Anual — R$ 900,00 (75,00 p/mês)" },
-        { "id": "adolescente", "nome": "Plano Adolescente",  "preco": 75,  "texto": "Plano Adolescente — R$ 75,00" },
-        { "id": "idoso",       "nome": "Plano Idoso",        "preco": 75,  "texto": "Plano Idoso — R$ 75,00" },
-        { "id": "3x-semana",   "nome": "Plano 3x na Semana", "preco": 75,  "texto": "Plano 3x na Semana — R$ 75,00" },
-        { "id": "professor",   "nome": "Plano Professor",    "preco": 75,  "texto": "Plano Professor — R$ 75,00" },
-        { "id": "familia-2",   "nome": "Família 2 pessoas",  "preco": 150, "texto": "Família 2 pessoas — R$ 150,00" },
-        { "id": "familia-3",   "nome": "Família 3 pessoas",  "preco": 200, "texto": "Família 3 pessoas — R$ 200,00" },
-        { "id": "familia-4",   "nome": "Família 4 pessoas",  "preco": 250, "texto": "Família 4 pessoas — R$ 250,00" },
-        { "id": "familia-5",   "nome": "Família 5 pessoas",  "preco": 300, "texto": "Família 5 pessoas — R$ 300,00" }
-      ]
+      "modalidades": {
+        "Crossfit": {
+          "planos": [
+            { "id": "mensal",      "nome": "Mensal",             "preco": 90,  "texto": "Mensal — R$ 90,00" },
+            { "id": "trimestral",  "nome": "Trimestral",         "preco": 255, "texto": "Trimestral — R$ 255,00 (85,00 p/mês)" },
+            { "id": "semestral",   "nome": "Semestral",          "preco": 480, "texto": "Semestral — R$ 480,00 (80,00 p/mês)" },
+            { "id": "anual",       "nome": "Anual",              "preco": 900, "texto": "Anual — R$ 900,00 (75,00 p/mês)" },
+            { "id": "adolescente", "nome": "Plano Adolescente",  "preco": 75,  "texto": "Plano Adolescente — R$ 75,00" },
+            { "id": "idoso",       "nome": "Plano Idoso",        "preco": 75,  "texto": "Plano Idoso — R$ 75,00" },
+            { "id": "3x-semana",   "nome": "Plano 3x na Semana", "preco": 75,  "texto": "Plano 3x na Semana — R$ 75,00" },
+            { "id": "professor",   "nome": "Plano Professor",    "preco": 75,  "texto": "Plano Professor — R$ 75,00" },
+            { "id": "familia-2",   "nome": "Família 2 pessoas",  "preco": 150, "texto": "Família 2 pessoas — R$ 150,00" },
+            { "id": "familia-3",   "nome": "Família 3 pessoas",  "preco": 200, "texto": "Família 3 pessoas — R$ 200,00" },
+            { "id": "familia-4",   "nome": "Família 4 pessoas",  "preco": 250, "texto": "Família 4 pessoas — R$ 250,00" },
+            { "id": "familia-5",   "nome": "Família 5 pessoas",  "preco": 300, "texto": "Família 5 pessoas — R$ 300,00" }
+          ]
+        },
+        "Musculação": {
+          "planos": [
+            { "id": "mensal",      "nome": "Mensal",             "preco": 90,  "texto": "Mensal — R$ 90,00" },
+            { "id": "trimestral",  "nome": "Trimestral",         "preco": 255, "texto": "Trimestral — R$ 255,00 (85,00 p/mês)" },
+            { "id": "semestral",   "nome": "Semestral",          "preco": 480, "texto": "Semestral — R$ 480,00 (80,00 p/mês)" },
+            { "id": "anual",       "nome": "Anual",              "preco": 900, "texto": "Anual — R$ 900,00 (75,00 p/mês)" },
+            { "id": "adolescente", "nome": "Plano Adolescente",  "preco": 75,  "texto": "Plano Adolescente — R$ 75,00" },
+            { "id": "idoso",       "nome": "Plano Idoso",        "preco": 75,  "texto": "Plano Idoso — R$ 75,00" },
+            { "id": "3x-semana",   "nome": "Plano 3x na Semana", "preco": 75,  "texto": "Plano 3x na Semana — R$ 75,00" },
+            { "id": "professor",   "nome": "Plano Professor",    "preco": 75,  "texto": "Plano Professor — R$ 75,00" },
+            { "id": "familia-2",   "nome": "Família 2 pessoas",  "preco": 150, "texto": "Família 2 pessoas — R$ 150,00" },
+            { "id": "familia-3",   "nome": "Família 3 pessoas",  "preco": 200, "texto": "Família 3 pessoas — R$ 200,00" },
+            { "id": "familia-4",   "nome": "Família 4 pessoas",  "preco": 250, "texto": "Família 4 pessoas — R$ 250,00" },
+            { "id": "familia-5",   "nome": "Família 5 pessoas",  "preco": 300, "texto": "Família 5 pessoas — R$ 300,00" }
+          ]
+        },
+        "Fit Dance": {
+          "planos": [
+            { "id": "mensal",      "nome": "Mensal",             "preco": 90,  "texto": "Mensal — R$ 90,00" },
+            { "id": "trimestral",  "nome": "Trimestral",         "preco": 255, "texto": "Trimestral — R$ 255,00 (85,00 p/mês)" },
+            { "id": "semestral",   "nome": "Semestral",          "preco": 480, "texto": "Semestral — R$ 480,00 (80,00 p/mês)" },
+            { "id": "anual",       "nome": "Anual",              "preco": 900, "texto": "Anual — R$ 900,00 (75,00 p/mês)" },
+            { "id": "adolescente", "nome": "Plano Adolescente",  "preco": 75,  "texto": "Plano Adolescente — R$ 75,00" },
+            { "id": "idoso",       "nome": "Plano Idoso",        "preco": 75,  "texto": "Plano Idoso — R$ 75,00" },
+            { "id": "3x-semana",   "nome": "Plano 3x na Semana", "preco": 75,  "texto": "Plano 3x na Semana — R$ 75,00" },
+            { "id": "professor",   "nome": "Plano Professor",    "preco": 75,  "texto": "Plano Professor — R$ 75,00" },
+            { "id": "familia-2",   "nome": "Família 2 pessoas",  "preco": 150, "texto": "Família 2 pessoas — R$ 150,00" },
+            { "id": "familia-3",   "nome": "Família 3 pessoas",  "preco": 200, "texto": "Família 3 pessoas — R$ 200,00" },
+            { "id": "familia-4",   "nome": "Família 4 pessoas",  "preco": 250, "texto": "Família 4 pessoas — R$ 250,00" },
+            { "id": "familia-5",   "nome": "Família 5 pessoas",  "preco": 300, "texto": "Família 5 pessoas — R$ 300,00" }
+          ]
+        },
+        "Spinning": {
+          "planos": [
+            { "id": "mensal",      "nome": "Mensal",             "preco": 90,  "texto": "Mensal — R$ 90,00" },
+            { "id": "trimestral",  "nome": "Trimestral",         "preco": 255, "texto": "Trimestral — R$ 255,00 (85,00 p/mês)" },
+            { "id": "semestral",   "nome": "Semestral",          "preco": 480, "texto": "Semestral — R$ 480,00 (80,00 p/mês)" },
+            { "id": "anual",       "nome": "Anual",              "preco": 900, "texto": "Anual — R$ 900,00 (75,00 p/mês)" },
+            { "id": "adolescente", "nome": "Plano Adolescente",  "preco": 75,  "texto": "Plano Adolescente — R$ 75,00" },
+            { "id": "idoso",       "nome": "Plano Idoso",        "preco": 75,  "texto": "Plano Idoso — R$ 75,00" },
+            { "id": "3x-semana",   "nome": "Plano 3x na Semana", "preco": 75,  "texto": "Plano 3x na Semana — R$ 75,00" },
+            { "id": "professor",   "nome": "Plano Professor",    "preco": 75,  "texto": "Plano Professor — R$ 75,00" },
+            { "id": "familia-2",   "nome": "Família 2 pessoas",  "preco": 150, "texto": "Família 2 pessoas — R$ 150,00" },
+            { "id": "familia-3",   "nome": "Família 3 pessoas",  "preco": 200, "texto": "Família 3 pessoas — R$ 200,00" },
+            { "id": "familia-4",   "nome": "Família 4 pessoas",  "preco": 250, "texto": "Família 4 pessoas — R$ 250,00" },
+            { "id": "familia-5",   "nome": "Família 5 pessoas",  "preco": 300, "texto": "Família 5 pessoas — R$ 300,00" }
+          ]
+        },
+        "Jump": {
+          "planos": [
+            { "id": "mensal",      "nome": "Mensal",             "preco": 90,  "texto": "Mensal — R$ 90,00" },
+            { "id": "trimestral",  "nome": "Trimestral",         "preco": 255, "texto": "Trimestral — R$ 255,00 (85,00 p/mês)" },
+            { "id": "semestral",   "nome": "Semestral",          "preco": 480, "texto": "Semestral — R$ 480,00 (80,00 p/mês)" },
+            { "id": "anual",       "nome": "Anual",              "preco": 900, "texto": "Anual — R$ 900,00 (75,00 p/mês)" },
+            { "id": "adolescente", "nome": "Plano Adolescente",  "preco": 75,  "texto": "Plano Adolescente — R$ 75,00" },
+            { "id": "idoso",       "nome": "Plano Idoso",        "preco": 75,  "texto": "Plano Idoso — R$ 75,00" },
+            { "id": "3x-semana",   "nome": "Plano 3x na Semana", "preco": 75,  "texto": "Plano 3x na Semana — R$ 75,00" },
+            { "id": "professor",   "nome": "Plano Professor",    "preco": 75,  "texto": "Plano Professor — R$ 75,00" },
+            { "id": "familia-2",   "nome": "Família 2 pessoas",  "preco": 150, "texto": "Família 2 pessoas — R$ 150,00" },
+            { "id": "familia-3",   "nome": "Família 3 pessoas",  "preco": 200, "texto": "Família 3 pessoas — R$ 200,00" },
+            { "id": "familia-4",   "nome": "Família 4 pessoas",  "preco": 250, "texto": "Família 4 pessoas — R$ 250,00" },
+            { "id": "familia-5",   "nome": "Família 5 pessoas",  "preco": 300, "texto": "Família 5 pessoas — R$ 300,00" }
+          ]
+        }
+      }
     },
 
     "Queluz - SP": {
-      "modalidades": ["Musculação", "Fit Dance", "Jump"],
-      "planos": [
-        { "id": "mensal",     "nome": "Mensal",     "preco": 80,  "texto": "Mensal — R$ 80,00" },
-        { "id": "trimestral", "nome": "Trimestral", "preco": 225, "texto": "Trimestral — R$ 225,00 (75,00 p/mês)" },
-        { "id": "anual",      "nome": "Anual",      "preco": 840, "texto": "Anual — R$ 840,00 (70,00 p/mês)" }
-      ]
+      "modalidades": {
+        "Musculação": {
+          "planos": [
+            { "id": "mensal",     "nome": "Mensal",     "preco": 80,  "texto": "Mensal — R$ 80,00" },
+            { "id": "trimestral", "nome": "Trimestral", "preco": 225, "texto": "Trimestral — R$ 225,00 (75,00 p/mês)" },
+            { "id": "anual",      "nome": "Anual",      "preco": 840, "texto": "Anual — R$ 840,00 (70,00 p/mês)" }
+          ]
+        },
+        "Fit Dance": {
+          "planos": [
+            { "id": "mensal",     "nome": "Mensal",     "preco": 80,  "texto": "Mensal — R$ 80,00" },
+            { "id": "trimestral", "nome": "Trimestral", "preco": 225, "texto": "Trimestral — R$ 225,00 (75,00 p/mês)" },
+            { "id": "anual",      "nome": "Anual",      "preco": 840, "texto": "Anual — R$ 840,00 (70,00 p/mês)" }
+          ]
+        },
+        "Jump": {
+          "planos": [
+            { "id": "mensal",     "nome": "Mensal",     "preco": 80,  "texto": "Mensal — R$ 80,00" },
+            { "id": "trimestral", "nome": "Trimestral", "preco": 225, "texto": "Trimestral — R$ 225,00 (75,00 p/mês)" },
+            { "id": "anual",      "nome": "Anual",      "preco": 840, "texto": "Anual — R$ 840,00 (70,00 p/mês)" }
+          ]
+        }
+      }
     },
 
     "Engenheiro Passos (Resende - RJ)": {
-      "modalidades": ["Crossfit", "Musculação"],
-      "planos": [
-        { "id": "mensal",     "nome": "Mensal",     "preco": 85,  "texto": "Mensal — R$ 85,00" },
-        { "id": "trimestral", "nome": "Trimestral", "preco": 240, "texto": "Trimestral — R$ 240,00 (80,00 p/mês)" },
-        { "id": "semestral",  "nome": "Semestral",  "preco": 450, "texto": "Semestral — R$ 450,00 (75,00 p/mês)" }
-      ]
+      "modalidades": {
+        "Crossfit": {
+          "planos": [
+            { "id": "mensal",     "nome": "Mensal",     "preco": 85,  "texto": "Mensal — R$ 85,00" },
+            { "id": "trimestral", "nome": "Trimestral", "preco": 240, "texto": "Trimestral — R$ 240,00 (80,00 p/mês)" },
+            { "id": "semestral",  "nome": "Semestral",  "preco": 450, "texto": "Semestral — R$ 450,00 (75,00 p/mês)" }
+          ]
+        },
+        "Musculação": {
+          "planos": [
+            { "id": "mensal",     "nome": "Mensal",     "preco": 85,  "texto": "Mensal — R$ 85,00" },
+            { "id": "trimestral", "nome": "Trimestral", "preco": 240, "texto": "Trimestral — R$ 240,00 (80,00 p/mês)" },
+            { "id": "semestral",  "nome": "Semestral",  "preco": 450, "texto": "Semestral — R$ 450,00 (75,00 p/mês)" }
+          ]
+        }
+      }
     }
   }
 }
