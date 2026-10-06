@@ -322,8 +322,9 @@ function tratarRetornoMercadoPago(status) {
         textoStatus = '✅ Pagamento aprovado';
         textoEl.textContent = 'Seus dados estão prontos. Clique abaixo para enviar ao WhatsApp:';
     }
-
-    tituloEl.innerHTML = `<i class="${icone}"></i> ${titulo}`;
+    
+    //CONSTRUÇÃO DO FORMULARIO PARA ENVIO PARA O ZAP
+    tituloEl.innerHTML = `<i class="${icone}"></i> ${titulo}`;  
 
     const [a, m, d] = dados.nascimento.split('-');
     const dataFmt = `${d}/${m}/${a}`;

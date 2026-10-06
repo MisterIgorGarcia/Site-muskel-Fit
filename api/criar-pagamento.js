@@ -71,7 +71,7 @@ module.exports = async function handler(req, res) {
         }
 
         // --- Access Token (fica só no servidor, nunca no navegador) ---
-        const token = process.env.MP_ACCESS_TOKEN;
+        const token = process.env.MP_ACCESS_TOKEN; //conecta ao processo do ambiente do vercel atraves do MP_ACCESS_TOKEN configurado dentro da conta do vercel
         if (!token) {
             console.error('Variável MP_ACCESS_TOKEN não configurada na Vercel.');
             return res.status(500).json({ erro: 'Pagamento indisponível no momento' });
