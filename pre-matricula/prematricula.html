@@ -39,44 +39,25 @@
                    placeholder="(12) 99999-9999" required autocomplete="tel">
         </div>
 
+        <!-- Unidade vem ANTES de plano/modalidade -->
         <div class="campo">
-            <label for="plano">Plano desejado *</label>
-            <select id="plano" name="plano" required>
-                <option value="">Selecione um plano...</option>
-                <option>Mensal — R$ 90,00</option>
-                <option>Trimestral — R$ 255,00 (85,00 p/mês)</option>
-                <option>Semestral — R$ 480,00 (80,00 p/mês)</option>
-                <option>Anual — R$ 900,00 (75,00 p/mês)</option>
-                <option>Família 2 pessoas — R$ 150,00</option>
-                <option>Família 3 pessoas — R$ 200,00</option>
-                <option>Família 4 pessoas — R$ 250,00</option>
-                <option>Família 5 pessoas — R$ 300,00</option>
-                <option>Plano Adolescente — R$ 75,00</option>
-                <option>Plano Idoso — R$ 75,00</option>
-                <option>Plano 3x na Semana — R$ 75,00</option>
-                <option>Plano Professor — R$ 75,00</option>
+            <label for="unidade">Unidade *</label>
+            <select id="unidade" name="unidade" required>
+                <option value="">Carregando unidades...</option>
             </select>
         </div>
 
         <div class="campo">
             <label for="modalidade">Modalidade *</label>
-            <select id="modalidade" name="modalidade" required>
-                <option value="">Selecione a modalidade...</option>
-                <option>Crossfit</option>
-                <option>Musculação</option>
-                <option>Fit Dance</option>
-                <option>Spinning</option>
-                <option>Jump</option>
+            <select id="modalidade" name="modalidade" required disabled>
+                <option value="">Selecione a unidade primeiro...</option>
             </select>
         </div>
 
         <div class="campo">
-            <label for="unidade">Unidade *</label>
-            <select id="unidade" name="unidade" required>
-                <option value="">Selecione a unidade...</option>
-                <option>Cruzeiro - SP</option>
-                <option>Queluz - SP</option>
-                <option>Engenheiro Passos (Resende - RJ)</option>
+            <label for="plano">Plano desejado *</label>
+            <select id="plano" name="plano" required disabled>
+                <option value="">Selecione a unidade primeiro...</option>
             </select>
         </div>
 
@@ -101,7 +82,6 @@
         </button>
     </form>
 
-    <!-- Painel de CONFIRMAÇÃO — aparece após o retorno do Mercado Pago -->
     <div id="painel-confirmacao" class="painel-pagamento" hidden>
         <h3><i class="fa-solid fa-circle-check"></i> Pagamento aprovado!</h3>
         <p>Seus dados estão prontos. Clique abaixo para enviar ao WhatsApp:</p>

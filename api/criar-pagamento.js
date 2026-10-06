@@ -1,36 +1,27 @@
 // api/criar-pagamento.js
 //
 // "API" mínima da Muskel Fit.
-// Recebe o plano e a forma de pagamento escolhidos no formulário, cria o
-// pagamento no Mercado Pago (já com a URL de retorno) e devolve o link do checkout.
+// Recebe a unidade, o plano e a forma de pagamento escolhidos no formulário,
+// cria o pagamento no Mercado Pago (já com a URL de retorno) e devolve o link do checkout.
 //
 // Por que isso precisa rodar no servidor?
 // A URL de retorno (back_urls) só é definida quando o pagamento é criado pela
 // API do Mercado Pago, e isso exige o Access Token, que é SECRETO.
 // Aqui no servidor ele fica seguro; no JavaScript do site qualquer pessoa o veria.
+//
+// Por que o preço NÃO está mais neste arquivo?
+// Agora cada unidade tem seus próprios planos e preços, e tudo fica em
+// config/catalogo.json — a MESMA fonte que o site usa para montar os <select>.
+// Assim nunca existe divergência entre o valor mostrado e o valor cobrado.
 
 /* ===================== CONFIGURAÇÃO ===================== */
 
-// Página para onde o cliente volta depois de pagar
-const PAGINA_RETORNO = 'https://muskelfit-academia.vercel.app/pre-matricula/prematricula.html';
+// Catálogo único de unidades, planos e modalidades.
+// Para adicionar/alterar planos, edite o arquivo config/catalogo.json.
+const catalogo = require('../config/catalogo.json'); //conecta ao JSON, caminho dele
 
-// ⚠️ CONFIRA OS VALORES: é exatamente o que será cobrado do cliente.
-// A chave é o nome curto do plano (o mesmo texto que aparece no <select>).
-// Os preços ficam AQUI (e não no navegador) para ninguém conseguir alterar o valor.
-const PLANOS = {
-    'Mensal':            90,
-    'Trimestral':        255,
-    'Semestral':         480,
-    'Anual':             900,
-    'Família 2 pessoas': 150,
-    'Família 3 pessoas': 200,
-    'Família 4 pessoas': 250,
-    'Família 5 pessoas': 300,
-    'Adolescente':       75,
-    'Idoso':             75,
-    '3x na Semana':      75,
-    'Professor':         75
-};
+// Página para onde o cliente volta depois de pagar
+const PAGINA_RETORNO = 'https://muskelfit-academia.vercel.app/pre-matricula/prematricula.html'; //retorna o usuario para esta pagina
 
 // Forma de pagamento do formulário -> tipo correspondente no Mercado Pago
 const TIPO_MP = {
@@ -52,18 +43,30 @@ module.exports = async function handler(req, res) {
     }
 
     try {
-        const { plano, pagamento } = req.body || {};
+        // O formulário envia: unidade (nome exato), planoId (id curto) e pagamento
+        const { unidade, planoId, pagamento } = req.body || {};
 
-        // O <select> envia algo como "Mensal — R$ 90,00": procuramos o nome curto dentro dele
-        const nomePlano = Object.keys(PLANOS).find(nome =>
-            String(plano || '').toLowerCase().includes(nome.toLowerCase())
-        );
-        const tipoEscolhido = TIPO_MP[pagamento];
-
-        if (!nomePlano || !tipoEscolhido) {
-            return res.status(400).json({ erro: 'Plano ou forma de pagamento inválidos' });
+        // --- Procura a unidade no catálogo ---
+        const unidadeCfg = catalogo.unidades?.[unidade];
+        if (!unidadeCfg) {
+            return res.status(400).json({ erro: 'Unidade não encontrada no catálogo' });
         }
 
+        // --- Procura o plano dentro da unidade (validação de verdade) ---
+        // Isso impede que alguém adultere o HTML e envie, por exemplo,
+        // o plano "anual" com preço de "mensal" — aqui o preço vem sempre do catálogo.
+        const plano = unidadeCfg.planos?.find(p => p.id === planoId);
+        if (!plano) {
+            return res.status(400).json({ erro: 'Plano indisponível para esta unidade' });
+        }
+
+        // --- Valida a forma de pagamento ---
+        const tipoEscolhido = TIPO_MP[pagamento];
+        if (!tipoEscolhido) {
+            return res.status(400).json({ erro: 'Forma de pagamento inválida' });
+        }
+
+        // --- Access Token (fica só no servidor, nunca no navegador) ---
         const token = process.env.MP_ACCESS_TOKEN;
         if (!token) {
             console.error('Variável MP_ACCESS_TOKEN não configurada na Vercel.');
@@ -79,9 +82,11 @@ module.exports = async function handler(req, res) {
             },
             body: JSON.stringify({
                 items: [{
-                    title: `Muskel Fit — Plano ${nomePlano}`,
+                    // Título inclui a unidade para o cliente (e a academia) identificarem de onde veio
+                    title: `Muskel Fit — ${unidade} — ${plano.nome}`,
                     quantity: 1,
-                    unit_price: PLANOS[nomePlano],
+                    // Number() garante que o MP receba número puro, mesmo se o JSON tiver string
+                    unit_price: Number(plano.preco),
                     currency_id: 'BRL'
                 }],
 
