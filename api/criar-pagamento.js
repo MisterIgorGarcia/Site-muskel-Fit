@@ -1,7 +1,7 @@
 // api/criar-pagamento.js
 //
 // "API" mínima da Muskel Fit.
-// Recebe a unidade, o plano e a forma de pagamento escolhidos no formulário,
+// Recebe a unidade, modalidade, o plano e a forma de pagamento escolhidos no formulário,
 // cria o pagamento no Mercado Pago (já com a URL de retorno) e devolve o link do checkout.
 //
 // Por que isso precisa rodar no servidor?
@@ -10,25 +10,16 @@
 // Aqui no servidor ele fica seguro; no JavaScript do site qualquer pessoa o veria.
 //
 // Por que o preço NÃO está mais neste arquivo?
-// Agora cada unidade tem seus próprios planos e preços, e tudo fica em
-// config/catalogo.json — a MESMA fonte que o site usa para montar os <select>.
+// Agora cada unidade tem suas próprias modalidades, e cada modalidade tem seus planos e preços.
+// Tudo fica em pre-matricula/catalogos/catalogo.json — a MESMA fonte que o site usa.
 // Assim nunca existe divergência entre o valor mostrado e o valor cobrado.
 
 /* ===================== CONFIGURAÇÃO ===================== */
 
-// Catálogo único de unidades, planos e modalidades.
-// Para adicionar/alterar planos, edite o arquivo config/catalogo.json.
-//const path = require('path');
-//const fs = require('fs');
-// Constrói o caminho absoluto usando o diretório atual do projeto (process.cwd())
-//const catalogoPath = path.join(process.cwd(), 'pre-matricula', 'catalogos', 'catalogo.json');
-// Lê o arquivo e transforma em objeto JSON
-//const catalogo = JSON.parse(fs.readFileSync(catalogoPath, 'utf8'));
-
-const catalogo = require('../pre-matricula/catalogos/catalogo.json'); //conecta ao JSON, caminho dele
+const catalogo = require('../pre-matricula/catalogos/catalogo.json'); // Conecta ao JSON
 
 // Página para onde o cliente volta depois de pagar
-const PAGINA_RETORNO = 'https://muskelfit-academia.vercel.app/pre-matricula/prematricula.html'; //retorna o usuario para esta pagina
+const PAGINA_RETORNO = 'https://muskelfit-academia.vercel.app/pre-matricula/prematricula.html';
 
 // Forma de pagamento do formulário -> tipo correspondente no Mercado Pago
 const TIPO_MP = {
@@ -50,8 +41,8 @@ module.exports = async function handler(req, res) {
     }
 
     try {
-        // O formulário envia: unidade (nome exato), planoId (id curto) e pagamento
-        const { unidade, planoId, pagamento } = req.body || {};
+        // O formulário agora envia: unidade, modalidade, planoId e pagamento
+        const { unidade, modalidade, planoId, pagamento } = req.body || {};
 
         // --- Procura a unidade no catálogo ---
         const unidadeCfg = catalogo.unidades?.[unidade];
@@ -59,12 +50,18 @@ module.exports = async function handler(req, res) {
             return res.status(400).json({ erro: 'Unidade não encontrada no catálogo' });
         }
 
-        // --- Procura o plano dentro da unidade (validação de verdade) ---
-        // Isso impede que alguém adultere o HTML e envie, por exemplo,
-        // o plano "anual" com preço de "mensal" — aqui o preço vem sempre do catálogo.
-        const plano = unidadeCfg.planos?.find(p => p.id === planoId);
+        // --- Procura a modalidade dentro da unidade ---
+        // Isso garante que o usuário não envie uma modalidade que não existe para aquela unidade
+        const modalidadeCfg = unidadeCfg.modalidades?.[modalidade];
+        if (!modalidadeCfg) {
+            return res.status(400).json({ erro: 'Modalidade indisponível para esta unidade' });
+        }
+
+        // --- Procura o plano dentro da modalidade (validação de verdade) ---
+        // Isso impede que alguém adultere o HTML e envie um plano com preço diferente
+        const plano = modalidadeCfg.planos?.find(p => p.id === planoId);
         if (!plano) {
-            return res.status(400).json({ erro: 'Plano indisponível para esta unidade' });
+            return res.status(400).json({ erro: 'Plano indisponível para esta modalidade' });
         }
 
         // --- Valida a forma de pagamento ---
@@ -89,10 +86,10 @@ module.exports = async function handler(req, res) {
             },
             body: JSON.stringify({
                 items: [{
-                    // Título inclui a unidade para o cliente (e a academia) identificarem de onde veio
-                    title: `Muskel Fit — ${unidade} — ${plano.nome}`,
+                    // Título agora inclui a modalidade também para identificação clara
+                    title: `Muskel Fit — ${unidade} — ${modalidade} — ${plano.nome}`,
                     quantity: 1,
-                    // Number() garante que o MP receba número puro, mesmo se o JSON tiver string
+                    // Number() garante que o MP receba número puro
                     unit_price: Number(plano.preco),
                     currency_id: 'BRL'
                 }],
