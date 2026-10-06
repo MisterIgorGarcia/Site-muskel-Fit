@@ -56,7 +56,7 @@ module.exports = async function handler(req, res) {
         }
 
         // --- Procura a unidade no catálogo ---
-        const unidadeCfg = catalogo.unidades?.[unidade];
+        const unidadeCfg = catalogo?.[unidade];
         if (!unidadeCfg) {
             return res.status(400).json({ erro: 'Unidade não encontrada no catálogo' });
         }
