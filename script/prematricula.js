@@ -3,7 +3,7 @@ const CONFIG = {
     whatsapp: '5512991859267'    // número da academia (com DDI+DDD)
 };
 
-const CAMINHO_CATALOGO = '../config/catalogo.json';
+const CAMINHO_CATALOGO = '../pre-matricula/catalogos/catalogo.json';
 
 let CATALOGO = null;   // { unidades: { "Nome": { modalidades: [], planos: [] } } }
 
