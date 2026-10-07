@@ -133,7 +133,7 @@ async function redirecionarParaPagamento(dados) {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 unidade:    dados.unidade,
-                modalidade: dados.modalidade, // <-- ADICIONADO: Enviando a modalidade para o backend
+                modalidade: dados.modalidade,
                 planoId:    dados.planoId,
                 pagamento:  dados.pagamento
             })
