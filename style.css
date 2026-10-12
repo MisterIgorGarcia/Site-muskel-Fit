@@ -1153,6 +1153,156 @@ footer {
     }
 }
 
+/*==================================================================PAGINA LEGAL (PRIVACIDADE)====================================================================================*/
+
+.pagina-legal {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 80px 40px 100px;
+    color: var(--cor-texto-claro);
+}
+
+.pagina-legal-header {
+    text-align: center;
+    margin-bottom: 60px;
+    padding-bottom: 30px;
+    border-bottom: 3px solid var(--cor-secundaria);
+}
+
+.pagina-legal-header h1 {
+    font-size: 2.5rem;
+    color: var(--cor-secundaria);
+    margin-bottom: 15px;
+    line-height: 1.2;
+}
+
+.pagina-legal-data {
+    color: #999;
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+}
+
+.pagina-legal-data strong {
+    color: var(--cor-secundaria);
+}
+
+.pagina-legal-conteudo {
+    text-align: left;
+    line-height: 1.75;
+    font-size: 1rem;
+}
+
+.pagina-legal-conteudo p {
+    color: #c8c8c8;
+    margin-bottom: 18px;
+}
+
+.pagina-legal-conteudo h2 {
+    font-size: 1.4rem;
+    color: var(--cor-secundaria);
+    margin-top: 40px;
+    margin-bottom: 18px;
+    padding-left: 15px;
+    border-left: 4px solid var(--cor-secundaria);
+}
+
+.pagina-legal-conteudo h3 {
+    font-size: 1.1rem;
+    color: var(--cor-texto-claro);
+    margin-top: 25px;
+    margin-bottom: 12px;
+}
+
+.pagina-legal-conteudo ul {
+    list-style: none;
+    padding-left: 0;
+    margin-bottom: 20px;
+}
+
+.pagina-legal-conteudo ul li {
+    color: #c8c8c8;
+    padding: 6px 0 6px 28px;
+    position: relative;
+}
+
+.pagina-legal-conteudo ul li::before {
+    content: "✔";
+    color: var(--cor-secundaria);
+    position: absolute;
+    left: 0;
+    font-weight: bold;
+}
+
+.pagina-legal-conteudo a {
+    color: var(--cor-secundaria);
+    text-decoration: none;
+    font-weight: bold;
+    transition: color 0.3s;
+}
+
+.pagina-legal-conteudo a:hover {
+    color: #ffe066;
+    text-decoration: underline;
+}
+
+.pagina-legal-conteudo strong {
+    color: var(--cor-texto-claro);
+}
+
+.pagina-legal-rodape {
+    margin-top: 30px;
+    padding: 20px 25px;
+    background-color: #1a1a1a;
+    border-left: 4px solid var(--cor-secundaria);
+    border-radius: 8px;
+    color: #d0d0d0;
+    font-style: italic;
+}
+
+.pagina-legal-voltar {
+    text-align: center;
+    margin-top: 60px;
+}
+
+.pagina-legal-voltar .btn-amarelo {
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* ---------- Responsividade ---------- */
+@media (max-width: 768px) {
+    .pagina-legal {
+        padding: 50px 22px 70px;
+    }
+
+    .pagina-legal-header h1 {
+        font-size: 1.8rem;
+    }
+
+    .pagina-legal-header {
+        margin-bottom: 40px;
+    }
+
+    .pagina-legal-conteudo h2 {
+        font-size: 1.2rem;
+        margin-top: 32px;
+    }
+
+    .pagina-legal-conteudo h3 {
+        font-size: 1rem;
+    }
+
+    .pagina-legal-conteudo {
+        font-size: 0.95rem;
+        line-height: 1.7;
+    }
+
+    .pagina-legal-conteudo ul li {
+        padding-left: 24px;
+    }
+}
 
 /*==================================================================PAGINA DE PRE MATRICULA====================================================================================*/
 
