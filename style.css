@@ -550,10 +550,11 @@ iframe {
     text-align: center;
 }
 .secao-prematricula{
-    padding: 30px 40px;
+    padding: 20px 40px;
+    max-width: 600px;
     text-align: center;
     border-radius: 10px; /*bordas arredondadas*/
-    margin: auto;  /*margem auto para centralizar o conteudo*/
+    margin: 0 auto;  /*margem auto para centralizar o conteudo apenas no form 0, sem alargar pros lados*/
     border-radius: 10px; /*bordas arredondadas*/
     background: #141414;  /*fundo branco
 }
