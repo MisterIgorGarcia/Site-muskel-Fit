@@ -330,7 +330,10 @@ iframe {
     justify-content: center;
     gap: 8px;
     text-align: center;
-    text-decoration: none; 
+    text-decoration: none;
+    font-family: inherit;      /* <button> não herda a fonte do site */
+    line-height: 1;            /* alinha a altura do texto entre os dois */
+    box-sizing: border-box;    /* <a> e <button> calculam padding diferente */
 }
 /* Em telas menores que 600px, o menu e o header viram coluna ao invés de linha */
 @keyframes flutuar { /*usa a variavel flutuar e como keyframe*/
@@ -541,6 +544,18 @@ iframe {
     margin: 0 auto;
     color: #cccccc;
     line-height: 1.6;
+}
+.secao-prematricula-h1 {
+    padding: 60px 40px;
+    text-align: center;
+}
+.secao-prematricula{
+    padding: 30px 40px;
+    text-align: center;
+    border-radius: 10px; /*bordas arredondadas*/
+    margin: auto;  /*margem auto para centralizar o conteudo*/
+    border-radius: 10px; /*bordas arredondadas*/
+    background: #141414;  /*fundo branco
 }
 
 .destaque {
