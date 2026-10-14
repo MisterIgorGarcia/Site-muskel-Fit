@@ -3,6 +3,7 @@
 import { iniciarBadge } from './script/badge.js';
 import { iniciarMenu } from './script/menu.js';
 import { iniciarCronometro } from './script/cronometro.js';
+import './script/externos.js';
 
 function init() {
     iniciarBadge();

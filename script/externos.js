@@ -31,3 +31,6 @@ function abrirAppTreino() {
         window.open(playStoreUrl, '_blank');
     }
 }
+
+// exporta pra caso outro módulo queira importar
+export { abrirAppTreino };
