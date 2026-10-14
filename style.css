@@ -545,18 +545,26 @@ iframe {
     color: #cccccc;
     line-height: 1.6;
 }
-.secao-prematricula-h1 {
+.secao-sub-h1 {
     padding: 60px 40px;
     text-align: center;
 }
-.secao-prematricula{
+.secao-sub{
     padding: 20px 40px;
-    max-width: 600px;
+    max-width: 600px; /*largura maxima 600px*/
     text-align: center;
     border-radius: 10px; /*bordas arredondadas*/
     margin: 0 auto;  /*margem auto para centralizar o conteudo apenas no form 0, sem alargar pros lados*/
     border-radius: 10px; /*bordas arredondadas*/
-    background: #141414;  /*fundo branco
+    background: #141414;  /*fundo branco*/
+}
+
+.secao-sub-alt{
+    padding: 20px 40px;
+    border-radius: 10px; /*bordas arredondadas*/
+    background: #141414;  /*fundo branco*/
+    margin: 0 auto;
+    text-align: center;
 }
 
 .destaque {
