@@ -32,5 +32,6 @@ function abrirAppTreino() {
     }
 }
 
-// exporta pra caso outro módulo queira importar
+// Funções exportadas
 export { abrirAppTreino };
+window.abrirAppTreino = abrirAppTreino; //necessário para o onclick funcionar
