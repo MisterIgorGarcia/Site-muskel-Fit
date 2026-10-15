@@ -346,6 +346,110 @@ iframe {
     transform: scale(1.05);     /* botão cresce um pouquinho ao passar o mouse */
 }
 
+.btn-amarelo-premium {
+    /* ===== BASE ===== */
+    position: relative;                    /* necessário pro ::before (shine) */
+    overflow: hidden;                      /* corta o shine que passar da borda */
+    background-color: var(--cor-secundaria);
+    color: var(--cor-primaria);
+    border: none;
+    padding: 14px 30px;
+    font-weight: bold;
+    font-size: 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: transform 0.2s, background-color 0.2s, box-shadow 0.3s;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    text-align: center;
+    text-decoration: none;
+    font-family: inherit;
+    line-height: 1;
+    box-sizing: border-box;
+
+    /* ===== BRILHO / GLOW ===== */
+    box-shadow:
+        0 0 0 rgba(255, 214, 10, 0),
+        0 0 20px rgba(255, 214, 10, 0.4),
+        0 0 40px rgba(255, 214, 10, 0.2);
+
+    animation: brilho-promocao 2s ease-in-out infinite;
+}
+
+/* ===== ANIMAÇÃO DO GLOW (pulsando) ===== */
+@keyframes brilho-promocao {
+    0%, 100% {
+        box-shadow:
+            0 0 0 rgba(255, 214, 10, 0),
+            0 0 20px rgba(255, 214, 10, 0.4),
+            0 0 40px rgba(255, 214, 10, 0.2);
+    }
+    50% {
+        box-shadow:
+            0 0 0 rgba(255, 214, 10, 0),
+            0 0 30px rgba(255, 214, 10, 0.7),
+            0 0 60px rgba(255, 214, 10, 0.4);
+    }
+}
+
+/* ===== EFEITO SHINE (barra de luz que atravessa) ===== */
+.btn-amarelo-premium::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        120deg,
+        transparent 0%,
+        transparent 30%,
+        rgba(255, 255, 255, 0.7) 50%,
+        transparent 70%,
+        transparent 100%
+    );
+    animation: shine-passar 3s ease-in-out infinite;
+    pointer-events: none;
+}
+
+@keyframes shine-passar {
+    0% {
+        left: -100%;
+    }
+    60% {
+        left: 100%;
+    }
+    100% {
+        left: 100%;
+    }
+}
+
+/* ===== HOVER (intensifica o brilho) ===== */
+.btn-amarelo-premium:hover {
+    background-color: #ffe066;
+    transform: scale(1.05);
+    box-shadow:
+        0 0 30px rgba(255, 214, 10, 0.9),
+        0 0 60px rgba(255, 214, 10, 0.6),
+        0 0 90px rgba(255, 214, 10, 0.3);
+    animation-play-state: paused;   /* pausa a pulsação no hover */
+}
+
+/* ===== KEYFRAME ANTIGO (mantido por compatibilidade) ===== */
+@keyframes flutuar {
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(-15px); }
+}
+
+/* ===== ACESSIBILIDADE (respeita "reduzir animações") ===== */
+@media (prefers-reduced-motion: reduce) {
+    .btn-amarelo-premium,
+    .btn-amarelo-premium::before {
+        animation: none;
+    }
+}
 /* ===================== SEÇÃO MAPA ===================== */
 #localizacao {
     display: flex;
