@@ -409,6 +409,13 @@ iframe {
 }
 /*----------------------------*/
 
+/*SELO DE POR TEMPO LIMITADO*/
+.btn-com-selo {
+    position: relative;
+    display: inline-block;
+}
+/*----------------------------*/
+
 /* ===================== SEÇÃO MAPA ===================== */
 #localizacao {
     display: flex;
