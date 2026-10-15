@@ -291,7 +291,7 @@ async function iniciarFormulario() {
         }
 
         const dados = {
-            nome, nascimento, telefone, celular,
+            nome, nascimento, celular,
             unidade,
             modalidade,
             planoId:     planoObj.id,
@@ -362,7 +362,6 @@ function tratarRetornoMercadoPago(status) {
         `*MATRÍCULA — Muskel Fit*\n\n` +
         `*Nome:* ${dados.nome}\n` +
         `*Nascimento:* ${dataFmt}\n` +
-        `*Telefone:* ${dados.telefone}\n` +
         `*Celular:* ${dados.celular}\n` +
         `*Unidade:* ${dados.unidade}\n` +
         `*Modalidade:* ${dados.modalidade}\n` +
