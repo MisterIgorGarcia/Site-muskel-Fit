@@ -314,7 +314,7 @@ iframe {
     margin-top: 20px;
 }
 
-/* Botão amarelo reutilizado em vários lugares do site */
+/* BOTAO AMARELO NORMAL*/
 .btn-amarelo {
     background-color: var(--cor-secundaria);
     color: var(--cor-primaria);   /* texto preto em cima do botão amarelo, pro contraste */
@@ -345,20 +345,22 @@ iframe {
     background-color: #ffe066; /* amarelo mais claro no hover */
     transform: scale(1.05);     /* botão cresce um pouquinho ao passar o mouse */
 }
+/*----------------------------*/
 
+/* BOTAO AMARELO PREMIUM*/
 .btn-amarelo-premium {
-    /* ===== BASE ===== */
-    position: relative;                    /* necessário pro ::before (shine) */
-    overflow: hidden;                      /* corta o shine que passar da borda */
-    background-color: var(--cor-secundaria);
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(135deg, #ffe44d 0%, #ffd60a 50%, #ccaa00 100%);
+    background-size: 200% 200%;
     color: var(--cor-primaria);
-    border: none;
+    border: 2px solid #c0c0c0;             /* ← borda prateada */
     padding: 14px 30px;
     font-weight: bold;
     font-size: 1rem;
     border-radius: 6px;
     cursor: pointer;
-    transition: transform 0.2s, background-color 0.2s, box-shadow 0.3s;
+    transition: transform 0.2s, background-position 0.4s, box-shadow 0.3s;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -369,32 +371,12 @@ iframe {
     line-height: 1;
     box-sizing: border-box;
 
-    /* ===== BRILHO / GLOW ===== */
-    box-shadow:
-        0 0 0 rgba(255, 214, 10, 0),
-        0 0 20px rgba(255, 214, 10, 0.4),
-        0 0 40px rgba(255, 214, 10, 0.2);
-
-    animation: brilho-promocao 2s ease-in-out infinite;
+    /* ===== EXTRAS PREMIUM ===== */
+    box-shadow: 0 0 20px rgba(255, 214, 10, 0.4), 0 0 40px rgba(255, 214, 10, 0.2);
+    animation: brilho 2s ease-in-out infinite;
 }
 
-/* ===== ANIMAÇÃO DO GLOW (pulsando) ===== */
-@keyframes brilho-promocao {
-    0%, 100% {
-        box-shadow:
-            0 0 0 rgba(255, 214, 10, 0),
-            0 0 20px rgba(255, 214, 10, 0.4),
-            0 0 40px rgba(255, 214, 10, 0.2);
-    }
-    50% {
-        box-shadow:
-            0 0 0 rgba(255, 214, 10, 0),
-            0 0 30px rgba(255, 214, 10, 0.7),
-            0 0 60px rgba(255, 214, 10, 0.4);
-    }
-}
-
-/* ===== EFEITO SHINE (barra de luz que atravessa) ===== */
+/* Shine atravessando */
 .btn-amarelo-premium::before {
     content: "";
     position: absolute;
@@ -402,54 +384,31 @@ iframe {
     left: -100%;
     width: 100%;
     height: 100%;
-    background: linear-gradient(
-        120deg,
-        transparent 0%,
-        transparent 30%,
-        rgba(255, 255, 255, 0.7) 50%,
-        transparent 70%,
-        transparent 100%
-    );
-    animation: shine-passar 3s ease-in-out infinite;
+    background: linear-gradient(120deg, transparent 30%, rgba(255, 255, 255, 0.75) 50%, transparent 70%);
+    animation: shine 3s ease-in-out infinite;
     pointer-events: none;
 }
 
-@keyframes shine-passar {
-    0% {
-        left: -100%;
-    }
-    60% {
-        left: 100%;
-    }
-    100% {
-        left: 100%;
-    }
+/* Glow pulsante */
+@keyframes brilho {
+    50% { box-shadow: 0 0 30px rgba(255, 214, 10, 0.7), 0 0 60px rgba(255, 214, 10, 0.4); }
 }
 
-/* ===== HOVER (intensifica o brilho) ===== */
+/* Movimento do shine */
+@keyframes shine {
+    0%          { left: -100%; }
+    60%, 100%   { left: 100%; }
+}
+
+/* Hover */
 .btn-amarelo-premium:hover {
-    background-color: #ffe066;
+    background-position: 100% 100%;
     transform: scale(1.05);
-    box-shadow:
-        0 0 30px rgba(255, 214, 10, 0.9),
-        0 0 60px rgba(255, 214, 10, 0.6),
-        0 0 90px rgba(255, 214, 10, 0.3);
-    animation-play-state: paused;   /* pausa a pulsação no hover */
+    box-shadow: 0 0 30px rgba(255, 214, 10, 0.9), 0 0 60px rgba(255, 214, 10, 0.6);
+    animation-play-state: paused;
 }
+/*----------------------------*/
 
-/* ===== KEYFRAME ANTIGO (mantido por compatibilidade) ===== */
-@keyframes flutuar {
-    0%, 100% { transform: translateY(0); }
-    50%      { transform: translateY(-15px); }
-}
-
-/* ===== ACESSIBILIDADE (respeita "reduzir animações") ===== */
-@media (prefers-reduced-motion: reduce) {
-    .btn-amarelo-premium,
-    .btn-amarelo-premium::before {
-        animation: none;
-    }
-}
 /* ===================== SEÇÃO MAPA ===================== */
 #localizacao {
     display: flex;
