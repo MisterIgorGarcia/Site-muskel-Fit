@@ -1328,7 +1328,7 @@ footer {
     }
 }
 
-/*==================================================================PAGINA DE PRE MATRICULA====================================================================================*/
+/*==================================================================PAGINA DE PRE PRE-MATRICULA====================================================================================*/
 
 
 /* ===================== FORMULÁRIO DE PRÉ-MATRÍCULA ===================== */
@@ -1466,4 +1466,278 @@ footer {
 @media (max-width: 600px) {
     .campo-radio label { width: 100%; justify-content: center; }
     .pix-copia-cola { flex-direction: column; }
+}
+
+/*==================================================================PAGINA DE PRE MATRICULA====================================================================================*/
+
+/* Botão "voltar" no cabeçalho */
+.btn-voltar-header {
+    color: var(--cor-texto-claro);
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    border: 1px solid #2a2a2a;
+    border-radius: 999px;
+    transition: border-color 0.3s, color 0.3s;
+}
+
+.btn-voltar-header:hover {
+    border-color: var(--cor-secundaria);
+    color: var(--cor-secundaria);
+}
+
+/* ---------- HERO DA PÁGINA ---------- */
+.matricula-hero {
+    text-align: center;
+    padding: 70px 20px 50px;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.matricula-label {
+    color: var(--cor-secundaria);
+    font-size: 0.8rem;
+    font-weight: bold;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+.matricula-titulo {
+    font-size: 2.8rem;
+    font-weight: 900;
+    line-height: 1.1;
+    margin: 15px 0 20px;
+    color: var(--cor-texto-claro);
+}
+
+.matricula-titulo .destaque {
+    color: var(--cor-secundaria);
+}
+
+.matricula-subtitulo {
+    color: #b5b5b5;
+    font-size: 1.05rem;
+    line-height: 1.6;
+    max-width: 600px;
+    margin: 0 auto 35px;
+}
+
+/* Benefícios */
+.matricula-beneficios {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 30px;
+}
+
+.beneficio-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--cor-texto-claro);
+    font-size: 0.9rem;
+    font-weight: bold;
+}
+
+.beneficio-item i {
+    color: var(--cor-secundaria);
+    font-size: 1.1rem;
+}
+
+/* ---------- CONTAINER DO FORMULÁRIO ---------- */
+.matricula-container {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 0 20px 60px;
+}
+
+.form-matricula {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+/* Cada bloco do formulário */
+.form-bloco {
+    background-color: #141414;
+    border: 1px solid #1f1f1f;
+    border-radius: 14px;
+    padding: 30px 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.form-bloco-titulo {
+    color: var(--cor-secundaria);
+    font-size: 1rem;
+    font-weight: bold;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid #1f1f1f;
+}
+
+.form-bloco-titulo i {
+    font-size: 1.1rem;
+}
+
+/* ---------- PREVIEW DO PLANO ---------- */
+.preview-plano {
+    background: linear-gradient(135deg, #1a1a1a 0%, #141414 100%);
+    border: 2px solid var(--cor-secundaria);
+    border-radius: 14px;
+    padding: 22px 26px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.preview-linha {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #b5b5b5;
+    font-size: 0.95rem;
+}
+
+.preview-linha strong {
+    color: var(--cor-texto-claro);
+    font-weight: bold;
+}
+
+.preview-valor {
+    padding-top: 12px;
+    border-top: 1px solid #2a2a2a;
+    font-size: 1.1rem;
+}
+
+.preview-valor strong {
+    color: var(--cor-secundaria);
+    font-size: 1.6rem;
+}
+
+/* ---------- AÇÕES DO FORMULÁRIO ---------- */
+.form-acoes {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+}
+
+.form-acoes .btn-voltar {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 14px 20px;
+    background: transparent;
+    color: var(--cor-texto-claro);
+    border: 1px solid #2a2a2a;
+    border-radius: 6px;
+    font-weight: bold;
+    font-size: 1rem;
+    text-decoration: none;
+    transition: border-color 0.3s, color 0.3s;
+}
+
+.form-acoes .btn-voltar:hover {
+    border-color: var(--cor-secundaria);
+    color: var(--cor-secundaria);
+}
+
+.form-acoes .btn-pagar {
+    flex: 2;
+}
+
+/* ---------- SELO DE SEGURANÇA ---------- */
+.selo-seguranca {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    color: #666;
+    font-size: 0.8rem;
+    text-align: center;
+    padding-top: 10px;
+}
+
+.selo-seguranca i {
+    color: #22c55e;
+    font-size: 1rem;
+}
+
+.selo-seguranca strong {
+    color: #999;
+}
+
+/* ---------- SEÇÃO DE AJUDA ---------- */
+.matricula-ajuda {
+    text-align: center;
+    padding: 60px 20px 80px;
+    border-top: 1px solid #1f1f1f;
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.matricula-ajuda p {
+    color: #999;
+    font-size: 0.95rem;
+    margin-bottom: 20px;
+}
+
+/* ---------- RESPONSIVIDADE ---------- */
+@media (max-width: 768px) {
+    .matricula-hero {
+        padding: 45px 20px 35px;
+    }
+
+    .matricula-titulo {
+        font-size: 2rem;
+    }
+
+    .matricula-subtitulo {
+        font-size: 0.95rem;
+    }
+
+    .matricula-beneficios {
+        gap: 20px;
+    }
+
+    .beneficio-item {
+        font-size: 0.8rem;
+    }
+
+    .form-bloco {
+        padding: 24px 20px;
+    }
+
+    .form-acoes {
+        flex-direction: column-reverse;
+    }
+
+    .form-acoes .btn-voltar,
+    .form-acoes .btn-pagar {
+        flex: 1;
+        width: 100%;
+    }
+
+    .preview-plano {
+        padding: 18px 20px;
+    }
+
+    .preview-valor strong {
+        font-size: 1.35rem;
+    }
+
+    .matricula-ajuda {
+        padding: 45px 20px 60px;
+    }
 }

@@ -11,89 +11,155 @@
 
 <header id="cabecalho">
     <h1><span class="spanm">M</span>USKEL <span class="spanfit">FIT</span></h1>
+    <a href="../index.html" class="btn-voltar-header">
+        <i class="fa-solid fa-arrow-left"></i> Voltar
+    </a>
 </header>
 
-<section class="secao-sub-h1">
-    <h2>Matrícula</h2>
-
-    <p class="subtitulo-horario">
-        Preencha seus dados, escolha o plano e finalize pelo WhatsApp.
+<!-- ===================== HERO DA PÁGINA ===================== -->
+<section class="matricula-hero">
+    <span class="matricula-label">MATRÍCULA ONLINE</span>
+    <h2 class="matricula-titulo">
+        Comece sua jornada<br>
+        na <span class="destaque">Muskel Fit</span>
+    </h2>
+    <p class="matricula-subtitulo">
+        Preencha seus dados, escolha o plano ideal e finalize o pagamento em poucos cliques.
+        Rápido, seguro e sem sair de casa.
     </p>
 
-    <section class="secao-sub">
+    <!-- Benefícios -->
+    <div class="matricula-beneficios">
+        <div class="beneficio-item">
+            <i class="fa-solid fa-lock"></i>
+            <span>Pagamento seguro</span>
+        </div>
+        <div class="beneficio-item">
+            <i class="fa-solid fa-bolt"></i>
+            <span>Confirmação rápida</span>
+        </div>
+        <div class="beneficio-item">
+            <i class="fa-solid fa-medal"></i>
+            <span>Sem taxa de adesão</span>
+        </div>
+    </div>
+</section>
+
+<!-- ===================== FORMULÁRIO ===================== -->
+<section class="matricula-container">
+
     <form id="form-matricula" class="form-matricula" novalidate>
 
-        <div class="campo">
-            <label for="nome">Nome completo *</label>
-            <input type="text" id="nome" name="nome" required autocomplete="name">
+        <!-- Bloco 1: Dados pessoais -->
+        <div class="form-bloco">
+            <h3 class="form-bloco-titulo">
+                <i class="fa-solid fa-user"></i> Seus dados
+            </h3>
+
+            <div class="campo">
+                <label for="nome">Nome completo *</label>
+                <input type="text" id="nome" name="nome" required autocomplete="name">
+            </div>
+
+            <div class="campo">
+                <label for="nascimento">Data de nascimento *</label>
+                <input type="date" id="nascimento" name="nascimento" required>
+            </div>
+
+            <div class="campo">
+                <label for="telefone">Telefone fixo</label>
+                <input type="tel" id="telefone" name="telefone"
+                       placeholder="(12) 3000-0000" autocomplete="tel">
+            </div>
+
+            <div class="campo">
+                <label for="celular">Celular (WhatsApp) *</label>
+                <input type="tel" id="celular" name="celular"
+                       placeholder="(12) 99999-9999" required autocomplete="tel">
+            </div>
         </div>
 
-        <div class="campo">
-            <label for="nascimento">Data de nascimento *</label>
-            <input type="date" id="nascimento" name="nascimento" required>
+        <!-- Bloco 2: Plano -->
+        <div class="form-bloco">
+            <h3 class="form-bloco-titulo">
+                <i class="fa-solid fa-dumbbell"></i> Escolha seu plano
+            </h3>
+
+            <div class="campo">
+                <label for="unidade">Unidade *</label>
+                <select id="unidade" name="unidade" required>
+                    <option value="">Carregando unidades...</option>
+                </select>
+            </div>
+
+            <div class="campo">
+                <label for="modalidade">Modalidade *</label>
+                <select id="modalidade" name="modalidade" required disabled>
+                    <option value="">Selecione a unidade primeiro...</option>
+                </select>
+            </div>
+
+            <div class="campo">
+                <label for="plano">Plano desejado *</label>
+                <select id="plano" name="plano" required disabled>
+                    <option value="">Selecione a unidade primeiro...</option>
+                </select>
+            </div>
         </div>
 
-        <div class="campo">
-            <label for="telefone">Telefone fixo</label>
-            <input type="tel" id="telefone" name="telefone"
-                   placeholder="(12) 3000-0000" autocomplete="tel">
+        <!-- Bloco 3: Pagamento -->
+        <div class="form-bloco">
+            <h3 class="form-bloco-titulo">
+                <i class="fa-solid fa-credit-card"></i> Forma de pagamento
+            </h3>
+
+            <fieldset class="campo campo-radio">
+                <label>
+                    <input type="radio" name="pagamento" value="PIX" required>
+                    <i class="fa-brands fa-pix"></i> PIX
+                </label>
+                <label>
+                    <input type="radio" name="pagamento" value="Débito">
+                    <i class="fa-solid fa-credit-card"></i> Débito
+                </label>
+                <label>
+                    <input type="radio" name="pagamento" value="Crédito">
+                    <i class="fa-solid fa-credit-card"></i> Crédito
+                </label>
+            </fieldset>
         </div>
 
-        <div class="campo">
-            <label for="celular">Celular (WhatsApp) *</label>
-            <input type="tel" id="celular" name="celular"
-                   placeholder="(12) 99999-9999" required autocomplete="tel">
+        <!-- Preview do plano escolhido (aparece via JS) -->
+        <div class="preview-plano" id="preview-plano" hidden>
+            <div class="preview-linha">
+                <span>Plano selecionado:</span>
+                <strong id="preview-nome">—</strong>
+            </div>
+            <div class="preview-linha preview-valor">
+                <span>Total a pagar:</span>
+                <strong id="preview-valor">R$ 0,00</strong>
+            </div>
         </div>
 
-        <div class="campo">
-            <label for="unidade">Unidade *</label>
-            <select id="unidade" name="unidade" required>
-                <option value="">Carregando unidades...</option>
-            </select>
+        <!-- Botões -->
+        <div class="form-acoes">
+            <a href="../index.html" class="btn-voltar">
+                <i class="fa-solid fa-arrow-left"></i> Voltar
+            </a>
+            <button type="submit" class="btn-amarelo btn-pagar">
+                <i class="fa-solid fa-lock"></i> Ir para o pagamento
+            </button>
         </div>
 
-        <div class="campo">
-            <label for="modalidade">Modalidade *</label>
-            <select id="modalidade" name="modalidade" required disabled>
-                <option value="">Selecione a unidade primeiro...</option>
-            </select>
+        <!-- Selo de segurança -->
+        <div class="selo-seguranca">
+            <i class="fa-solid fa-shield-halved"></i>
+            <span>Pagamento processado com segurança pelo <strong>Mercado Pago</strong></span>
         </div>
-
-        <div class="campo">
-            <label for="plano">Plano desejado *</label>
-            <select id="plano" name="plano" required disabled>
-                <option value="">Selecione a unidade primeiro...</option>
-            </select>
-        </div>
-
-        <fieldset class="campo campo-radio">
-            <legend>Forma de pagamento *</legend>
-            <label>
-                <input type="radio" name="pagamento" value="PIX" required>
-                <i class="fa-brands fa-pix"></i> PIX
-            </label>
-            <label>
-                <input type="radio" name="pagamento" value="Débito">
-                <i class="fa-solid fa-credit-card"></i> Débito
-            </label>
-            <label>
-                <input type="radio" name="pagamento" value="Crédito">
-                <i class="fa-solid fa-credit-card"></i> Crédito
-            </label>
-        </fieldset>
-
-    </section>
-
-        <br>
-        <a href="../index.html" class="btn-amarelo">
-            <i class="fa-solid fa-arrow-left"></i> Voltar.
-        </a>
-        <button type="submit" class="btn-amarelo">
-            <i class="fa-solid fa-lock"></i> Ir para o pagamento.
-        </button>
 
     </form>
 
+    <!-- Painel de confirmação (mantém como estava) -->
     <div id="painel-confirmacao" class="painel-pagamento" hidden>
         <h3><i class="fa-solid fa-circle-check"></i> Pagamento aprovado!</h3>
         <p>Seus dados estão prontos. Clique abaixo para enviar ao WhatsApp:</p>
@@ -107,7 +173,15 @@
 
 </section>
 
-<!-- Aponta pro script de MATRÍCULA (não o de pré-matrícula) -->
+<!-- ===================== AJUDA ===================== -->
+<section class="matricula-ajuda">
+    <p>Ficou com dúvida? Fale com a gente antes de se matricular.</p>
+    <a href="https://wa.me/5512991859267?text=Ol%C3%A1%21%20Tenho%20d%C3%BAvidas%20sobre%20a%20matr%C3%ADcula."
+       target="_blank" rel="noopener" class="btn-amarelo">
+        <i class="fa-brands fa-whatsapp"></i> Tirar dúvidas no WhatsApp
+    </a>
+</section>
+
 <script src="../script/matricula.js"></script>
 </body>
 </html>
