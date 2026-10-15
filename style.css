@@ -410,9 +410,70 @@ iframe {
 /*----------------------------*/
 
 /*SELO DE POR TEMPO LIMITADO*/
-.btn-com-selo {
+.selo-lateral {
     position: relative;
     display: inline-block;
+}
+.btn-com-selo-lateral {
+    position: relative;
+    display: inline-block;
+    max-width: 100%;
+}
+
+/* Selo vermelho ao lado */
+.selo-lateral {
+    position: absolute;
+    top: 50%;
+    right: -110px;                       /* ← distância do botão */
+    transform: translateY(-50%);
+    background: linear-gradient(135deg, #ff3b3b, #cc0000);
+    color: #fff;
+    font-size: 0.7rem;
+    font-weight: 900;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    text-align: center;
+    line-height: 1.1;
+    padding: 10px 14px;
+    border-radius: 8px;
+    white-space: nowrap;
+    z-index: 2;
+    box-shadow: 0 6px 16px rgba(255, 59, 59, 0.5);
+    animation: pulsar-selo-lateral 1.5s ease-in-out infinite;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.selo-lateral i {
+    font-size: 1rem;
+    animation: balancar-fogo 0.6s ease-in-out infinite alternate;
+}
+
+/* ⬅️ Triângulo apontando pro botão (seta esquerda) */
+.selo-lateral::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: -10px;
+    transform: translateY(-50%);
+    width: 0;
+    height: 0;
+    border-top: 10px solid transparent;
+    border-bottom: 10px solid transparent;
+    border-right: 10px solid #cc0000;    /* ← cor da lateral direita do gradiente */
+}
+
+/* Pulsação do selo */
+@keyframes pulsar-selo-lateral {
+    0%, 100% { transform: translateY(-50%) scale(1); }
+    50%      { transform: translateY(-50%) scale(1.06); }
+}
+
+/* Fogo balançando */
+@keyframes balancar-fogo {
+    0%   { transform: rotate(-8deg); }
+    100% { transform: rotate(8deg); }
 }
 /*----------------------------*/
 
@@ -1245,6 +1306,54 @@ footer {
     .card .preco {
         font-size: 1.3rem;
     }
+}
+
+/* ===================== RESPONSIVIDADE DO SELO LATERAL ===================== */
+
+/* Telas médias: reduz o espaço pra o selo não vazar */
+@media (max-width: 1100px) {
+    .selo-lateral {
+        right: -95px;
+        font-size: 0.65rem;
+        padding: 8px 12px;
+    }
+}
+
+/* Celular: selo vai pra CIMA do botão (fica mais legível) */
+@media (max-width: 768px) {
+    .btn-com-selo-lateral {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+        width: 100%;
+    }
+
+    .selo-lateral {
+        position: static;
+        transform: none;
+        animation: pulsar-selo-lateral-mobile 1.5s ease-in-out infinite;
+        order: -1;                        /* ← força o selo a ficar em cima */
+        font-size: 0.7rem;
+        padding: 8px 16px;
+    }
+
+    /* Triângulo passa a apontar pra BAIXO (pro botão) */
+    .selo-lateral::before {
+        top: auto;
+        bottom: -10px;
+        left: 50%;
+        transform: translateX(-50%);
+        border-top: 10px solid #cc0000;
+        border-bottom: none;
+        border-left: 10px solid transparent;
+        border-right: 10px solid transparent;
+    }
+}
+
+@keyframes pulsar-selo-lateral-mobile {
+    0%, 100% { transform: scale(1); }
+    50%      { transform: scale(1.06); }
 }
 
 /*==================================================================PAGINA LEGAL (PRIVACIDADE)====================================================================================*/
