@@ -21,19 +21,24 @@ module.exports = async function handler(req, res) {
     }
 
     try {
-        // ← NOVO: recebe o tipo também
         const { tipo, unidade, modalidade, planoId, pagamento } = req.body || {};
 
-        // ← NOVO: define qual chave do Edge Config e qual página de retorno usar
         const tipoNormalizado = tipo === 'matricula' ? 'matricula' : 'pre-matricula';
-        const chaveCatalogo = tipoNormalizado === 'matricula' ? 'unidades-matricula' : 'unidades';
         const paginaRetorno = PAGINA_RETORNO[tipoNormalizado];
 
-        const catalogo = await get(chaveCatalogo);
+        // Busca a chave única
+        const dados = await get('unidades');
+
+        if (!dados) {
+            console.error('Catálogo não encontrado no Edge Config.');
+            return res.status(500).json({ erro: 'Catálogo indisponível no momento' });
+        }
+
+        // Pega o bloco do tipo solicitado
+        const catalogo = dados[tipoNormalizado];
 
         if (!catalogo) {
-            console.error(`Catálogo '${chaveCatalogo}' não encontrado no Edge Config.`);
-            return res.status(500).json({ erro: 'Catálogo indisponível no momento' });
+            return res.status(500).json({ erro: `Catálogo '${tipoNormalizado}' indisponível` });
         }
 
         const unidadeCfg = catalogo?.[unidade];
@@ -91,14 +96,14 @@ module.exports = async function handler(req, res) {
             })
         });
 
-        const dados = await resposta.json();
+        const dadosMP = await resposta.json();
 
-        if (!resposta.ok || !dados.init_point) {
-            console.error('Erro do Mercado Pago:', resposta.status, JSON.stringify(dados));
+        if (!resposta.ok || !dadosMP.init_point) {
+            console.error('Erro do Mercado Pago:', resposta.status, JSON.stringify(dadosMP));
             return res.status(502).json({ erro: 'Não foi possível criar o pagamento' });
         }
 
-        return res.status(200).json({ url: dados.init_point });
+        return res.status(200).json({ url: dadosMP.init_point });
 
     } catch (erro) {
         console.error('Erro inesperado:', erro);

@@ -3,19 +3,24 @@ const { get } = require('@vercel/edge-config');
 
 module.exports = async function handler(req, res) {
     try {
-        // ← NOVO: detecta o tipo (pre-matricula ou matricula)
+        // Detecta o tipo (pre-matricula ou matricula)
         const tipo = req.query.tipo === 'matricula' ? 'matricula' : 'pre-matricula';
 
-        // ← NOVO: escolhe a chave do Edge Config conforme o tipo
-        const chave = tipo === 'matricula' ? 'unidades-matricula' : 'unidades';
-
-        const dados = await get(chave);
+        // Busca a chave única "unidades" (que agora tem os 2 blocos)
+        const dados = await get('unidades');
 
         if (!dados) {
-            return res.status(404).json({ erro: `Catálogo '${chave}' não encontrado` });
+            return res.status(404).json({ erro: 'Catálogo não encontrado' });
         }
 
-        const catalogo = { unidades: dados };
+        // Pega só o bloco do tipo solicitado
+        const unidades = dados[tipo];
+
+        if (!unidades) {
+            return res.status(404).json({ erro: `Catálogo '${tipo}' não encontrado` });
+        }
+
+        const catalogo = { unidades };
 
         res.setHeader('Access-Control-Allow-Origin', '*');
         res.setHeader('Cache-Control', 's-maxage=60, stale-while-revalidate');
