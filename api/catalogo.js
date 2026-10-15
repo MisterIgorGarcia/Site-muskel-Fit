@@ -3,18 +3,11 @@ const { get } = require('@vercel/edge-config');
 
 module.exports = async function handler(req, res) {
     try {
-        // Detecta o tipo (pre-matricula ou matricula)
+        // Detecta o tipo: 'matricula' ou 'pre-matricula'
         const tipo = req.query.tipo === 'matricula' ? 'matricula' : 'pre-matricula';
 
-        // Busca a chave única "unidades" (que agora tem os 2 blocos)
-        const dados = await get('unidades');
-
-        if (!dados) {
-            return res.status(404).json({ erro: 'Catálogo não encontrado' });
-        }
-
-        // Pega só o bloco do tipo solicitado
-        const unidades = dados[tipo];
+        // Busca DIRETAMENTE a chave do tipo escolhido no Edge Config
+        const unidades = await get(tipo);
 
         if (!unidades) {
             return res.status(404).json({ erro: `Catálogo '${tipo}' não encontrado` });

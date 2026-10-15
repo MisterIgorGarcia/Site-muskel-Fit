@@ -26,19 +26,12 @@ module.exports = async function handler(req, res) {
         const tipoNormalizado = tipo === 'matricula' ? 'matricula' : 'pre-matricula';
         const paginaRetorno = PAGINA_RETORNO[tipoNormalizado];
 
-        // Busca a chave única
-        const dados = await get('unidades');
-
-        if (!dados) {
-            console.error('Catálogo não encontrado no Edge Config.');
-            return res.status(500).json({ erro: 'Catálogo indisponível no momento' });
-        }
-
-        // Pega o bloco do tipo solicitado
-        const catalogo = dados[tipoNormalizado];
+        // Busca DIRETAMENTE a chave do tipo escolhido no Edge Config
+        const catalogo = await get(tipoNormalizado);
 
         if (!catalogo) {
-            return res.status(500).json({ erro: `Catálogo '${tipoNormalizado}' indisponível` });
+            console.error(`Catálogo '${tipoNormalizado}' não encontrado no Edge Config.`);
+            return res.status(500).json({ erro: 'Catálogo indisponível no momento' });
         }
 
         const unidadeCfg = catalogo?.[unidade];
