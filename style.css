@@ -1600,6 +1600,10 @@ footer {
     gap: 12px;
 }
 
+.preview-plano[hidden] {
+    display: none !important;
+}
+
 .preview-linha {
     display: flex;
     justify-content: space-between;

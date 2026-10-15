@@ -1,7 +1,7 @@
 /* ===================== CONFIGURAÇÃO ===================== */
 const CONFIG = {
     whatsapp: '5512991859267',           // número da academia
-    tipo: 'matricula'                     // ← MUDA AQUI: 'matricula' ou 'pre-matricula'
+    tipo: 'matricula'                     // 'matricula' ou 'pre-matricula'
 };
 
 let CATALOGO = null;
@@ -45,7 +45,7 @@ window.addEventListener('pageshow', () => definirCarregando(false));
 async function carregarCatalogo() {
     if (CATALOGO) return CATALOGO;
 
-    // ← MUDA AQUI: passa o tipo como query string pra API saber qual catálogo usar
+    // Passa o tipo como query string pra API saber qual catálogo usar
     const resp = await fetch(`/api/catalogo?tipo=${CONFIG.tipo}`, { cache: 'no-cache' });
     if (!resp.ok) throw new Error('Falha ao carregar catálogo de planos.');
     CATALOGO = await resp.json();
@@ -119,6 +119,42 @@ function selecionarPorCorrespondencia(selectEl, valor) {
     }
 }
 
+/* ===================== PREVIEW DO PLANO ===================== */
+
+function atualizarPreviewPlano() {
+    const previewEl    = document.getElementById('preview-plano');
+    const nomeEl       = document.getElementById('preview-nome');
+    const valorEl      = document.getElementById('preview-valor');
+    const planoEl      = document.getElementById('plano');
+    const unidadeEl    = document.getElementById('unidade');
+    const modalidadeEl = document.getElementById('modalidade');
+
+    if (!previewEl || !nomeEl || !valorEl) return;
+
+    const unidade    = unidadeEl?.value;
+    const modalidade = modalidadeEl?.value;
+    const planoId    = planoEl?.value;
+
+    // Se algum campo estiver vazio, esconde o preview
+    if (!unidade || !modalidade || !planoId || !CATALOGO) {
+        previewEl.hidden = true;
+        return;
+    }
+
+    const plano = CATALOGO?.unidades?.[unidade]
+        ?.modalidades?.[modalidade]
+        ?.planos?.find(p => p.id === planoId);
+
+    if (!plano) {
+        previewEl.hidden = true;
+        return;
+    }
+
+    nomeEl.textContent  = plano.texto;
+    valorEl.textContent = `R$ ${Number(plano.preco).toFixed(2).replace('.', ',')}`;
+    previewEl.hidden    = false;
+}
+
 /* ===================== REDIRECIONAMENTO PRO PAGAMENTO ===================== */
 
 async function redirecionarParaPagamento(dados) {
@@ -128,7 +164,7 @@ async function redirecionarParaPagamento(dados) {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                tipo:       CONFIG.tipo,     // ← MUDA AQUI: informa o tipo pro backend
+                tipo:       CONFIG.tipo,
                 unidade:    dados.unidade,
                 modalidade: dados.modalidade,
                 planoId:    dados.planoId,
@@ -191,12 +227,24 @@ async function iniciarFormulario() {
     preencherPlanosDaModalidade(unidadeEl.value, modalidadeEl.value);
     selecionarPorCorrespondencia(planoEl, params.get('plano'));
 
+    // ✅ Chama uma vez após pré-selecionar via URL
+    atualizarPreviewPlano();
+
+    // ✅ Troca de unidade → repopula modalidades e atualiza preview
     unidadeEl.addEventListener('change', () => {
         preencherModalidadesDaUnidade(unidadeEl.value);
+        atualizarPreviewPlano();
     });
 
+    // ✅ Troca de modalidade → repopula planos e atualiza preview
     modalidadeEl.addEventListener('change', () => {
         preencherPlanosDaModalidade(unidadeEl.value, modalidadeEl.value);
+        atualizarPreviewPlano();
+    });
+
+    // ✅ Troca de plano → atualiza o preview
+    planoEl.addEventListener('change', () => {
+        atualizarPreviewPlano();
     });
 
     form.addEventListener('submit', (e) => {
@@ -247,9 +295,9 @@ async function iniciarFormulario() {
             nome, nascimento, telefone, celular,
             unidade,
             modalidade,
-            planoId:    planoObj.id,
+            planoId:     planoObj.id,
             planoTitulo: planoObj.texto,
-            preco:      planoObj.preco,
+            preco:       planoObj.preco,
             pagamento
         };
 
@@ -264,11 +312,11 @@ const statusPagamento = urlParams.get('status');
 const STATUS_VALIDOS = ['success', 'approved', 'pending', 'failure'];
 
 function tratarRetornoMercadoPago(status) {
-    const formEl           = document.getElementById('form-matricula');
+    const formEl            = document.getElementById('form-matricula');
     const painelConfirmacao = document.getElementById('painel-confirmacao');
-    const btnWhats         = document.getElementById('btn-enviar-whatsapp');
-    const tituloEl         = painelConfirmacao?.querySelector('h3');
-    const textoEl          = painelConfirmacao?.querySelector('p');
+    const btnWhats          = document.getElementById('btn-enviar-whatsapp');
+    const tituloEl          = painelConfirmacao?.querySelector('h3');
+    const textoEl           = painelConfirmacao?.querySelector('p');
 
     if (!formEl || !painelConfirmacao || !btnWhats || !tituloEl || !textoEl) {
         console.warn('Elementos do retorno não encontrados.');
@@ -311,7 +359,6 @@ function tratarRetornoMercadoPago(status) {
     const [a, m, d] = dados.nascimento.split('-');
     const dataFmt = `${d}/${m}/${a}`;
 
-    // ← MUDA AQUI: texto do cabeçalho da mensagem
     const msg =
         `*MATRÍCULA — Muskel Fit*\n\n` +
         `*Nome:* ${dados.nome}\n` +
@@ -350,38 +397,4 @@ if (STATUS_VALIDOS.includes(statusPagamento)) {
     tratarRetornoMercadoPago(statusPagamento);
 } else {
     iniciarFormulario();
-}
-
-/* ===================== PREVIEW DO PLANO NA PAGINA DE MATRICULA ===================== */
-function atualizarPreviewPlano() {
-    const previewEl   = document.getElementById('preview-plano');
-    const nomeEl      = document.getElementById('preview-nome');
-    const valorEl     = document.getElementById('preview-valor');
-    const planoEl     = document.getElementById('plano');
-    const unidadeEl   = document.getElementById('unidade');
-    const modalidadeEl = document.getElementById('modalidade');
-
-    if (!previewEl || !nomeEl || !valorEl) return;
-
-    const unidade    = unidadeEl?.value;
-    const modalidade = modalidadeEl?.value;
-    const planoId    = planoEl?.value;
-
-    if (!unidade || !modalidade || !planoId) {
-        previewEl.hidden = true;
-        return;
-    }
-
-    const plano = CATALOGO?.unidades?.[unidade]
-        ?.modalidades?.[modalidade]
-        ?.planos?.find(p => p.id === planoId);
-
-    if (!plano) {
-        previewEl.hidden = true;
-        return;
-    }
-
-    nomeEl.textContent = plano.texto;
-    valorEl.textContent = `R$ ${Number(plano.preco).toFixed(2).replace('.', ',')}`;
-    previewEl.hidden = false;
 }
