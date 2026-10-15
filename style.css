@@ -1509,6 +1509,13 @@ footer {
 
 /*==================================================================PAGINA DE PRE PRE-MATRICULA====================================================================================*/
 
+.prematricula-subtitulo{
+    color: #b5b5b5;
+    font-size: 1.05rem;
+    line-height: 1.6;
+    max-width: 600px;
+    margin: 0 auto 35px;
+}
 
 /* ===================== FORMULÁRIO DE PRÉ-MATRÍCULA ===================== */
 /* Reaproveita .card, .btn-amarelo, .secao, .destaque do CSS atual */
