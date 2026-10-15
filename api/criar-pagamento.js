@@ -2,8 +2,8 @@
 const { get } = require('@vercel/edge-config');
 
 const PAGINA_RETORNO = {
-    'pre-matricula': 'https://muskelfit-academia.vercel.app/pre-matricula/prematricula.html',
-    'matricula':     'https://muskelfit-academia.vercel.app/matricula/matricula.html'
+    'pre-matricula': 'https://muskelfit-academia.vercel.app/matriculas/prematricula.html',
+    'matricula':     'https://muskelfit-academia.vercel.app/matriculas/matricula.html'
 };
 
 const TIPO_MP = {

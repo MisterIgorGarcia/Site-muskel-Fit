@@ -3,9 +3,8 @@ const CONFIG = {
     whatsapp: '5512991859267'    // número da academia (com DDI+DDD)
 };
 
-
-// Estrutura atualizada: { unidades: { "Nome": { modalidades: { "NomeModalidade": { planos: [] } } } } }
-let CATALOGO = null;   
+// Estrutura: { unidades: { "Nome": { modalidades: { "NomeModalidade": { planos: [] } } } } }
+let CATALOGO = null;
 
 /* ===================== HELPERS ===================== */
 
@@ -45,7 +44,6 @@ window.addEventListener('pageshow', () => definirCarregando(false));
 
 async function carregarCatalogo() {
     if (CATALOGO) return CATALOGO;
-    // Agora busca da API que lê o Edge Config, em vez do arquivo JSON local
     const resp = await fetch('/api/catalogo', { cache: 'no-cache' });
     if (!resp.ok) throw new Error('Falha ao carregar catálogo de planos.');
     CATALOGO = await resp.json();
@@ -73,13 +71,11 @@ function preencherUnidades() {
     preencherSelect(sel, nomes, 'Selecione a unidade...', n => n, n => n);
 }
 
-/** Preenche as modalidades com base na unidade escolhida. */
 function preencherModalidadesDaUnidade(nomeUnidade) {
     const modalEl = document.getElementById('modalidade');
     const planoEl = document.getElementById('plano');
     const unidade = CATALOGO.unidades[nomeUnidade];
 
-    // Sempre limpa e desabilita os planos ao trocar de unidade
     preencherSelect(planoEl, [], 'Selecione a modalidade primeiro...', p => p.id, p => p.texto);
     planoEl.disabled = true;
 
@@ -89,13 +85,11 @@ function preencherModalidadesDaUnidade(nomeUnidade) {
         return;
     }
 
-    // Pega as chaves do objeto de modalidades (ex: "Crossfit", "Musculação")
     const modalidades = Object.keys(unidade.modalidades);
     preencherSelect(modalEl, modalidades, 'Selecione a modalidade...', m => m, m => m);
     modalEl.disabled = false;
 }
 
-/** Preenche os planos com base na unidade E modalidade escolhidas. */
 function preencherPlanosDaModalidade(nomeUnidade, nomeModalidade) {
     const planoEl = document.getElementById('plano');
     const unidade = CATALOGO.unidades[nomeUnidade];
@@ -145,7 +139,7 @@ async function redirecionarParaPagamento(dados) {
             throw new Error(resultado.erro || 'Resposta inválida da API');
         }
 
-        localStorage.setItem('dadosMatricula', JSON.stringify(dados));
+        localStorage.setItem('dadosPreMatricula', JSON.stringify(dados));   // ← ALTERADO
         window.location.href = resultado.url;
 
     } catch (erro) {
@@ -174,7 +168,6 @@ async function iniciarFormulario() {
 
     preencherUnidades();
 
-    // Máscara nos telefones
     ['telefone', 'celular'].forEach(id => {
         const el = document.getElementById(id);
         if (!el) return;
@@ -187,31 +180,22 @@ async function iniciarFormulario() {
     const modalidadeEl = document.getElementById('modalidade');
     const planoEl      = document.getElementById('plano');
 
-    // Pré-seleção via URL (?unidade=...&modalidade=...&plano=...)
     const params = new URLSearchParams(window.location.search);
-    
-    // 1. Seleciona a Unidade
+
     selecionarPorCorrespondencia(unidadeEl, params.get('unidade'));
-    
-    // 2. Popula e Seleciona a Modalidade
     preencherModalidadesDaUnidade(unidadeEl.value);
     selecionarPorCorrespondencia(modalidadeEl, params.get('modalidade'));
-    
-    // 3. Popula e Seleciona o Plano
     preencherPlanosDaModalidade(unidadeEl.value, modalidadeEl.value);
     selecionarPorCorrespondencia(planoEl, params.get('plano'));
 
-    // Trocou de unidade → repopula modalidades e limpa planos
     unidadeEl.addEventListener('change', () => {
         preencherModalidadesDaUnidade(unidadeEl.value);
     });
 
-    // Trocou de modalidade → repopula planos
     modalidadeEl.addEventListener('change', () => {
         preencherPlanosDaModalidade(unidadeEl.value, modalidadeEl.value);
     });
 
-    // Submit
     form.addEventListener('submit', (e) => {
         e.preventDefault();
 
@@ -225,7 +209,6 @@ async function iniciarFormulario() {
         const planoId    = fd.get('plano');
         const pagamento  = fd.get('pagamento');
 
-        // -------- Validações Básicas --------
         const erroNasc = validarNascimento(nascimento);
         if (erroNasc) { alert(erroNasc); return; }
 
@@ -242,18 +225,15 @@ async function iniciarFormulario() {
             return;
         }
 
-        // -------- Confere contra o catálogo (segurança) --------
         const unidadeCfg = CATALOGO.unidades[unidade];
         if (!unidadeCfg) { alert('Unidade inválida.'); return; }
 
-        // Verifica se a modalidade existe dentro da unidade
         const modalidadeCfg = unidadeCfg.modalidades[modalidade];
-        if (!modalidadeCfg) { 
-            alert('A modalidade selecionada não está disponível nesta unidade.'); 
-            return; 
+        if (!modalidadeCfg) {
+            alert('A modalidade selecionada não está disponível nesta unidade.');
+            return;
         }
 
-        // Verifica se o plano existe dentro da modalidade
         const planoObj = modalidadeCfg.planos.find(p => p.id === planoId);
         if (!planoObj) {
             alert('O plano selecionado não está disponível nesta modalidade.');
@@ -263,7 +243,7 @@ async function iniciarFormulario() {
         const dados = {
             nome, nascimento, telefone, celular,
             unidade,
-            modalidade, // <-- Salva a modalidade nos dados para o WhatsApp
+            modalidade,
             planoId:    planoObj.id,
             planoTitulo: planoObj.texto,
             preco:      planoObj.preco,
@@ -292,7 +272,7 @@ function tratarRetornoMercadoPago(status) {
         return;
     }
 
-    const dadosSalvosRaw = localStorage.getItem('dadosMatricula');
+    const dadosSalvosRaw = localStorage.getItem('dadosPreMatricula');   // ← ALTERADO
 
     if (!dadosSalvosRaw) {
         painelConfirmacao.hidden = false;
@@ -322,9 +302,8 @@ function tratarRetornoMercadoPago(status) {
         textoStatus = '✅ Pagamento aprovado';
         textoEl.textContent = 'Seus dados estão prontos. Clique abaixo para enviar ao WhatsApp:';
     }
-    
-    //CONSTRUÇÃO DO FORMULARIO PARA ENVIO PARA O ZAP
-    tituloEl.innerHTML = `<i class="${icone}"></i> ${titulo}`;  
+
+    tituloEl.innerHTML = `<i class="${icone}"></i> ${titulo}`;
 
     const [a, m, d] = dados.nascimento.split('-');
     const dataFmt = `${d}/${m}/${a}`;
@@ -358,7 +337,7 @@ function tratarRetornoMercadoPago(status) {
         });
     }
 
-    localStorage.removeItem('dadosMatricula');
+    localStorage.removeItem('dadosPreMatricula');   // ← ALTERADO
 }
 
 /* ===================== BOOT ===================== */

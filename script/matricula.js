@@ -135,7 +135,6 @@ function atualizarPreviewPlano() {
     const modalidade = modalidadeEl?.value;
     const planoId    = planoEl?.value;
 
-    // Se algum campo estiver vazio, esconde o preview
     if (!unidade || !modalidade || !planoId || !CATALOGO) {
         previewEl.hidden = true;
         return;
