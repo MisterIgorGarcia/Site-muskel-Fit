@@ -202,7 +202,6 @@ async function iniciarFormulario() {
         const fd = new FormData(e.target);
         const nome       = (fd.get('nome') || '').trim();
         const nascimento = fd.get('nascimento');
-        const telefone   = (fd.get('telefone') || '').trim() || '—';
         const celular    = (fd.get('celular') || '').trim();
         const unidade    = fd.get('unidade');
         const modalidade = fd.get('modalidade');
