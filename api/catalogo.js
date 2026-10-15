@@ -3,21 +3,23 @@ const { get } = require('@vercel/edge-config');
 
 module.exports = async function handler(req, res) {
     try {
-        // Busca os dados do Edge Config usando a chave 'unidades'
-        const dados = await get('unidades'); 
-        
+        // ← NOVO: detecta o tipo (pre-matricula ou matricula)
+        const tipo = req.query.tipo === 'matricula' ? 'matricula' : 'pre-matricula';
+
+        // ← NOVO: escolhe a chave do Edge Config conforme o tipo
+        const chave = tipo === 'matricula' ? 'unidades-matricula' : 'unidades';
+
+        const dados = await get(chave);
+
         if (!dados) {
-            return res.status(404).json({ erro: 'Catálogo não encontrado' });
+            return res.status(404).json({ erro: `Catálogo '${chave}' não encontrado` });
         }
 
-        // O frontend espera um objeto no formato { unidades: { ... } }
-        // Como o Edge Config já extraiu a chave 'unidades', envolvemos os dados novamente.
         const catalogo = { unidades: dados };
 
-        // Permite que o seu site acesse esses dados
         res.setHeader('Access-Control-Allow-Origin', '*');
         res.setHeader('Cache-Control', 's-maxage=60, stale-while-revalidate');
-        
+
         return res.status(200).json(catalogo);
     } catch (erro) {
         console.error('Erro ao ler Edge Config:', erro);
