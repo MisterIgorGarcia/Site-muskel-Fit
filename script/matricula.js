@@ -351,3 +351,37 @@ if (STATUS_VALIDOS.includes(statusPagamento)) {
 } else {
     iniciarFormulario();
 }
+
+/* ===================== PREVIEW DO PLANO NA PAGINA DE MATRICULA ===================== */
+function atualizarPreviewPlano() {
+    const previewEl   = document.getElementById('preview-plano');
+    const nomeEl      = document.getElementById('preview-nome');
+    const valorEl     = document.getElementById('preview-valor');
+    const planoEl     = document.getElementById('plano');
+    const unidadeEl   = document.getElementById('unidade');
+    const modalidadeEl = document.getElementById('modalidade');
+
+    if (!previewEl || !nomeEl || !valorEl) return;
+
+    const unidade    = unidadeEl?.value;
+    const modalidade = modalidadeEl?.value;
+    const planoId    = planoEl?.value;
+
+    if (!unidade || !modalidade || !planoId) {
+        previewEl.hidden = true;
+        return;
+    }
+
+    const plano = CATALOGO?.unidades?.[unidade]
+        ?.modalidades?.[modalidade]
+        ?.planos?.find(p => p.id === planoId);
+
+    if (!plano) {
+        previewEl.hidden = true;
+        return;
+    }
+
+    nomeEl.textContent = plano.texto;
+    valorEl.textContent = `R$ ${Number(plano.preco).toFixed(2).replace('.', ',')}`;
+    previewEl.hidden = false;
+}
