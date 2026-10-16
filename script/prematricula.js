@@ -274,6 +274,7 @@ function tratarRetornoMercadoPago(status) {
     const dadosSalvosRaw = localStorage.getItem('dadosPreMatricula');
 
     if (!dadosSalvosRaw) {
+        formEl.style.display = 'none';
         painelConfirmacao.hidden = false;
         tituloEl.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> Dados não encontrados';
         textoEl.textContent = 'Não conseguimos recuperar seus dados. Preencha o formulário novamente.';
