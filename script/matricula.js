@@ -315,6 +315,7 @@ function tratarRetornoMercadoPago(status) {
     const btnWhats          = document.getElementById('btn-enviar-whatsapp');
     const tituloEl          = painelConfirmacao?.querySelector('h3');
     const textoEl           = painelConfirmacao?.querySelector('p');
+    const avisoEl           = painelConfirmacao?.querySelector('.aviso-pix');
 
     if (!formEl || !painelConfirmacao || !btnWhats || !tituloEl || !textoEl) {
         console.warn('Elementos do retorno não encontrados.');
@@ -340,16 +341,35 @@ function tratarRetornoMercadoPago(status) {
         titulo = 'Pagamento não aprovado';
         textoStatus = '❌ Pagamento não aprovado';
         textoEl.textContent = 'O pagamento não foi aprovado. Você pode tentar novamente ou entrar em contato com a academia pelo WhatsApp.';
+
+        // ⬇️ Texto específico para FALHA
+        if (avisoEl) {
+            avisoEl.innerHTML = 'Não se preocupe, você pode tentar novamente ou falar com a gente pelo WhatsApp.';
+        }
     } else if (status === 'pending') {
         icone = 'fa-solid fa-hourglass-half';
         titulo = 'Pagamento em processamento';
         textoStatus = '⏳ Pagamento em processamento';
         textoEl.textContent = 'Seu pagamento está em processamento. Envie seus dados no WhatsApp para a academia confirmar.';
+
+        // ⬇️ Texto específico para PENDENTE
+        if (avisoEl) {
+            avisoEl.innerHTML = 'Assim que o pagamento for confirmado, você receberá o aviso. Já pode enviar seus dados no WhatsApp.';
+        }
     } else {
         icone = 'fa-solid fa-circle-check';
         titulo = 'Pagamento aprovado!';
         textoStatus = '✅ Pagamento aprovado';
         textoEl.textContent = 'Seus dados estão prontos. Clique abaixo para enviar ao WhatsApp:';
+
+        // ⬇️ Texto específico para SUCESSO
+        if (avisoEl) {
+            avisoEl.innerHTML = `
+            <strong>Pronto, Matricula concluida !</strong><br>
+                </br>Agora é só ir até a recepção da academia. Seja bem vindo !<br>
+            <i class="fa-solid fa-dumbbell"></i> Bora treinar <i class="fa-solid fa-dumbbell"></i>
+            `;
+        }
     }
 
     tituloEl.innerHTML = `<i class="${icone}"></i> ${titulo}`;
@@ -374,8 +394,7 @@ function tratarRetornoMercadoPago(status) {
 
     if (status === 'failure') {
         btnWhats.style.display = 'none';
-        const aviso = painelConfirmacao.querySelector('.aviso-pix');
-        if (aviso) aviso.textContent = 'Tente novamente ou fale com a academia.';
+        // ⬆️ Removido o trecho antigo que sobrescrevia aviso.textContent
     } else {
         btnWhats.addEventListener('click', () => {
             window.open(

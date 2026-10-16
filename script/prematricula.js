@@ -3,7 +3,6 @@ const CONFIG = {
     whatsapp: '5512991859267'    // número da academia (com DDI+DDD)
 };
 
-// Estrutura: { unidades: { "Nome": { modalidades: { "NomeModalidade": { planos: [] } } } } }
 let CATALOGO = null;
 
 /* ===================== HELPERS ===================== */
@@ -139,7 +138,7 @@ async function redirecionarParaPagamento(dados) {
             throw new Error(resultado.erro || 'Resposta inválida da API');
         }
 
-        localStorage.setItem('dadosPreMatricula', JSON.stringify(dados));   // ← ALTERADO
+        localStorage.setItem('dadosPreMatricula', JSON.stringify(dados));
         window.location.href = resultado.url;
 
     } catch (erro) {
@@ -260,18 +259,19 @@ const statusPagamento = urlParams.get('status');
 const STATUS_VALIDOS = ['success', 'approved', 'pending', 'failure'];
 
 function tratarRetornoMercadoPago(status) {
-    const formEl           = document.getElementById('form-matricula');
+    const formEl            = document.getElementById('form-matricula');
     const painelConfirmacao = document.getElementById('painel-confirmacao');
-    const btnWhats         = document.getElementById('btn-enviar-whatsapp');
-    const tituloEl         = painelConfirmacao?.querySelector('h3');
-    const textoEl          = painelConfirmacao?.querySelector('p');
+    const btnWhats          = document.getElementById('btn-enviar-whatsapp');
+    const tituloEl          = painelConfirmacao?.querySelector('h3');
+    const textoEl           = painelConfirmacao?.querySelector('p');
+    const avisoEl           = painelConfirmacao?.querySelector('.aviso-pix');
 
     if (!formEl || !painelConfirmacao || !btnWhats || !tituloEl || !textoEl) {
         console.warn('Elementos do retorno não encontrados.');
         return;
     }
 
-    const dadosSalvosRaw = localStorage.getItem('dadosPreMatricula');   // ← ALTERADO
+    const dadosSalvosRaw = localStorage.getItem('dadosPreMatricula');
 
     if (!dadosSalvosRaw) {
         painelConfirmacao.hidden = false;
@@ -290,16 +290,35 @@ function tratarRetornoMercadoPago(status) {
         titulo = 'Pagamento não aprovado';
         textoStatus = '❌ Pagamento não aprovado';
         textoEl.textContent = 'O pagamento não foi aprovado. Você pode tentar novamente ou entrar em contato com a academia pelo WhatsApp.';
+
+        if (avisoEl) {
+            avisoEl.innerHTML = 'Não se preocupe, você pode tentar novamente ou falar com a gente pelo WhatsApp.';
+        }
     } else if (status === 'pending') {
         icone = 'fa-solid fa-hourglass-half';
         titulo = 'Pagamento em processamento';
         textoStatus = '⏳ Pagamento em processamento';
         textoEl.textContent = 'Seu pagamento está em processamento. Envie seus dados no WhatsApp para a academia confirmar.';
+
+        if (avisoEl) {
+            avisoEl.innerHTML = 'Assim que o pagamento for confirmado, você receberá o aviso. Já pode enviar seus dados no WhatsApp.';
+        }
     } else {
         icone = 'fa-solid fa-circle-check';
         titulo = 'Pagamento aprovado!';
         textoStatus = '✅ Pagamento aprovado';
         textoEl.textContent = 'Seus dados estão prontos. Clique abaixo para enviar ao WhatsApp:';
+
+        if (avisoEl) {
+            avisoEl.innerHTML = `
+                Pré-matricula concluída.<br><br>
+                <strong>
+                    <i class="fa-solid fa-champagne-glasses"></i>
+                    Aguardamos você na inauguração!!!
+                    <i class="fa-solid fa-champagne-glasses"></i>
+                </strong>
+            `;
+        }
     }
 
     tituloEl.innerHTML = `<i class="${icone}"></i> ${titulo}`;
@@ -324,8 +343,6 @@ function tratarRetornoMercadoPago(status) {
 
     if (status === 'failure') {
         btnWhats.style.display = 'none';
-        const aviso = painelConfirmacao.querySelector('.aviso-pix');
-        if (aviso) aviso.textContent = 'Tente novamente ou fale com a academia.';
     } else {
         btnWhats.addEventListener('click', () => {
             window.open(
@@ -335,7 +352,7 @@ function tratarRetornoMercadoPago(status) {
         });
     }
 
-    localStorage.removeItem('dadosPreMatricula');   // ← ALTERADO
+    localStorage.removeItem('dadosPreMatricula');
 }
 
 /* ===================== BOOT ===================== */
