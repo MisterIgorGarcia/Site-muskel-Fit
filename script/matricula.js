@@ -69,14 +69,14 @@ function preencherSelect(selectEl, itens, placeholder, getValue, getLabel) {
 
 function preencherUnidades() {
     const sel = document.getElementById('unidade');
-    const nomes = Object.keys(CATALOGO.unidades);
+    const nomes = Object.keys(CATALOGO.respostaAPI);
     preencherSelect(sel, nomes, 'Selecione a unidade...', n => n, n => n);
 }
 
 function preencherModalidadesDaUnidade(nomeUnidade) {
     const modalEl = document.getElementById('modalidade');
     const planoEl = document.getElementById('plano');
-    const unidade = CATALOGO.unidades[nomeUnidade];
+    const unidade = CATALOGO.respostaAPI[nomeUnidade];
 
     preencherSelect(planoEl, [], 'Selecione a modalidade primeiro...', p => p.id, p => p.texto);
     planoEl.disabled = true;
@@ -94,7 +94,7 @@ function preencherModalidadesDaUnidade(nomeUnidade) {
 
 function preencherPlanosDaModalidade(nomeUnidade, nomeModalidade) {
     const planoEl = document.getElementById('plano');
-    const unidade = CATALOGO.unidades[nomeUnidade];
+    const unidade = CATALOGO.respostaAPI[nomeUnidade];
 
     if (!unidade || !nomeModalidade || !unidade.modalidades[nomeModalidade]) {
         preencherSelect(planoEl, [], 'Selecione a modalidade primeiro...', p => p.id, p => p.texto);
@@ -140,7 +140,7 @@ function atualizarPreviewPlano() {
         return;
     }
 
-    const plano = CATALOGO?.unidades?.[unidade]
+    const plano = CATALOGO?.respostaAPI?.[unidade]
         ?.modalidades?.[modalidade]
         ?.planos?.find(p => p.id === planoId);
 
@@ -274,7 +274,7 @@ async function iniciarFormulario() {
             return;
         }
 
-        const unidadeCfg = CATALOGO.unidades[unidade];
+        const unidadeCfg = CATALOGO.respostaAPI[unidade];
         if (!unidadeCfg) { alert('Unidade inválida.'); return; }
 
         const modalidadeCfg = unidadeCfg.modalidades[modalidade];

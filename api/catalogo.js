@@ -7,13 +7,13 @@ module.exports = async function handler(req, res) {
         const tipo = req.query.tipo === 'matricula' ? 'matricula' : 'pre-matricula';
 
         // Busca DIRETAMENTE a chave do tipo escolhido no Edge Config
-        const unidades = await get(tipo);
+        const respostaAPI = await get(tipo);
 
-        if (!unidades) {
+        if (!respostaAPI) {
             return res.status(404).json({ erro: `Catálogo '${tipo}' não encontrado` });
         }
 
-        const catalogo = { unidades };
+        const catalogo = { respostaAPI };
 
         res.setHeader('Access-Control-Allow-Origin', '*');
         res.setHeader('Cache-Control', 's-maxage=60, stale-while-revalidate');
