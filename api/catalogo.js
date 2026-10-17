@@ -3,8 +3,10 @@ const { get } = require('@vercel/edge-config');
 
 module.exports = async function handler(req, res) {
     try {
-        // Detecta o tipo: 'matricula' ou 'pre-matricula'
-        const tipo = req.query.tipo === 'matricula' ? 'matricula' : 'pre-matricula';
+        // Detecta o tipo: 'matricula', 'pre-matricula' ou 'preview'
+        const tipo = ['matricula', 'pre-matricula', 'preview'].includes(req.query.tipo) 
+            ? req.query.tipo 
+            : 'pre-matricula';
 
         // Busca DIRETAMENTE a chave do tipo escolhido no Edge Config
         const respostaAPI = await get(tipo);

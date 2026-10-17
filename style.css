@@ -1719,6 +1719,55 @@ footer {
     to { opacity: 1; transform: translateY(0); } /* Fica visível e desce pro lugar */
 }
 
+/* ===================== PREVIEW DA MATRÍCULA FUTURA ===================== */
+.preview-futuro-matricula {
+    background-color: #1a1a1a;
+    border: 1px solid #333;
+    border-radius: 8px;
+    padding: 16px;
+    margin-top: 12px;
+    animation: fadeInAviso 0.4s ease-out;
+}
+
+.preview-futuro-matricula[hidden] {
+    display: none !important;
+}
+
+.preview-futuro-matricula h4 {
+    color: var(--cor-texto-claro);
+    font-size: 0.9rem;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-bottom: 1px solid #333;
+    padding-bottom: 10px;
+}
+
+.preview-futuro-matricula h4 i {
+    color: var(--cor-secundaria);
+}
+
+.lista-futura-planos {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.plano-futuro-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.85rem;
+    color: #b5b5b5;
+    padding: 4px 0;
+}
+
+.plano-futuro-item span:last-child {
+    color: var(--cor-secundaria);
+    font-weight: bold;
+}
+
 /* ===================== PÁGINA DE MATRÍCULA ===================== */
 .btn-voltar-header {
     color: var(--cor-texto-claro);
