@@ -178,6 +178,17 @@ async function iniciarFormulario() {
     const unidadeEl    = document.getElementById('unidade');
     const modalidadeEl = document.getElementById('modalidade');
     const planoEl      = document.getElementById('plano');
+    const avisoEl      = document.getElementById('aviso-prematricula'); // ← Elemento do aviso
+
+    // Função que checa se o plano selecionado é o de pré-matrícula e mostra o aviso
+    function verificarAvisoPlano() {
+        if (!avisoEl) return;
+        if (planoEl.value === 'pre-matricula') {
+            avisoEl.hidden = false; // Mostra a caixa
+        } else {
+            avisoEl.hidden = true;  // Esconde a caixa
+        }
+    }
 
     const params = new URLSearchParams(window.location.search);
 
@@ -187,12 +198,22 @@ async function iniciarFormulario() {
     preencherPlanosDaModalidade(unidadeEl.value, modalidadeEl.value);
     selecionarPorCorrespondencia(planoEl, params.get('plano'));
 
+    // Checa o aviso logo ao carregar (caso o plano já venha via URL)
+    verificarAvisoPlano();
+
     unidadeEl.addEventListener('change', () => {
         preencherModalidadesDaUnidade(unidadeEl.value);
+        verificarAvisoPlano(); // Atualiza ao mudar a unidade
     });
 
     modalidadeEl.addEventListener('change', () => {
         preencherPlanosDaModalidade(unidadeEl.value, modalidadeEl.value);
+        verificarAvisoPlano(); // Atualiza ao mudar a modalidade
+    });
+
+    // ✅ Ouve a mudança do plano para mostrar/esconder o aviso
+    planoEl.addEventListener('change', () => {
+        verificarAvisoPlano();
     });
 
     form.addEventListener('submit', (e) => {

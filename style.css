@@ -1734,6 +1734,43 @@ footer {
     .pix-copia-cola { flex-direction: column; }
 }
 
+/* ===================== AVISO DO PLANO DE PRÉ-MATRÍCULA ===================== */
+.aviso-plano-prematricula {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    background-color: rgba(255, 214, 10, 0.08); /* Amarelo bem sutil */
+    border: 1px solid rgba(255, 214, 10, 0.3);
+    border-left: 4px solid var(--cor-secundaria); /* Linha amarela grossa na esquerda */
+    padding: 14px 16px;
+    border-radius: 8px;
+    margin-top: 12px;
+    font-size: 0.85rem;
+    color: #d0d0d0;
+    line-height: 1.5;
+    animation: fadeInAviso 0.4s ease-out; /* Animação suave ao aparecer */
+}
+
+/* Garante que o atributo hidden do HTML funcione e esconda a caixa */
+.aviso-plano-prematricula[hidden] {
+    display: none !important;
+}
+
+.aviso-plano-prematricula i {
+    color: var(--cor-secundaria);
+    font-size: 1.1rem;
+    margin-top: 2px;
+}
+
+.aviso-plano-prematricula strong {
+    color: var(--cor-secundaria);
+}
+
+@keyframes fadeInAviso {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
 /*==================================================================PAGINA DE PRE MATRICULA====================================================================================*/
 
 /* Botão "voltar" no cabeçalho */
