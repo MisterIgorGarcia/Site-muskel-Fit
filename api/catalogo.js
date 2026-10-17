@@ -8,8 +8,15 @@ module.exports = async function handler(req, res) {
             ? req.query.tipo 
             : 'pre-matricula';
 
-        // Busca DIRETAMENTE a chave do tipo escolhido no Edge Config
-        const respostaAPI = await get(tipo);
+        // Busca a caixa principal 'catalogo'
+        const catalogoCompleto = await get('catalogo');
+
+        if (!catalogoCompleto) {
+            return res.status(404).json({ erro: 'Catálogo principal não encontrado' });
+        }
+
+        // Separa a gaveta que o frontend pediu
+        const respostaAPI = catalogoCompleto[tipo];
 
         if (!respostaAPI) {
             return res.status(404).json({ erro: `Catálogo '${tipo}' não encontrado` });
