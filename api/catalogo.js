@@ -3,20 +3,13 @@ const { get } = require('@vercel/edge-config');
 
 module.exports = async function handler(req, res) {
     try {
-        // Detecta o tipo, aceitando 'preview' também
+        // Pega o tipo da URL. Ex: ?tipo=preview
         const tipo = ['matricula', 'pre-matricula', 'preview'].includes(req.query.tipo) 
             ? req.query.tipo 
             : 'pre-matricula';
 
-        // Busca a chave ÚNICA 'catalogo' no Edge Config
-        const catalogoCompleto = await get('catalogo');
-
-        if (!catalogoCompleto) {
-            return res.status(404).json({ erro: 'Catálogo principal não encontrado' });
-        }
-
-        // Separa a fatia que o frontend pediu
-        const respostaAPI = catalogoCompleto[tipo];
+        // Busca diretamente a chave na Vercel
+        const respostaAPI = await get(tipo);
 
         if (!respostaAPI) {
             return res.status(404).json({ erro: `Catálogo '${tipo}' não encontrado` });
