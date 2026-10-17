@@ -132,23 +132,30 @@ function atualizarPreviewMatricula() {
     const previewEl    = document.getElementById('preview-matricula');
     const listaEl      = document.getElementById('lista-futura-planos');
     const unidadeEl    = document.getElementById('unidade');
+    const modalidadeEl = document.getElementById('modalidade');
     const planoEl      = document.getElementById('plano');
 
     if (!previewEl || !listaEl || !CATALOGO_PREVIEW) return;
 
-    // Só mostra se o plano for 'pre-matricula' e uma unidade estiver selecionada
-    if (planoEl.value !== 'pre-matricula' || !unidadeEl.value) {
+    // Só mostra se o plano for 'pre-matricula' e os campos anteriores estiverem preenchidos
+    if (planoEl.value !== 'pre-matricula' || !unidadeEl.value || !modalidadeEl.value) {
         previewEl.hidden = true;
         return;
     }
 
     const nomeUnidade = unidadeEl.value;
-    const planosFuturos = CATALOGO_PREVIEW.respostaAPI[nomeUnidade];
+    const nomeModalidade = modalidadeEl.value;
+    
+    // Acessa os dados agrupados
+    const unidadePreview = CATALOGO_PREVIEW.respostaAPI[nomeUnidade];
 
-    if (!planosFuturos) {
+    // Se não houver preview para essa unidade ou para essa modalidade, esconde
+    if (!unidadePreview || !unidadePreview[nomeModalidade]) {
         previewEl.hidden = true; 
         return;
     }
+
+    const planosFuturos = unidadePreview[nomeModalidade];
 
     listaEl.innerHTML = planosFuturos.map(plano => {
         const valorFormatado = `R$ ${Number(plano.preco).toFixed(2).replace('.', ',')}`;
