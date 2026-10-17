@@ -1,9 +1,10 @@
 /* ===================== CONFIGURAÇÃO ===================== */
 const CONFIG = {
-    whatsapp: '5512991859267'    // número da academia (com DDI+DDD)
+    whatsapp: '5512991859267'
 };
 
-let CATALOGO = null;
+let CATALOGO = null;           // Dados da pré-matrícula
+let CATALOGO_PREVIEW = null;   // Dados do preview (valores futuros)
 
 /* ===================== HELPERS ===================== */
 
@@ -39,15 +40,25 @@ function definirCarregando(carregando) {
 }
 window.addEventListener('pageshow', () => definirCarregando(false));
 
-/* ===================== CATÁLOGO ===================== */
+/* ===================== CATÁLOGOS ===================== */
 
 async function carregarCatalogo() {
     if (CATALOGO) return CATALOGO;
-    const resp = await fetch('/api/catalogo', { cache: 'no-cache' });
-    if (!resp.ok) throw new Error('Falha ao carregar catálogo de planos.');
+    const resp = await fetch('/api/catalogo?tipo=pre-matricula', { cache: 'no-cache' });
+    if (!resp.ok) throw new Error('Falha ao carregar pré-matrícula.');
     CATALOGO = await resp.json();
     return CATALOGO;
 }
+
+async function carregarPreview() {
+    if (CATALOGO_PREVIEW) return CATALOGO_PREVIEW;
+    const resp = await fetch('/api/catalogo?tipo=preview', { cache: 'no-cache' });
+    if (!resp.ok) throw new Error('Falha ao carregar preview.');
+    CATALOGO_PREVIEW = await resp.json();
+    return CATALOGO_PREVIEW;
+}
+
+/* ===================== RENDERIZAÇÃO ===================== */
 
 function preencherSelect(selectEl, itens, placeholder, getValue, getLabel) {
     selectEl.innerHTML = '';
@@ -108,15 +119,51 @@ function selecionarPorCorrespondencia(selectEl, valor) {
     if (!valor || !selectEl) return;
     const alvo = valor.toLowerCase();
     for (const opt of selectEl.options) {
-        if (opt.value.toLowerCase() === alvo ||
-            opt.textContent.toLowerCase().includes(alvo)) {
+        if (opt.value.toLowerCase() === alvo || opt.textContent.toLowerCase().includes(alvo)) {
             selectEl.value = opt.value;
             return;
         }
     }
 }
 
-/* ===================== REDIRECIONAMENTO PRO PAGAMENTO ===================== */
+/* ===================== LÓGICA DO PREVIEW ===================== */
+
+function atualizarPreviewMatricula() {
+    const previewEl    = document.getElementById('preview-matricula');
+    const listaEl      = document.getElementById('lista-futura-planos');
+    const unidadeEl    = document.getElementById('unidade');
+    const planoEl      = document.getElementById('plano');
+
+    if (!previewEl || !listaEl || !CATALOGO_PREVIEW) return;
+
+    // Só mostra se o plano for 'pre-matricula' e uma unidade estiver selecionada
+    if (planoEl.value !== 'pre-matricula' || !unidadeEl.value) {
+        previewEl.hidden = true;
+        return;
+    }
+
+    const nomeUnidade = unidadeEl.value;
+    const planosFuturos = CATALOGO_PREVIEW.respostaAPI[nomeUnidade];
+
+    if (!planosFuturos) {
+        previewEl.hidden = true; 
+        return;
+    }
+
+    listaEl.innerHTML = planosFuturos.map(plano => {
+        const valorFormatado = `R$ ${Number(plano.preco).toFixed(2).replace('.', ',')}`;
+        return `
+            <div class="plano-futuro-item">
+                <span>${plano.nome}</span>
+                <span>${valorFormatado}</span>
+            </div>
+        `;
+    }).join('');
+
+    previewEl.hidden = false;
+}
+
+/* ===================== REDIRECIONAMENTO ===================== */
 
 async function redirecionarParaPagamento(dados) {
     definirCarregando(true);
@@ -144,10 +191,7 @@ async function redirecionarParaPagamento(dados) {
     } catch (erro) {
         console.error('Erro ao criar pagamento:', erro);
         definirCarregando(false);
-        alert(
-            'Não foi possível iniciar o pagamento agora. ' +
-            'Tente novamente em instantes ou fale com a academia pelo WhatsApp.'
-        );
+        alert('Não foi possível iniciar o pagamento agora. Tente novamente em instantes ou fale com a academia pelo WhatsApp.');
     }
 }
 
@@ -158,7 +202,7 @@ async function iniciarFormulario() {
     if (!form) return;
 
     try {
-        await carregarCatalogo();
+        await Promise.all([carregarCatalogo(), carregarPreview()]);
     } catch (e) {
         console.error(e);
         alert('Não foi possível carregar as opções de planos. Recarregue a página.');
@@ -178,16 +222,11 @@ async function iniciarFormulario() {
     const unidadeEl    = document.getElementById('unidade');
     const modalidadeEl = document.getElementById('modalidade');
     const planoEl      = document.getElementById('plano');
-    const avisoEl      = document.getElementById('aviso-prematricula'); // ← Elemento do aviso
+    const avisoEl      = document.getElementById('aviso-prematricula');
 
-    // Função que checa se o plano selecionado é o de pré-matrícula e mostra o aviso
     function verificarAvisoPlano() {
         if (!avisoEl) return;
-        if (planoEl.value === 'pre-matricula') {
-            avisoEl.hidden = false; // Mostra a caixa
-        } else {
-            avisoEl.hidden = true;  // Esconde a caixa
-        }
+        avisoEl.hidden = planoEl.value !== 'pre-matricula';
     }
 
     const params = new URLSearchParams(window.location.search);
@@ -198,21 +237,24 @@ async function iniciarFormulario() {
     preencherPlanosDaModalidade(unidadeEl.value, modalidadeEl.value);
     selecionarPorCorrespondencia(planoEl, params.get('plano'));
 
-    // Checa o aviso logo ao carregar (caso o plano já venha via URL)
+    // Dispara as funções visuais ao carregar
+    atualizarPreviewMatricula();
     verificarAvisoPlano();
 
     unidadeEl.addEventListener('change', () => {
         preencherModalidadesDaUnidade(unidadeEl.value);
-        verificarAvisoPlano(); // Atualiza ao mudar a unidade
+        atualizarPreviewMatricula();
+        verificarAvisoPlano();
     });
 
     modalidadeEl.addEventListener('change', () => {
         preencherPlanosDaModalidade(unidadeEl.value, modalidadeEl.value);
-        verificarAvisoPlano(); // Atualiza ao mudar a modalidade
+        atualizarPreviewMatricula();
+        verificarAvisoPlano();
     });
 
-    // ✅ Ouve a mudança do plano para mostrar/esconder o aviso
     planoEl.addEventListener('change', () => {
+        atualizarPreviewMatricula();
         verificarAvisoPlano();
     });
 
@@ -312,25 +354,18 @@ function tratarRetornoMercadoPago(status) {
         titulo = 'Pagamento não aprovado';
         textoStatus = '❌ Pagamento não aprovado';
         textoEl.textContent = 'O pagamento não foi aprovado. Você pode tentar novamente ou entrar em contato com a academia pelo WhatsApp.';
-
-        if (avisoEl) {
-            avisoEl.innerHTML = 'Não se preocupe, você pode tentar novamente ou falar com a gente pelo WhatsApp.';
-        }
+        if (avisoEl) avisoEl.innerHTML = 'Não se preocupe, você pode tentar novamente ou falar com a gente pelo WhatsApp.';
     } else if (status === 'pending') {
         icone = 'fa-solid fa-hourglass-half';
         titulo = 'Pagamento em processamento';
         textoStatus = '⏳ Pagamento em processamento';
         textoEl.textContent = 'Seu pagamento está em processamento. Envie seus dados no WhatsApp para a academia confirmar.';
-
-        if (avisoEl) {
-            avisoEl.innerHTML = 'Assim que o pagamento for confirmado, você receberá o aviso. Já pode enviar seus dados no WhatsApp.';
-        }
+        if (avisoEl) avisoEl.innerHTML = 'Assim que o pagamento for confirmado, você receberá o aviso. Já pode enviar seus dados no WhatsApp.';
     } else {
         icone = 'fa-solid fa-circle-check';
         titulo = 'Pagamento aprovado!';
         textoStatus = '✅ Pagamento aprovado';
         textoEl.textContent = 'Seus dados estão prontos. Clique abaixo para enviar ao WhatsApp:';
-
         if (avisoEl) {
             avisoEl.innerHTML = `
                 Pré-matricula concluída.<br><br>
@@ -367,10 +402,7 @@ function tratarRetornoMercadoPago(status) {
         btnWhats.style.display = 'none';
     } else {
         btnWhats.addEventListener('click', () => {
-            window.open(
-                `https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(msg)}`,
-                '_blank'
-            );
+            window.open(`https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(msg)}`, '_blank');
         });
     }
 
