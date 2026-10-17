@@ -44,6 +44,7 @@
                 <li><a href="#hero">Matricula</a></li>
                 <li><a href="#localizacao">Localização e Contato</a></li>
                 <li><a href="#sobre">Diferenciais</a></li>
+                <li><a href="#planos">Nossos Planos</a></li>
                 <li><a href="#horario">Horarios</a></li>
             </ul>
         </nav>
@@ -132,6 +133,7 @@
         </div>
     </section>
     <hr class="separador">
+
     <!-- ===================== SEÇÃO SOBRE ===================== -->
     <section id="sobre" class="secao">
         <h1>Sobre a <span class="destaque">Muskel Fit</span></h1>
@@ -183,152 +185,155 @@
         </section>
     </section>
     <hr class="separador">
-    <!-- ===================== SEÇÃO PLANOS ===================== -->
-    <!-- Cada "card" abaixo representa um plano diferente de assinatura
+
+   <!-- ===================== SEÇÃO PLANOS ===================== -->
     <section id="planos" class="secao">
-        <h2>NOSSOS PLANOS</h2>
+        <h2>CONFIRA NOSSOS PLANOS</h2>
 
-        Uso uma div pra cada card de plano, assim fica fácil estilizar em grid no CSS
-        ---- Planos comuns ---- 
-        <div class="cards-planos">
-            <h3 class="titulo-grupo-planos">Planos Comuns — Para apenas uma pessoa</h3>
-            <div class="card">
-                <h3><i class="fa-solid fa-user"></i> Mensal</h3>
-                <p class="preco">R$ 90,00<span>/mês</span></p>
-                <ul>
-                    <li>✔ Acesso à musculação</li>
-                    <li>✔ Avaliação física</li>
-                </ul>
-                <button class="btn-amarelo" onclick="window.open('https://wa.me/5512991859267?text=Ol%C3%A1%2C%20desejo%20me%20matricular%2C%20me%20interessei%20pelo%20plano%20mensal.', '_blank')">Escolher</button>
-            </div>
-            <div class="card">
-                <h3><i class="fa-solid fa-user"></i> Trimestral</h3>
-                <p class="preco">R$ 85,00<span>/6 meses</span></p>
-                <ul>
-                    <li>✔ Acesso à musculação</li>
-                    <li>✔ Avaliação física</li>
-                </ul>
-                <button class="btn-amarelo" onclick="window.open('https://wa.me/5512991859267?text=Ol%C3%A1%2C%20desejo%20me%20matricular%2C%20me%20interessei%20pelo%20plano%20trimestral.', '_blank')">Escolher</button>
-            </div>
-            <div class="card">
-                <h3><i class="fa-solid fa-user"></i> Semestral</h3>
-                <p class="preco">R$ 80,00<span>/ano</span></p>
-                <ul>
-                    <li>✔ Acesso à musculação</li>
-                    <li>✔ Avaliação física</li>
-                </ul>
-                <button class="btn-amarelo" onclick="window.open('https://wa.me/5512991859267?text=Ol%C3%A1%2C%20desejo%20me%20matricular%2C%20me%20interessei%20pelo%20plano%20semestral.', '_blank')">Escolher</button>
-            </div>
-                        <div class="card">
-                <h3><i class="fa-solid fa-user"></i> Anual</h3>
-                <p class="preco">R$ 75,00<span>/ano</span></p>
-                <ul>
-                    <li>✔ Acesso à musculação</li>
-                    <li>✔ Avaliação física</li>
-                </ul>
-                <button class="btn-amarelo" onclick="window.open('https://wa.me/5512991859267?text=Ol%C3%A1%2C%20desejo%20me%20matricular%2C%20me%20interessei%20pelo%20plano%20anual.', '_blank')">Escolher</button>
-            </div>
-        </div>
+        <h3 class="titulo-grupo-planos">Planos Comuns — Para apenas uma pessoa</h3>
 
-         Planos família 
-        <div class="cards-planos">
-            <h3 class="titulo-grupo-planos">Planos Família — Para a sua família treinar junto</h3>
+        <article class="card">
+            <h3><i class="fa-solid fa-user"></i> Mensal</h3>
+            <p class="preco">R$ 90,00<span>/mês</span></p>
+            <ul>
+                <li>✔ Acesso à musculação</li>
+                <li>✔ Avaliação física</li>
+            </ul>
+        </article>
 
-            <div class="card">
-                <h3><i class="fa-solid fa-user"></i><i class="fa-solid fa-user"></i><br>2 Pessoas</h3>
-                <p class="preco">R$ 150,00<span>/mês<br>(75 por pessoa)</span></p>
-                <ul>
-                    <li><i class="fa-solid fa-triangle-exclamation"></i> O pagamento precisa ser feito de uma vez só por mês</li>
-                    <li>✔ Acesso à musculação</li>
-                    <li>✔ Avaliação física</li>
-                </ul>
-                <button class="btn-amarelo" onclick="window.open('https://wa.me/5512991859267?text=Ol%C3%A1%2C%20desejo%20me%20matricular%2C%20me%20interessei%20pelo%20plano%20familia%202%20pessoas.', '_blank')">Escolher</button>
-            </div>
+        <article class="card">
+            <h3><i class="fa-solid fa-user"></i> Trimestral</h3>
+            <p class="preco">R$ 85,00<span>/6 meses</span></p>
+            <ul>
+                <li>✔ Acesso à musculação</li>
+                <li>✔ Avaliação física</li>
+            </ul>
+        </article>
 
-            <div class="card">
-                <h3><i class="fa-solid fa-user"></i><i class="fa-solid fa-user"></i><i class="fa-solid fa-user"></i><br>3 Pessoas</h3>
-                <p class="preco">R$ 200,00<span>/mês<br>(67 por pessoa)</span></p>
-                <ul>
-                    <li><i class="fa-solid fa-triangle-exclamation"></i> O pagamento precisa ser feito de uma vez só por mês</li>
-                    <li>✔ Acesso à musculação</li>
-                    <li>✔ Avaliação física</li>
-                </ul>
-                <button class="btn-amarelo" onclick="window.open('https://wa.me/5512991859267?text=Ol%C3%A1%2C%20desejo%20me%20matricular%2C%20me%20interessei%20pelo%20plano%20familia%203%20pessoas.', '_blank')">Escolher</button>
-            </div>
+        <article class="card">
+            <h3><i class="fa-solid fa-user"></i> Semestral</h3>
+            <p class="preco">R$ 80,00<span>/ano</span></p>
+            <ul>
+                <li>✔ Acesso à musculação</li>
+                <li>✔ Avaliação física</li>
+            </ul>
+        </article>
 
-            <div class="card">
-                <h3><i class="fa-solid fa-user"></i><i class="fa-solid fa-user"></i><i class="fa-solid fa-user"></i><i class="fa-solid fa-user"></i><br>4 Pessoas</h3>
-                <p class="preco">R$ 250,00<span>/mês<br>(62 por pessoa)</span></p>
-                <ul>
-                    <li><i class="fa-solid fa-triangle-exclamation"></i> O pagamento precisa ser feito de uma vez só por mês</li>
-                    <li>✔ Acesso à musculação</li>
-                    <li>✔ Avaliação física</li>
-                </ul>
-                <button class="btn-amarelo" onclick="window.open('https://wa.me/5512991859267?text=Ol%C3%A1%2C%20desejo%20me%20matricular%2C%20me%20interessei%20pelo%20plano%20familia%204%20pessoas.', '_blank')">Escolher</button>
-            </div>
+        <article class="card">
+            <h3><i class="fa-solid fa-user"></i> Anual</h3>
+            <p class="preco">R$ 75,00<span>/ano</span></p>
+            <ul>
+                <li>✔ Acesso à musculação</li>
+                <li>✔ Avaliação física</li>
+            </ul>
+        </article>
 
-            <div class="card">
-                <h3><i class="fa-solid fa-user"></i><i class="fa-solid fa-user"></i><i class="fa-solid fa-user"></i><i class="fa-solid fa-user"></i><i class="fa-solid fa-user"></i><br>5 Pessoas</h3>
-                <p class="preco">R$ 300,00<span>/mês<br>(60 por pessoa)</span></p>
-                <ul>
-                    <li><i class="fa-solid fa-triangle-exclamation"></i> O pagamento precisa ser feito de uma vez só por mês</li>
-                    <li>✔ Acesso à musculação</li>
-                    <li>✔ Avaliação física</li>
-                </ul>
-                <button class="btn-amarelo" onclick="window.open('https://wa.me/5512991859267?text=Ol%C3%A1%2C%20desejo%20me%20matricular%2C%20me%20interessei%20pelo%20plano%20familia%205%20pessoas.', '_blank')">Escolher</button>
-            </div>
-        </div>
+        <h3 class="titulo-grupo-planos">Planos Família — Para a sua família treinar junto</h3>
 
-         Planos especiais 
-        <div class="cards-planos">
-            <h3 class="titulo-grupo-planos">Planos Especiais — Diversos planos extras</h3>
+        <article class="card">
+            <h3><i class="fa-solid fa-user"></i><i class="fa-solid fa-user"></i><br>2 Pessoas</h3>
+            <p class="preco">R$ 150,00<span>/mês<br>(75 por pessoa)</span></p>
+            <ul>
+                <li><i class="fa-solid fa-triangle-exclamation"></i> O pagamento precisa ser feito de uma vez só por mês</li>
+                <li>✔ Acesso à musculação</li>
+                <li>✔ Avaliação física</li>
+            </ul>
+        </article>
 
-            <div class="card">
-                <h3><i class="fa-solid fa-child"></i> Plano Adolescente</h3>
-                <p class="preco">R$ 75,00<span>/mês</span></p>
-                <ul>
-                    <li><i class="fa-solid fa-triangle-exclamation"></i> Precisa ter até 16 anos</li>
-                    <li>✔ Acesso à musculação</li>
-                    <li>✔ Avaliação física</li>
-                </ul>
-                <button class="btn-amarelo" onclick="window.open('https://wa.me/5512991859267?text=Ol%C3%A1%2C%20desejo%20me%20matricular%2C%20me%20interessei%20pelo%20plano%20adolescente.', '_blank')">Escolher</button>
-            </div>
+        <article class="card">
+            <h3><i class="fa-solid fa-user"></i><i class="fa-solid fa-user"></i><i class="fa-solid fa-user"></i><br>3 Pessoas</h3>
+            <p class="preco">R$ 200,00<span>/mês<br>(67 por pessoa)</span></p>
+            <ul>
+                <li><i class="fa-solid fa-triangle-exclamation"></i> O pagamento precisa ser feito de uma vez só por mês</li>
+                <li>✔ Acesso à musculação</li>
+                <li>✔ Avaliação física</li>
+            </ul>
+        </article>
 
-            <div class="card">
-                <h3><i class="fa-solid fa-person-cane"></i> Plano Idoso</h3>
-                <p class="preco">R$ 75,00<span>/mês</span></p>
-                <ul>
-                    <li><i class="fa-solid fa-triangle-exclamation"></i> Precisa ter mais de 60 anos</li>
-                    <li>✔ Acesso à musculação</li>
-                    <li>✔ Avaliação física</li>
-                </ul>
-                <button class="btn-amarelo" onclick="window.open('https://wa.me/5512991859267?text=Ol%C3%A1%2C%20desejo%20me%20matricular%2C%20me%20interessei%20pelo%20plano%20idoso.', '_blank')">Escolher</button>
-            </div>
+        <article class="card">
+            <h3><i class="fa-solid fa-user"></i><i class="fa-solid fa-user"></i><i class="fa-solid fa-user"></i><i class="fa-solid fa-user"></i><br>4 Pessoas</h3>
+            <p class="preco">R$ 250,00<span>/mês<br>(62 por pessoa)</span></p>
+            <ul>
+                <li><i class="fa-solid fa-triangle-exclamation"></i> O pagamento precisa ser feito de uma vez só por mês</li>
+                <li>✔ Acesso à musculação</li>
+                <li>✔ Avaliação física</li>
+            </ul>
+        </article>
 
-            <div class="card">
-                <h3><i class="fa-solid fa-calendar-days"></i> Plano 3x na Semana</h3>
-                <p class="preco">R$ 75,00<span>/mês</span></p>
-                <ul>
-                    <li><i class="fa-solid fa-triangle-exclamation"></i> Acesso 3x por semana</li>
-                    <li>✔ Acesso à musculação</li>
-                    <li>✔ Avaliação física</li>
-                </ul>
-                <button class="btn-amarelo" onclick="window.open('https://wa.me/5512991859267?text=Ol%C3%A1%2C%20desejo%20me%20matricular%2C%20me%20interessei%20pelo%20plano%203x%20na%20semana.', '_blank')">Escolher</button>
-            </div>
+        <article class="card">
+            <h3><i class="fa-solid fa-user"></i><i class="fa-solid fa-user"></i><i class="fa-solid fa-user"></i><i class="fa-solid fa-user"></i><i class="fa-solid fa-user"></i><br>5 Pessoas</h3>
+            <p class="preco">R$ 300,00<span>/mês<br>(60 por pessoa)</span></p>
+            <ul>
+                <li><i class="fa-solid fa-triangle-exclamation"></i> O pagamento precisa ser feito de uma vez só por mês</li>
+                <li>✔ Acesso à musculação</li>
+                <li>✔ Avaliação física</li>
+            </ul>
+        </article>
 
-            <div class="card">
-                <h3><i class="fa-solid fa-chalkboard-user"></i> Plano Professor</h3>
-                <p class="preco">R$ 75,00<span>/mês</span></p>
-                <ul>
-                    <li><i class="fa-solid fa-triangle-exclamation"></i> Apenas para professores</li>
-                    <li>✔ Acesso à musculação</li>
-                    <li>✔ Avaliação física</li>
-                </ul>
-                <button class="btn-amarelo" onclick="window.open('https://wa.me/5512991859267?text=Ol%C3%A1%2C%20desejo%20me%20matricular%2C%20me%20interessei%20pelo%20plano%20professor.', '_blank')">Escolher</button>
-            </div>
-        </div>
+        <h3 class="titulo-grupo-planos">Planos Especiais — Diversos planos extras</h3>
+
+        <article class="card">
+            <h3><i class="fa-solid fa-child"></i> Plano Adolescente</h3>
+            <p class="preco">R$ 75,00<span>/mês</span></p>
+            <ul>
+                <li><i class="fa-solid fa-triangle-exclamation"></i> Precisa ter até 16 anos</li>
+                <li>✔ Acesso à musculação</li>
+                <li>✔ Avaliação física</li>
+            </ul>
+        </article>
+
+        <article class="card">
+            <h3><i class="fa-solid fa-person-cane"></i> Plano Idoso</h3>
+            <p class="preco">R$ 75,00<span>/mês</span></p>
+            <ul>
+                <li><i class="fa-solid fa-triangle-exclamation"></i> Precisa ter mais de 60 anos</li>
+                <li>✔ Acesso à musculação</li>
+                <li>✔ Avaliação física</li>
+            </ul>
+        </article>
+
+        <article class="card">
+            <h3><i class="fa-solid fa-calendar-days"></i> Plano 3x na Semana</h3>
+            <p class="preco">R$ 75,00<span>/mês</span></p>
+            <ul>
+                <li><i class="fa-solid fa-triangle-exclamation"></i> Acesso 3x por semana</li>
+                <li>✔ Acesso à musculação</li>
+                <li>✔ Avaliação física</li>
+            </ul>
+        </article>
+
+        <article class="card">
+            <h3><i class="fa-solid fa-chalkboard-user"></i> Plano Professor</h3>
+            <p class="preco">R$ 75,00<span>/mês</span></p>
+            <ul>
+                <li><i class="fa-solid fa-triangle-exclamation"></i> Apenas para professores</li>
+                <li>✔ Acesso à musculação</li>
+                <li>✔ Avaliação física</li>
+            </ul>
+        </article>
+
+        <article class="card">
+        <h3><i class="fa-solid fa-user-tie"></i> Plano Funcionário da Prefeitura</h3>
+        <p class="preco">R$ 50,00<span>/mês</span></p>
+        <ul>
+            <li><i class="fa-solid fa-triangle-exclamation"></i> Precisa comprovar vínculo com a prefeitura</li>
+            <li>✔ Acesso à musculação</li>
+            <li>✔ Avaliação física</li>
+        </ul>
+        </article>
+
+        <article class="card">
+            <h3><i class="fa-solid fa-handshake"></i> Plano Convênio Bem-Saúde</h3>
+            <p class="preco">R$ 50,00<span>/mês</span></p>
+            <ul>
+                <li><i class="fa-solid fa-triangle-exclamation"></i> Exclusivo para beneficiários do convênio</li>
+                <li>✔ Acesso à musculação</li>
+                <li>✔ Avaliação física</li>
+            </ul>
+        </article>
     </section>
-    <hr class="separador"> -->
+    <hr class="separador">
+    
     <!-- ===================== SEÇÃO HORÁRIOS ===================== -->
     <section id="horario" class="secao">
         <h2>NOSSOS HORÁRIOS</h2>
@@ -399,6 +404,7 @@
                     <li><a href="#hero">Matricula</a></li>
                     <li><a href="#localizacao">Localização e Contato</a></li>
                     <li><a href="#sobre">Diferenciais</a></li>
+                    <li><a href="#planos">Nossos Planos</a></li>
                     <li><a href="#horario">Horários</a></li>
                 </ul>
             </div>

@@ -708,75 +708,155 @@ iframe {
 }
 
 /* ===================== SEÇÃO DE PLANOS ===================== */
-.cards-planos {
-    display: flex;            /* flex pra colocar os cards lado a lado */
-    flex-wrap: wrap;          /* quebra linha se não couber (celular) */
-    justify-content: center;
-    gap: 30px;
-    margin-top: 40px;
-    background-color: var(--cor-card-fundo);
-    border: 1px solid #222;      /* borda sutil */
-    border-radius: 20px;
-    padding: 40px 30px;
+#planos {
+    display: grid;
+    /* minmax(220px, 250px) garante que os cards tenham um tamanho fixo agradável, nem tão grandes, nem minúsculos */
+    grid-template-columns: repeat(auto-fit, minmax(220px, 250px));
+    justify-content: center; /* Centraliza o conjunto de cards na tela */
+    gap: 25px; /* Espaçamento entre os cards */
+    max-width: 1200px; 
+    margin: 0 auto; 
+    padding: 60px 20px;
+    align-items: stretch; 
 }
-.cards-planos h1,
-.titulo-grupo-planos {
-    flex-basis: 100%;         /* força a ocupar a linha inteira */
+
+/* Títulos ocupam a linha toda */
+#planos > h2,
+#planos > .titulo-grupo-planos {
+    grid-column: 1 / -1;
     text-align: center;
-    font-size: 1.8rem;
     color: var(--cor-texto-claro);
-    margin-bottom: 30px;
 }
+
+#planos > h2 {
+    font-size: 2.2rem;
+    margin-bottom: 10px;
+}
+
+#planos > .titulo-grupo-planos {
+    font-size: 1.6rem;
+    margin-top: 40px;
+    margin-bottom: 10px;
+    color: var(--cor-secundaria);
+}
+
+/* ===================== ESTILO DO CARD ===================== */
 .card {
-    background-color: var(--cor-card);
-    border: 2px solid transparent;
-    border-radius: 10px;
-    padding: 30px;
-    width: 250px;
-    transition: border-color 0.3s;
+    /* Degradê sutil para dar profundidade */
+    background: linear-gradient(145deg, #2a2a2a 0%, #1e1e1e 100%);
+    border: 1px solid #333;
+    border-radius: 12px;
+    padding: 25px 15px 20px; /* Reduzido para ficar mais compacto */
+    width: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* Linha amarela decorativa no topo do card */
+.card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background-color: var(--cor-secundaria);
+    opacity: 0.7;
+    transition: opacity 0.3s;
+}
+
+/* Efeito ao passar o mouse */
+.card:hover {
+    transform: translateY(-5px); /* Levanta o card */
+    border-color: var(--cor-secundaria);
+    box-shadow: 0 8px 25px rgba(255, 214, 10, 0.15); /* Brilho amarelo suave */
+}
+
+.card:hover::before {
+    opacity: 1; /* Acende a linha do topo */
+    box-shadow: 0 0 10px var(--cor-secundaria);
+}
+
+/* Título do Card */
+.card h3 {
+    color: var(--cor-secundaria);
+    font-size: 1.1rem; /* Fonte um pouco menor */
+    margin-top: 5px;
+    margin-bottom: 12px;
     text-align: center;
 }
 
-.card:hover {
-    border-color: var(--cor-secundaria); /* borda amarela aparece ao passar o mouse */
+/* Ícones dentro do título (ex: bonequinhos) */
+.card h3 i {
+    color: var(--cor-texto-claro);
+    opacity: 0.8;
+    margin: 0 2px;
 }
 
-.card-destaque {
-    border-color: var(--cor-secundaria); /* o plano trimestral já nasce com borda amarela */
-}
-
-.card h3 {
-    color: var(--cor-secundaria);
-    margin-bottom: 15px;
-}
-
+/* Preço em destaque */
 .card .preco {
-    font-size: 1.5rem;
+    font-size: 1.3rem;
     font-weight: bold;
+    color: var(--cor-texto-claro);
+    background: rgba(0, 0, 0, 0.4); /* Fundo para destacar o valor */
+    padding: 8px 12px;
+    border-radius: 8px;
+    width: 100%;
     margin-bottom: 15px;
+    text-align: center;
 }
 
 .card .preco span {
-    font-size: 0.9rem;
+    font-size: 0.75rem;
     font-weight: normal;
-    color: #999999;
+    color: #aaa;
+    display: inline-block;
+    margin-left: 4px;
 }
 
+/* Lista de benefícios */
 .card ul {
     list-style: none;
-    margin-bottom: 20px;
+    margin-bottom: 0;
+    padding: 0;
     text-align: left;
     width: 100%;
+    flex-grow: 1; /* Empurra o conteúdo para preencher o espaço */
 }
 
 .card ul li {
-    padding: 6px 0;
+    padding: 5px 0;
     color: #cccccc;
+    font-size: 0.85rem; /* Texto menor e mais limpo */
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    line-height: 1.3;
 }
 
+/* Cor do aviso (triângulo) */
+.card ul li .fa-triangle-exclamation {
+    color: #f97316;
+    margin-top: 2px;
+}
+
+/* Ajuste do título no celular */
+@media (max-width: 600px) {
+    #planos > .titulo-grupo-planos {
+        font-size: 1.3rem;
+        margin-top: 25px;
+    }
+    
+    #planos {
+        grid-template-columns: 1fr; /* Força 1 coluna no celular se preferir, ou deixe auto-fit */
+        max-width: 320px; /* Centraliza e limita o tamanho no celular */
+    }
+}
 
 /* ===================== SEÇÃO HORÁRIOS ===================== */
 .subtitulo-horario {
@@ -1258,14 +1338,14 @@ footer {
         max-width: 320px;
     }
 
-    .cards-planos {
-        padding: 25px 15px;
+    /* Ajuste para a seção de planos em tablets/celulares */
+    #planos {
         gap: 20px;
+        padding: 40px 20px;
     }
 
     .card {
-        width: 100%;
-        max-width: 320px;
+        padding: 25px 20px;
     }
 
     .lista-aulas {
@@ -1298,9 +1378,9 @@ footer {
         padding: 22px;
     }
 
-    .titulo-grupo-planos,
-    .cards-planos h1 {
+    #planos > .titulo-grupo-planos {
         font-size: 1.25rem;
+        margin-top: 20px;
     }
 
     .card .preco {
