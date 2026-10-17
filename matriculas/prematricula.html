@@ -7,10 +7,9 @@
     <link rel="stylesheet" href="../style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <script>
-        // Verifica se a URL tem o parâmetro '?origem=index'
-        const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.get('origem') !== 'index') {
-            // Se não tiver, manda o usuário de volta para a página inicial
+        // Verifica se o crachá 'acessoLiberado' existe no navegador
+        if (sessionStorage.getItem('acessoPreMatricula') !== 'sim') {
+            // Se não existir, redireciona de volta para a página inicial
             window.location.href = "../index.html";
         }
     </script>
