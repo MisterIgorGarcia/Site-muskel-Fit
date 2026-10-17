@@ -1,157 +1,150 @@
 /* ===================== VARIÁVEIS DE COR =====================
-   Uso "variáveis CSS" (as --nome-da-variavel) pra centralizar as cores.
-   Assim, se quiser trocar o tom de amarelo depois, muda em um lugar só. */
+   O :root é a raiz do documento. Tudo que colocamos aqui vira uma "variável global".
+   Usar variáveis (--nome) permite trocar a cor do site inteiro em um lugar só. */
 :root {
-    --cor-primaria: #0d0d0d;   /* preto (fundo principal) */
-    --cor-secundaria: #ffd60a; /* amarelo (destaques, botões, títulos) */
-    --cor-texto-claro: #f5f5f5; /* branco suave, pra texto em cima do preto */
-    --cor-card-fundo: rgb(24, 24, 24);
-    --cor-card: #252525;       /* um cinza bem escuro pra diferenciar os cards do fundo */
+    --cor-primaria: #0d0d0d;   /* Preto profundo: fundo principal */
+    --cor-secundaria: #ffd60a; /* Amarelo vibrante: botões, destaques, títulos */
+    --cor-texto-claro: #f5f5f5; /* Branco suave: textos no fundo escuro */
+    --cor-card-fundo: rgb(24, 24, 24); /* Fundo de containers maiores */
+    --cor-card: #252525;       /* Cinza escuro: fundo de cards individuais */
 }
 
 /* ===================== RESET BÁSICO =====================
-   Zera margem/padding padrão do navegador e força box-sizing
-   pra facilitar o cálculo de tamanhos (largura já inclui padding/borda). */
+   O seletor '*' significa "todos os elementos da página".
+   Usamos isso para limpar os padrões dos navegadores (que variam) e nivelar tudo. */
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: Arial, Helvetica, sans-serif;
+    margin: 0; /* Remove a margem padrão que o navegador coloca */
+    padding: 0; /* Remove o espaçamento interno padrão */
+    box-sizing: border-box; /* ⬅️ MUITO IMPORTANTE: faz o padding e a borda serem contados DENTRO da largura/altura do elemento, evitando que ele "estoure" para os lados */
+    font-family: Arial, Helvetica, sans-serif; /* Define a fonte padrão para o site todo */
 }
 
 body {
-    background-color: var(--cor-primaria); /* fundo preto em todo o site */
-    color: var(--cor-texto-claro);
-    line-height: 1.5;
-    overflow-x: clip; /* ⬅️ ALTERADO: era "hidden". "clip" evita quebrar position: sticky nos filhos */
+    background-color: var(--cor-primaria); /* Aplica o preto no fundo da página */
+    color: var(--cor-texto-claro); /* Deixa o texto branco por padrão */
+    line-height: 1.5; /* Espaçamento entre as linhas do texto (facilita a leitura) */
+    overflow-x: clip; /* Evita que a página crie uma barra de rolagem horizontal se algo "vazar" pra fora */
 }
 
 img,
 iframe {
-    max-width: 100%;
+    max-width: 100%; /* Garante que imagens e mapas nunca fiquem maiores que a tela (importante pro celular) */
 }
 
 /* ===================== CABEÇALHO ===================== */
 #cabecalho {
-    display: flex;               /* flexbox pra alinhar logo e menu lado a lado */
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px 40px;
-    background-color: var(--cor-primaria);
-    border-bottom: 3px solid var(--cor-secundaria); /* linha amarela separando o header */
+    display: flex; /* Transforma o cabeçalho em um container flexível (alinha os itens na mesma linha) */
+    justify-content: space-between; /* Coloca a logo na esquerda e o menu na direita */
+    align-items: center; /* Alinha os itens verticalmente no centro */
+    padding: 20px 40px; /* Espaçamento interno: 20px em cima/baixo, 40px nas laterais */
+    background-color: var(--cor-primaria); 
+    border-bottom: 3px solid var(--cor-secundaria); /* A linha amarela que separa o topo */
 }
 
-#cabecalho h1 { /*Cor do Muskel Fit */
+#cabecalho h1 {
+    color: var(--cor-secundaria); /* Logo "MUSKEL" em amarelo */
+    font-size: 1.8rem; /* Tamanho da fonte */
+    white-space: nowrap; /* Impede que a logo quebre de linha no celular */
+}
+
+#cabecalho h1 .spanfit {
+    color: var(--cor-texto-claro); /* A palavra "FIT" fica branca */
+}
+
+#cabecalho h1 .spanm {
     color: var(--cor-secundaria);
-    font-size: 1.8rem;
-    white-space: nowrap;
+    font-size: 1.8em; /* O "M" fica quase o dobro do tamanho do resto */
+    font-weight: 900; /* Deixa o "M" super grosso */
+    line-height: 0.8; /* Aproxima as linhas para não esticar o cabeçalho */
+    vertical-align: -0.12em; /* Puxa o "M" um pouquinho pra baixo para alinhar a base com as outras letras */
+    margin-right: 1px; /* Dá 1 mísero pixel de respiro pra não colar no U */
 }
 
-#cabecalho h1 .spanfit { /*Estilo do Fit */
-    color: var(--cor-texto-claro);
-}
-
-#cabecalho h1 .spanm { /*Estilo do M */
-    color: var(--cor-secundaria);
-    font-size: 1.8em;                /* maior que o resto */
-    font-weight: 900;                /* mais grosso */
-    line-height: 0.8;                /* não estoura a linha */
-    vertical-align: -0.12em;         /* alinha a base com o resto */
-    margin-right: 1px;
-}
-
-#cabecalho nav ul { /*Unordered List (lista não ordenada) dentro tem os itens da lista não ordenada, que são os li*/
-    list-style: none;   /* tira as bolinhas da lista */
-    display: flex;       /* coloca os itens do menu em linha */
-    gap: 30px;
+#cabecalho nav ul {
+    list-style: none; /* Tira as bolinhas (marcadores) da lista */
+    display: flex; /* Coloca os links um do lado do outro */
+    gap: 30px; /* Dá 30px de espaço entre um link e outro */
 }
 
 #cabecalho nav a {
     color: var(--cor-texto-claro);
-    text-decoration: none;
-    font-weight: bold;
-    transition: color 0.3s; /* efeito suave ao passar o mouse */
+    text-decoration: none; /* Tira o sublinhado feio dos links */
+    font-weight: bold; /* Deixa o texto grosso */
+    transition: color 0.3s; /* Efeito suave: a cor demora 0.3s pra mudar no hover */
 }
 
 #cabecalho nav a:hover {
-    color: var(--cor-secundaria); /* link fica amarelo no hover */
+    color: var(--cor-secundaria); /* Quando passa o mouse, o link fica amarelo */
 }
 
 /* ===================== MENU HAMBÚRGUER (MOBILE) ===================== */
-
-/* O botão fica escondido no desktop */
 .btn-menu {
-    display: none;
-    flex-direction: column;
-    justify-content: space-between;
+    display: none; /* No computador, o menu hambúrguer fica escondido */
+    flex-direction: column; /* As 3 barrinhas ficam uma embaixo da outra */
+    justify-content: space-between; /* Distribui o espaço igualmente entre as barrinhas */
     width: 32px;
     height: 24px;
     background: transparent;
     border: none;
-    cursor: pointer;
+    cursor: pointer; /* Muda o mouse para a mãozinha de clique */
     padding: 0;
-    z-index: 1001; /* fica acima do menu quando aberto */
+    z-index: 1001; /* Coloca o botão "acima" de outras coisas na tela (eixo Z é a profundidade) */
 }
 
-/* Cada barrinha */
 .btn-menu .linha {
     display: block;
-    height: 3px;
-    width: 100%;
+    height: 3px; /* Espessura da barrinha */
+    width: 100%; /* Ocupa toda a largura do botão */
     background-color: var(--cor-secundaria);
-    border-radius: 3px;
-    transition: transform 0.3s, opacity 0.3s;
+    border-radius: 3px; /* Arredonda as pontas da barrinha */
+    transition: transform 0.3s, opacity 0.3s; /* Prepara a animação de virar um "X" */
 }
 
-/* Animação: transforma as 3 barrinhas em um "X" quando abre */
+/* Quando o botão tem a classe 'ativo', as barrinhas se transformam num X */
 .btn-menu.ativo .linha:nth-child(1) {
-    transform: translateY(10px) rotate(45deg);
+    transform: translateY(10px) rotate(45deg); /* A primeira desce e gira 45 graus */
 }
 .btn-menu.ativo .linha:nth-child(2) {
-    opacity: 0;
+    opacity: 0; /* A do meio desaparece */
 }
 .btn-menu.ativo .linha:nth-child(3) {
-    transform: translateY(-10px) rotate(-45deg);
+    transform: translateY(-10px) rotate(-45deg); /* A terceira sobe e gira -45 graus */
 }
 
 /* ---------- Só no celular ---------- */
-@media (max-width: 768px) {
-
+@media (max-width: 768px) { /* Tudo aqui só funciona em telas menores que 768px */
     #cabecalho {
-        position: sticky; /* ⬅️ ALTERADO: era "relative". Gruda no topo ao rolar */
-        top: 0;           /* ⬅️ ADICIONADO: necessário pro sticky funcionar */
-        z-index: 1000;    /* ⬅️ ADICIONADO: fica por cima das outras seções */
-        flex-direction: row; /* logo e botão na mesma linha */
+        position: sticky; /* Faz o cabeçalho "colar" no topo da tela ao rolar a página */
+        top: 0; /* Diz que ele deve colar no topo (0px do topo) */
+        z-index: 1000; /* Fica acima do conteúdo que rola por baixo */
+        flex-direction: row;
         justify-content: space-between;
         align-items: center;
     }
 
-    /* Mostra o botão hambúrguer */
     .btn-menu {
-        display: flex;
+        display: flex; /* Mostra o botão hambúrguer no celular */
     }
 
-    /* Esconde o menu por padrão no celular */
     #menu-nav {
-        position: absolute;
-        top: 100%;
+        position: absolute; /* Tira o menu do fluxo normal e posiciona em relação ao cabeçalho */
+        top: 100%; /* Posiciona logo ABAIXO do cabeçalho */
         left: 0;
         width: 100%;
         background-color: var(--cor-primaria);
         border-bottom: 3px solid var(--cor-secundaria);
-        max-height: 0;
-        overflow: hidden;
-        transition: max-height 0.3s ease;
+        max-height: 0; /* Começa com altura 0 (escondido) */
+        overflow: hidden; /* Corta o que passar da altura, pro conteúdo não vazar */
+        transition: max-height 0.3s ease; /* Animação suave ao abrir/fechar */
         z-index: 1000;
     }
 
-    /* Quando o menu está aberto */
     #menu-nav.aberto {
-        max-height: 400px; /* altura suficiente para os itens */
+        max-height: 400px; /* Quando ganha a classe 'aberto', ele expande até 400px de altura */
     }
 
     #menu-nav ul {
-        flex-direction: column;
+        flex-direction: column; /* No celular, os links ficam em coluna */
         gap: 0;
         padding: 10px 0;
     }
@@ -159,15 +152,15 @@ iframe {
     #menu-nav ul li {
         width: 100%;
         text-align: center;
-        border-bottom: 1px solid #222;
+        border-bottom: 1px solid #222; /* Uma linha divisória bem sutil entre os links */
     }
 
     #menu-nav ul li:last-child {
-        border-bottom: none;
+        border-bottom: none; /* Remove a linha do último item (fica mais bonito) */
     }
 
     #menu-nav ul li a {
-        display: block;
+        display: block; /* Faz o link ocupar toda a largura, facilitando o toque no celular */
         padding: 15px 20px;
         font-size: 1rem;
     }
@@ -179,120 +172,122 @@ iframe {
 
 /* ===================== LINHA SEPARADORA ===================== */
 .separador {
-    border: none;                       /* tira o estilo padrão do navegador */
-    height: 1px;                        /* altura da linha */
-    background-color: rgba(255, 255, 255, 0.123); /* branco bem opaco */
-    max-width: 1100px;                  /* mesma largura do conteúdo do site */
-    margin: 10px auto;                  /* espaço em cima e embaixo, centralizado */
+    border: none; /* Remove a linha feia padrão do HTML */
+    height: 1px; /* Cria uma linha fininha de 1px */
+    background-color: rgba(255, 255, 255, 0.123); /* Cor branca com opacidade (quase transparente) */
+    max-width: 1100px;
+    margin: 10px auto; /* 10px de espaço em cima/baixo, e 'auto' centraliza a linha */
 }
 
 /* ===================== BADGE DE STATUS ===================== */
 .status-atual {
-    display: inline-flex;
+    display: inline-flex; /* Flexível, mas do tamanho do conteúdo, não quebra a linha */
     align-items: center;
     gap: 10px;
     background-color: #1a1a1a;
     color: var(--cor-texto-claro);
     font-weight: bold;
     font-size: 0.85rem;
-    letter-spacing: 1px;
+    letter-spacing: 1px; /* Dá um espaço entre as letras do texto */
     padding: 8px 18px;
-    border-radius: 999px;
-    border: 1px solid #22c55e;    /* começa verde; o JS troca */
+    border-radius: 999px; /* Um valor alto de border-radius transforma a caixa numa "pílula" */
+    border: 1px solid #22c55e; /* Borda verde inicial */
     margin-bottom: 15px;
     transition: border-color 0.3s;
 }
+
 .bolinha {
-    position: relative;
+    position: relative; /* Necessário para posicionar o brilho (::after) por cima dela */
     display: inline-block;
     width: 10px;
     height: 10px;
     min-width: 10px;
     min-height: 10px;
-    flex-shrink: 0;
+    flex-shrink: 0; /* Impede que a bolinha seja esmagada pelo texto ao lado */
     background-color: #22c55e;
-    border-radius: 50%;
+    border-radius: 50%; /* Transforma o quadrado num círculo perfeito */
     transition: background-color 0.3s, box-shadow 0.3s;
 }
 
 .bolinha::after {
-    content: "";
+    content: ""; /* Obrigatório para elementos ::after funcionarem (mesmo vazio) */
     position: absolute;
     top: 50%;
     left: 50%;
     width: 10px;
     height: 10px;
-    transform: translate(-50%, -50%);   /* centraliza sobre a bolinha */
-    background-color: inherit;
+    transform: translate(-50%, -50%); /* Centraliza o brilho exatamente no meio da bolinha */
+    background-color: inherit; /* Puxa a mesma cor do elemento pai (.bolinha) */
     border-radius: 50%;
-    animation: pulsar-status 1.8s ease-out infinite;
-    pointer-events: none;
+    animation: pulsar-status 1.8s ease-out infinite; /* Aplica a animação de pulsar infinitamente */
+    pointer-events: none; /* O brilho não atrapalha se o usuário tentar clicar */
 }
 
 @keyframes pulsar-status {
     0% {
-        transform: translate(-50%, -50%) scale(1);
-        opacity: 0.8;
+        transform: translate(-50%, -50%) scale(1); /* Começa do tamanho normal */
+        opacity: 0.8; /* Um pouco transparente */
     }
     100% {
-        transform: translate(-50%, -50%) scale(2.5);
-        opacity: 0;
+        transform: translate(-50%, -50%) scale(2.5); /* Cresce 2.5 vezes de tamanho */
+        opacity: 0; /* Fica invisível (some) */
     }
 }
+
 /* ===================== SEÇÃO HERO ===================== */
 .hero {
-    display: flex; /*transforma em conteiner flexivel para conseguir alterar propriedades*/
-    align-items: center;    /*alinha os itens no centro */
-    justify-content: center;      /* cola os dois no centro */
-    gap: 30px;                    /* espaço real entre texto e imagem */
+    display: flex; 
+    align-items: center;
+    justify-content: center;
+    gap: 30px; 
     padding: 80px 20px;
     background-color: var(--cor-primaria);
-    text-align: left;             /* alinha texto à esquerda, não no centro */
-    max-width: 1100px;            /* limita a largura total */
-    margin: 0 auto;               /* centraliza o bloco na tela */
-    flex-wrap: wrap;              /* em telas pequenas, quebra sozinho */
+    text-align: left; 
+    max-width: 1100px; /* Limita a largura máxima para não ficar esticado em telas gigantes */
+    margin: 0 auto; /* O 'auto' nas laterais centraliza o bloco na tela */
+    flex-wrap: wrap; /* Se não couber lado a lado no celular, joga o texto pra baixo da imagem */
 }
 
 .hero-texto {
-    flex: 1;                     /* ocupa o espaço que sobrar */
+    flex: 1; /* Pede para ocupar todo o espaço restante disponível */
     max-width: 550px;
 }
 
-.hero-imagem { /*div que contem a imagem*/
-    flex: 1;                     /* metade da tela pra imagem */
+.hero-imagem {
+    flex: 1;
     display: flex;
     justify-content: center;
-    position: relative; /*posição relativa para o ::before absoluto*/
+    position: relative; /* Permite que o brilho (::before) seja posicionado em relação a esta div */
 }
 
-.hero-imagem::before {/* O glow atrás do avatar */
-    content: ""; /*Obrigatorio por que o glow e um pseudo-codigo*/
+.hero-imagem::before {
+    content: "";
     position: absolute;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%);   /* centraliza */
-    width: min(280px, 70vw);            /* maior que o avatar */
+    transform: translate(-50%, -50%); /* Centraliza perfeitamente */
+    width: min(280px, 70vw); /* O tamanho será o menor entre 280px e 70% da tela. Responsivo! */
     height: min(280px, 70vw);
     background: radial-gradient(
         circle,
-        rgba(255, 214, 10, 0.55) 0%,     /* amarelo forte no centro */
-        rgba(255, 214, 10, 0.25) 35%,    /* amarelo fraco no meio */
-        transparent 70%                   /* some nas bordas */
+        rgba(255, 214, 10, 0.55) 0%, /* Amarelo forte no centro */
+        rgba(255, 214, 10, 0.25) 35%, /* Amarelo fraco no meio */
+        transparent 70% /* Transparente nas bordas */
     );
     border-radius: 50%;
-    z-index: 0;                           /* atrás */
-    pointer-events: none;                 /* não bloqueia cliques */
-    filter: blur(20px);                   /* deixa difuso */
+    z-index: 0; /* Fica atrás da imagem */
+    pointer-events: none;
+    filter: blur(20px); /* Deixa o brilho desfocado e suave */
 }
 
-.hero-imagem img { /*a imagem propriamente dita*/
+.hero-imagem img {
     width: 100%;
-    max-width: 420px;            /* não deixa a imagem gigante */
+    max-width: 420px;
     height: auto;
     display: block;
-    animation: flutuar 3s ease-in-out infinite; /*animationn: variavel da animação, tempo de duração do ciclo, variação da velocidade, quantas vezes repete */
+    animation: flutuar 3s ease-in-out infinite; /* Animação de subir e descer */
     position: relative;
-    z-index: 1;  /* Eixo-Z, tridimencional, 0 seria a imagem, e 1 e o brilho */
+    z-index: 1; /* Fica na frente do brilho */
 }
 
 .hero h2 {
@@ -306,18 +301,17 @@ iframe {
     color: #cccccc;
 }
 
-/* Container dos botões do hero (novo, para organizar melhor no celular) */
 .hero-botoes {
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: wrap; /* Se os botões não couberem na linha, vão pra de baixo */
     gap: 15px;
     margin-top: 20px;
 }
 
-/* BOTAO AMARELO NORMAL*/
+/* ===================== BOTÃO AMARELO NORMAL ===================== */
 .btn-amarelo {
     background-color: var(--cor-secundaria);
-    color: var(--cor-primaria);   /* texto preto em cima do botão amarelo, pro contraste */
+    color: var(--cor-primaria); 
     border: none;
     padding: 14px 30px;
     font-weight: bold;
@@ -325,36 +319,35 @@ iframe {
     border-radius: 6px;
     cursor: pointer;
     transition: transform 0.2s, background-color 0.2s;
-    display: inline-flex;
+    display: inline-flex; /* Permite alinhar ícone e texto */
     align-items: center;
     justify-content: center;
-    gap: 8px;
+    gap: 8px; /* Espaço entre o ícone e o texto */
     text-align: center;
     text-decoration: none;
-    font-family: inherit;      /* <button> não herda a fonte do site */
-    line-height: 1;            /* alinha a altura do texto entre os dois */
-    box-sizing: border-box;    /* <a> e <button> calculam padding diferente */
+    font-family: inherit; /* Botões HTML não herdam a fonte por padrão, isso força eles a usarem a fonte do site */
+    line-height: 1; 
+    box-sizing: border-box; 
 }
-/* Em telas menores que 600px, o menu e o header viram coluna ao invés de linha */
-@keyframes flutuar { /*usa a variavel flutuar e como keyframe*/
-    0%, 100% { transform: translateY(0); } /*o trasnform ele transforma a imagem inves de mudar ela de lugar, de 0 para 15px e de 15 para 0, o Y é o eixo, no caso x seria horizontal */
-    50%      { transform: translateY(-15px); }
+
+@keyframes flutuar {
+    0%, 100% { transform: translateY(0); } /* Começa e termina no lugar normal */
+    50%      { transform: translateY(-15px); } /* No meio da animação, sobe 15px */
 }
 
 .btn-amarelo:hover {
-    background-color: #ffe066; /* amarelo mais claro no hover */
-    transform: scale(1.05);     /* botão cresce um pouquinho ao passar o mouse */
+    background-color: #ffe066; /* Clareia o amarelo */
+    transform: scale(1.05); /* Aumenta o botão em 5% */
 }
-/*----------------------------*/
 
-/* BOTAO AMARELO PREMIUM*/
+/* ===================== BOTÃO AMARELO PREMIUM ===================== */
 .btn-amarelo-premium {
-    position: relative;
-    overflow: hidden;
-    background: linear-gradient(135deg, #ffe44d 0%, #ffd60a 50%, #ccaa00 100%);
-    background-size: 200% 200%;
+    position: relative; /* Necessário para o 'shine' funcionar */
+    overflow: hidden; /* Corta o brilho que passar pra fora do botão */
+    background: linear-gradient(135deg, #ffe44d 0%, #ffd60a 50%, #ccaa00 100%); /* Gradiente de amarelos */
+    background-size: 200% 200%; /* Aumenta o fundo pro efeito de movimento funcionar */
     color: var(--cor-primaria);
-    border: 2px solid #c0c0c0;             /* ← borda prateada */
+    border: 2px solid #c0c0c0; /* Borda prateada */
     padding: 14px 30px;
     font-weight: bold;
     font-size: 1rem;
@@ -371,72 +364,62 @@ iframe {
     line-height: 1;
     box-sizing: border-box;
 
-    /* ===== EXTRAS PREMIUM ===== */
+    /* Sombra e brilho inicial */
     box-shadow: 0 0 20px rgba(255, 214, 10, 0.4), 0 0 40px rgba(255, 214, 10, 0.2);
-    animation: brilho 2s ease-in-out infinite;
+    animation: brilho 2s ease-in-out infinite; /* Pisca o brilho */
 }
 
-/* Shine atravessando */
 .btn-amarelo-premium::before {
     content: "";
     position: absolute;
     top: 0;
-    left: -100%;
+    left: -100%; /* Começa escondido pra esquerda */
     width: 100%;
     height: 100%;
-    background: linear-gradient(120deg, transparent 30%, rgba(255, 255, 255, 0.75) 50%, transparent 70%);
-    animation: shine 3s ease-in-out infinite;
+    background: linear-gradient(120deg, transparent 30%, rgba(255, 255, 255, 0.75) 50%, transparent 70%); /* Um feixe de luz branca */
+    animation: shine 3s ease-in-out infinite; /* Atravessa o botão */
     pointer-events: none;
 }
 
-/* Glow pulsante */
 @keyframes brilho {
-    50% { box-shadow: 0 0 30px rgba(255, 214, 10, 0.7), 0 0 60px rgba(255, 214, 10, 0.4); }
+    50% { box-shadow: 0 0 30px rgba(255, 214, 10, 0.7), 0 0 60px rgba(255, 214, 10, 0.4); } /* Intensifica a sombra */
 }
 
-/* Movimento do shine */
 @keyframes shine {
-    0%          { left: -100%; }
-    60%, 100%   { left: 100%; }
+    0%          { left: -100%; } /* Começa fora */
+    60%, 100%   { left: 100%; } /* Vai pra direita e fica lá até reiniciar */
 }
 
-/* Hover */
 .btn-amarelo-premium:hover {
-    background-position: 100% 100%;
+    background-position: 100% 100%; /* Move o gradiente */
     transform: scale(1.05);
     box-shadow: 0 0 30px rgba(255, 214, 10, 0.9), 0 0 60px rgba(255, 214, 10, 0.6);
-    animation-play-state: paused;
+    animation-play-state: paused; /* Para a pulsação no hover */
 }
-/*----------------------------*/
 
-/*SELO DE POR TEMPO LIMITADO*/
-.selo-lateral {
-    position: relative;
-    display: inline-block;
-}
+/* ===================== SELO DE POR TEMPO LIMITADO ===================== */
 .btn-com-selo-lateral {
-    position: relative;
+    position: relative; /* Para o selo se posicionar em relação ao botão */
     display: inline-block;
     max-width: 100%;
 }
 
-/* Selo vermelho ao lado */
 .selo-lateral {
     position: absolute;
-    top: 50%;
-    right: -110px;                       /* ← distância do botão */
-    transform: translateY(-50%);
-    background: linear-gradient(135deg, #ff3b3b, #cc0000);
+    top: 50%; /* Centraliza verticalmente em relação ao botão */
+    right: -110px; /* Joga pra fora do botão (direita) */
+    transform: translateY(-50%); /* Ajuste fino da centralização */
+    background: linear-gradient(135deg, #ff3b3b, #cc0000); /* Vermelho */
     color: #fff;
     font-size: 0.7rem;
     font-weight: 900;
     letter-spacing: 1px;
-    text-transform: uppercase;
+    text-transform: uppercase; /* Tudo maiúsculo */
     text-align: center;
     line-height: 1.1;
     padding: 10px 14px;
     border-radius: 8px;
-    white-space: nowrap;
+    white-space: nowrap; /* Não quebra o texto em várias linhas */
     z-index: 2;
     box-shadow: 0 6px 16px rgba(255, 59, 59, 0.5);
     animation: pulsar-selo-lateral 1.5s ease-in-out infinite;
@@ -447,35 +430,32 @@ iframe {
 
 .selo-lateral i {
     font-size: 1rem;
-    animation: balancar-fogo 0.6s ease-in-out infinite alternate;
+    animation: balancar-fogo 0.6s ease-in-out infinite alternate; /* Faz o fogo balançar */
 }
 
-/* ⬅️ Triângulo apontando pro botão (seta esquerda) */
 .selo-lateral::before {
     content: "";
     position: absolute;
     top: 50%;
-    left: -10px;
+    left: -10px; /* Joga pra esquerda pra fora da caixa */
     transform: translateY(-50%);
     width: 0;
     height: 0;
+    /* Truque de CSS: bordas com cores transparentes criam um triângulo */
     border-top: 10px solid transparent;
     border-bottom: 10px solid transparent;
-    border-right: 10px solid #cc0000;    /* ← cor da lateral direita do gradiente */
+    border-right: 10px solid #cc0000; 
 }
 
-/* Pulsação do selo */
 @keyframes pulsar-selo-lateral {
     0%, 100% { transform: translateY(-50%) scale(1); }
     50%      { transform: translateY(-50%) scale(1.06); }
 }
 
-/* Fogo balançando */
 @keyframes balancar-fogo {
-    0%   { transform: rotate(-8deg); }
-    100% { transform: rotate(8deg); }
+    0%   { transform: rotate(-8deg); } /* Inclina pra esquerda */
+    100% { transform: rotate(8deg); } /* Inclina pra direita */
 }
-/*----------------------------*/
 
 /* ===================== SEÇÃO MAPA ===================== */
 #localizacao {
@@ -491,47 +471,42 @@ iframe {
     flex-wrap: wrap;
 }
 
-/* ---------- Coluna esquerda: texto e cards ---------- */
 .mapa-texto {
     flex: 1;
-    min-width: 280px;
+    min-width: 280px; /* Garante que não fique espremido */
     max-width: 480px;
 }
 
-/* Título "Onde Estamos" */
 .mapa-texto h2 {
     font-size: 2rem;
     text-align: left;
     margin-bottom: 25px;
-    color: var(--cor-texto-claro);          /* texto branco */
-    padding-bottom: 12px;                   /* espaço pra linha */
-    position: relative;
+    color: var(--cor-texto-claro);
+    padding-bottom: 12px;
+    position: relative; /* Para a linha embaixo */
     display: inline-block;
 }
 
-/* A linha amarela embaixo do título */
 .mapa-texto h2::after {
     content: "";
     position: absolute;
     left: 0;
     bottom: 0;
-    width: 100%;                            /* tamanho da linha */
+    width: 100%; /* Linha do tamanho do texto */
     height: 4px;
     background-color: var(--cor-secundaria);
     border-radius: 2px;
 }
 
-/* ---------- Lista de cards ---------- */
 .info-localizacao {
     list-style: none;
     padding: 0;
     margin: 0;
     display: flex;
-    flex-direction: column;
-    gap: 12px;                           /* espaço entre os cards */
+    flex-direction: column; /* Cards um embaixo do outro */
+    gap: 12px;
 }
 
-/* O <a> que virou card */
 .bloco-info {
     display: flex;
     align-items: center;
@@ -541,66 +516,59 @@ iframe {
     border-radius: 10px;
     padding: 14px 18px;
     border: 1px solid #2a2a2a;
-    text-decoration: none;               /* tira sublinhado */
+    text-decoration: none; /* Tira o sublinhado do link */
     color: var(--cor-texto-claro);
     transition: border-color 0.3s, transform 0.3s, background-color 0.3s;
     cursor: pointer;
 }
 
-/* Hover — indica que é clicável */
 .bloco-info:hover {
-    border-color: var(--cor-secundaria);
+    border-color: var(--cor-secundaria); /* Borda amarela ao passar o mouse */
     background-color: #222222;
-    transform: translateX(5px);
+    transform: translateX(5px); /* "Empurra" o card um pouquinho pra direita */
 }
 
-/* Ícone à esquerda */
 .bloco-info i {
     font-size: 1.6rem;
     color: var(--cor-secundaria);
-    min-width: 32px;
+    min-width: 32px; /* Garante que os ícones fiquem alinhados mesmo com tamanhos diferentes */
     text-align: center;
-    flex-shrink: 0;
+    flex-shrink: 0; /* Não deixa o ícone amassar */
 }
 
-/* Bloco de texto dentro do card */
 .bloco-info div {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
     text-align: left;
     gap: 3px;
-    min-width: 0;                        /* permite quebra de texto */
+    min-width: 0; /* Truque para permitir que textos longos quebrem a linha no flexbox */
 }
 
-/* Título do card */
 .bloco-info strong {
     font-size: 0.95rem;
     color: var(--cor-texto-claro);
     font-weight: bold;
 }
 
-/* Texto secundário do card */
 .bloco-info span {
     font-size: 0.85rem;
     color: #999999;
     line-height: 1.4;
 }
 
-/* ---------- Cores específicas no hover ---------- */
-.bloco-instagram:hover { border-color: #E1306C; }
-.bloco-whatsapp:hover  { border-color: #25D366; }
+.bloco-instagram:hover { border-color: #E1306C; } /* Cor da marca do Instagram */
+.bloco-whatsapp:hover  { border-color: #25D366; } /* Cor da marca do WhatsApp */
 .bloco-endereco:hover  { border-color: var(--cor-secundaria); }
 
-/* ---------- Container do Google Maps, obrigatorio se não quebra o mapa ---------- */
 .mapa-container {
-    flex: 1 1 600px;
+    flex: 1 1 600px; /* Cresce e encolhe, base de 600px */
     max-width: 700px;
-    aspect-ratio: 16 / 9;
+    aspect-ratio: 16 / 9; /* Mantém a proporção do mapa (widescreen) para não distorcer */
     min-height: 250px;
     border-radius: 10px;
     overflow: hidden;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4); /* Sombra pra dar profundidade */
 }
 
 .mapa-container iframe {
@@ -610,10 +578,9 @@ iframe {
     display: block;
 }
 
-/* ---------- Responsividade ---------- */
 @media (max-width: 768px) {
     #localizacao {
-        flex-direction: column;
+        flex-direction: column; /* Mapa vai pra baixo do texto no celular */
         text-align: center;
         padding: 50px 20px;
         gap: 30px;
@@ -624,7 +591,7 @@ iframe {
     }
 
     .mapa-texto h2 {
-        margin: 0 auto 20px;             /* centraliza a pílula */
+        margin: 0 auto 20px; /* Centraliza a linha do título */
     }
 
     .mapa-container {
@@ -633,10 +600,11 @@ iframe {
         width: 100%;
     }
 }
-/* ===================== SEÇÕES SOBRE ===================== */
+
+/* ===================== SEÇÕES SOBRE (CARDS) ===================== */
 .card-sobre {
     background-color: var(--cor-card);
-    border: 2px solid transparent;
+    border: 2px solid transparent; /* Borda invisível (para não "pular" ao ganhar cor no hover) */
     border-radius: 10px;
     padding: 30px;
     width: 250px;
@@ -646,19 +614,23 @@ iframe {
     align-items: center;
     text-align: center;
 }
-.card-sobre h1 i{
-    color:var(--cor-secundaria)
+
+.card-sobre h1 i {
+    color: var(--cor-secundaria); /* Ícone do card amarelo */
 }
+
 .card-sobre-grupo {
-    display: flex;             /* flex pra colocar os cards lado a lado */
-    flex-wrap: wrap;          /* quebra linha se não couber (celular) */
+    display: flex;
+    flex-wrap: wrap; /* Permite que os cards desçam para a próxima linha */
     justify-content: center;
     gap: 30px;
     margin-top: 40px;
 }
+
 .card-sobre:hover {
-    border-color: var(--cor-secundaria); /* borda amarela aparece ao passar o mouse */
+    border-color: var(--cor-secundaria); /* Mostra a borda amarela */
 }
+
 /* ===================== SEÇÕES GERAIS ===================== */
 .secao {
     padding: 60px 40px;
@@ -672,58 +644,57 @@ iframe {
 
 .secao p {
     max-width: 700px;
-    margin: 0 auto;
+    margin: 0 auto; /* Centraliza o parágrafo */
     color: #cccccc;
     line-height: 1.6;
 }
+
 .secao-sub-h1 {
     padding: 60px 40px;
     text-align: center;
 }
-.secao-sub{
+
+.secao-sub {
     padding: 20px 40px;
-    max-width: 600px; /*largura maxima 600px*/
+    max-width: 600px;
     text-align: center;
-    border-radius: 10px; /*bordas arredondadas*/
-    margin: 0 auto;  /*margem auto para centralizar o conteudo apenas no form 0, sem alargar pros lados*/
-    border-radius: 10px; /*bordas arredondadas*/
-    background: #141414;  /*fundo branco*/
+    border-radius: 10px;
+    margin: 0 auto; /* Centraliza a caixa de fundo */
+    background: #141414;
 }
 
-.secao-sub-alt{
+.secao-sub-alt {
     padding: 20px 40px;
-    border-radius: 10px; /*bordas arredondadas*/
-    background: #141414;  /*fundo branco*/
+    border-radius: 10px;
+    background: #141414;
     margin: 0 auto;
     text-align: center;
 }
 
 .destaque {
-    color: var(--cor-secundaria); /* usado pra destacar o nome "Muskel Fit" dentro de textos */
+    color: var(--cor-secundaria); /* Texto amarelo pra destacar */
 }
 
-/* Seção com fundo levemente diferente pra criar contraste visual (planos) */
 .secao-escura {
-    background-color: #111111;
+    background-color: #111111; /* Fundo um pouquinho mais claro que o body, pra criar contraste entre seções */
 }
 
 /* ===================== SEÇÃO DE PLANOS ===================== */
 #planos {
-    display: grid;
-    /* minmax(220px, 250px) garante que os cards tenham um tamanho fixo agradável, nem tão grandes, nem minúsculos */
+    display: grid; /* Grid é ótimo para alinhar cards em colunas perfeitas */
+    /* Cria colunas automáticas, com tamanho mínimo de 220px e máximo de 250px */
     grid-template-columns: repeat(auto-fit, minmax(220px, 250px));
-    justify-content: center; /* Centraliza o conjunto de cards na tela */
-    gap: 25px; /* Espaçamento entre os cards */
+    justify-content: center; /* Centraliza os cards na tela */
+    gap: 25px;
     max-width: 1200px; 
     margin: 0 auto; 
     padding: 60px 20px;
-    align-items: stretch; 
+    align-items: stretch; /* Faz todos os cards da mesma linha terem a mesma altura */
 }
 
-/* Títulos ocupam a linha toda */
 #planos > h2,
 #planos > .titulo-grupo-planos {
-    grid-column: 1 / -1;
+    grid-column: 1 / -1; /* Força o título a ocupar a linha inteira (da coluna 1 até a última) */
     text-align: center;
     color: var(--cor-texto-claro);
 }
@@ -740,13 +711,11 @@ iframe {
     color: var(--cor-secundaria);
 }
 
-/* ===================== ESTILO DO CARD ===================== */
 .card {
-    /* Degradê sutil para dar profundidade */
-    background: linear-gradient(145deg, #2a2a2a 0%, #1e1e1e 100%);
+    background: linear-gradient(145deg, #2a2a2a 0%, #1e1e1e 100%); /* Gradiente diagonal pra dar 3D */
     border: 1px solid #333;
     border-radius: 12px;
-    padding: 25px 15px 20px; /* Reduzido para ficar mais compacto */
+    padding: 25px 15px 20px; 
     width: 100%;
     display: flex;
     flex-direction: column;
@@ -757,7 +726,6 @@ iframe {
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
-/* Linha amarela decorativa no topo do card */
 .card::before {
     content: "";
     position: absolute;
@@ -765,16 +733,15 @@ iframe {
     left: 0;
     width: 100%;
     height: 4px;
-    background-color: var(--cor-secundaria);
+    background-color: var(--cor-secundaria); /* Linha amarela no topo do card */
     opacity: 0.7;
     transition: opacity 0.3s;
 }
 
-/* Efeito ao passar o mouse */
 .card:hover {
-    transform: translateY(-5px); /* Levanta o card */
+    transform: translateY(-5px); /* Card sobe ao passar o mouse */
     border-color: var(--cor-secundaria);
-    box-shadow: 0 8px 25px rgba(255, 214, 10, 0.15); /* Brilho amarelo suave */
+    box-shadow: 0 8px 25px rgba(255, 214, 10, 0.15);
 }
 
 .card:hover::before {
@@ -782,28 +749,25 @@ iframe {
     box-shadow: 0 0 10px var(--cor-secundaria);
 }
 
-/* Título do Card */
 .card h3 {
     color: var(--cor-secundaria);
-    font-size: 1.1rem; /* Fonte um pouco menor */
+    font-size: 1.1rem;
     margin-top: 5px;
     margin-bottom: 12px;
     text-align: center;
 }
 
-/* Ícones dentro do título (ex: bonequinhos) */
 .card h3 i {
     color: var(--cor-texto-claro);
     opacity: 0.8;
     margin: 0 2px;
 }
 
-/* Preço em destaque */
 .card .preco {
     font-size: 1.3rem;
     font-weight: bold;
     color: var(--cor-texto-claro);
-    background: rgba(0, 0, 0, 0.4); /* Fundo para destacar o valor */
+    background: rgba(0, 0, 0, 0.4); /* Caixa preta semi-transparente pro preço */
     padding: 8px 12px;
     border-radius: 8px;
     width: 100%;
@@ -819,33 +783,30 @@ iframe {
     margin-left: 4px;
 }
 
-/* Lista de benefícios */
 .card ul {
     list-style: none;
     margin-bottom: 0;
     padding: 0;
     text-align: left;
     width: 100%;
-    flex-grow: 1; /* Empurra o conteúdo para preencher o espaço */
+    flex-grow: 1; /* Empurra o conteúdo pro fundo, alinhando os botões se um card for mais alto */
 }
 
 .card ul li {
     padding: 5px 0;
     color: #cccccc;
-    font-size: 0.85rem; /* Texto menor e mais limpo */
+    font-size: 0.85rem;
     display: flex;
     align-items: flex-start;
     gap: 6px;
     line-height: 1.3;
 }
 
-/* Cor do aviso (triângulo) */
 .card ul li .fa-triangle-exclamation {
-    color: #f97316;
+    color: #f97316; /* Laranja de aviso */
     margin-top: 2px;
 }
 
-/* Ajuste do título no celular */
 @media (max-width: 600px) {
     #planos > .titulo-grupo-planos {
         font-size: 1.3rem;
@@ -853,8 +814,8 @@ iframe {
     }
     
     #planos {
-        grid-template-columns: 1fr; /* Força 1 coluna no celular se preferir, ou deixe auto-fit */
-        max-width: 320px; /* Centraliza e limita o tamanho no celular */
+        grid-template-columns: 1fr; /* 1 coluna só no celular */
+        max-width: 320px; 
     }
 }
 
@@ -887,11 +848,10 @@ iframe {
 }
 
 .card-horario:hover {
-    border-color: var(--cor-secundaria); /* borda amarela no hover */
-    transform: translateY(-5px);         /* leve subida pra dar vida */
+    border-color: var(--cor-secundaria);
+    transform: translateY(-5px);
 }
 
-/* Ícone grande no topo do card */
 .horario-icone {
     font-size: 2.2rem;
     color: var(--cor-secundaria);
@@ -904,7 +864,6 @@ iframe {
     margin-bottom: 18px;
 }
 
-/* Cada linha de horário (ex: "06h — 22h") */
 .horario-linha {
     color: var(--cor-texto-claro);
     font-size: 1rem;
@@ -920,7 +879,6 @@ iframe {
     font-size: 0.9rem;
 }
 
-/* Etiqueta pequena embaixo (ex: "Aberto todo o dia") */
 .horario-tag {
     display: inline-block;
     margin-top: 18px;
@@ -929,14 +887,14 @@ iframe {
     font-weight: bold;
     letter-spacing: 0.5px;
     text-transform: uppercase;
-    border-radius: 999px;
+    border-radius: 999px; /* Tag arredondada tipo pílula */
     border: 1px solid;
 }
 
 .horario-tag.aberto {
     color: #22c55e;
     border-color: #22c55e;
-    background-color: rgba(34, 197, 94, 0.1);
+    background-color: rgba(34, 197, 94, 0.1); /* Fundo verde bem clarinho */
 }
 
 .horario-tag.atencao {
@@ -951,7 +909,6 @@ iframe {
     background-color: rgba(249, 115, 22, 0.1);
 }
 
-/* ---------- Responsividade dos horários ---------- */
 @media (max-width: 768px) {
     .cards-horario {
         gap: 20px;
@@ -972,23 +929,22 @@ iframe {
 /* ===================== CARD DO CRONÔMETRO ===================== */
 .horario-status-card {
     background-color: #1a1a1a;
-    border: 1px solid rgba(34, 197, 94, 0.4); /* começa verde */
+    border: 1px solid rgba(34, 197, 94, 0.4); /* Borda verde suave */
     border-radius: 14px;
     padding: 22px 26px;
     align-items: center;
     display: flex;
     flex-direction: column;
     gap: 8px;
-    margin: 0 auto 45px;         /* centraliza e dá espaço pros cards */
+    margin: 0 auto 45px;
     text-align: left;
     transition: border-color 0.4s;
     max-width: 520px;
     width: 100%;
 }
 
-/* Estado fechado: borda amarela (o JS troca) */
 .horario-status-card.fechado {
-    border-color: rgba(255, 214, 10, 0.4);
+    border-color: rgba(255, 214, 10, 0.4); /* Borda amarela quando fechado */
 }
 
 .horario-cronometro {
@@ -998,7 +954,7 @@ iframe {
     color: var(--cor-secundaria);
     font-size: 1.6rem;
     font-weight: bold;
-    font-variant-numeric: tabular-nums; /* números não "pulam" ao mudar */
+    font-variant-numeric: tabular-nums; /* Força os números a terem a MESMA largura, evitando que o cronômetro fique "pulando" de lado quando muda de 9 pra 10 */
 }
 
 .horario-cronometro i {
@@ -1020,7 +976,6 @@ iframe {
     font-weight: bold;
 }
 
-/* ---------- Destaque do card do dia atual ---------- */
 .card-horario.hoje {
     border-color: var(--cor-secundaria);
     transform: translateY(-5px);
@@ -1030,7 +985,6 @@ iframe {
     color: var(--cor-secundaria);
 }
 
-/* ---------- Responsividade do card do cronômetro ---------- */
 @media (max-width: 768px) {
     .horario-status-card {
         padding: 18px 20px;
@@ -1049,18 +1003,18 @@ iframe {
         font-size: 0.82rem;
     }
 }
+
 /* ===================== RODAPÉ ===================== */
 footer {
-    background-color: #000;
+    background-color: #000; /* Preto puro, mais escuro que o resto do site */
     border-top: 3px solid var(--cor-secundaria);
     color: #999;
-    padding: 0;              /* o padding agora é por coluna */
+    padding: 0; 
 }
 
-/* ---------- Grid das 3 colunas ---------- */
 .footer-conteudo {
     display: grid;
-    grid-template-columns: 1.3fr 1fr 1.3fr;
+    grid-template-columns: 1.3fr 1fr 1.3fr; /* Divide o rodapé em 3 colunas de tamanhos diferentes */
     gap: 50px;
     max-width: 1100px;
     margin: 0 auto;
@@ -1076,7 +1030,6 @@ footer {
     margin-bottom: 18px;
 }
 
-/* ---------- Coluna 1: logo + descrição + redes ---------- */
 .footer-logo {
     color: var(--cor-secundaria);
     font-size: 1.6rem;
@@ -1101,7 +1054,6 @@ footer {
     margin-bottom: 20px;
 }
 
-/* Redes sociais em círculo */
 .footer-redes {
     display: flex;
     gap: 12px;
@@ -1115,7 +1067,7 @@ footer {
     height: 40px;
     background-color: #1a1a1a;
     border: 1px solid #2a2a2a;
-    border-radius: 50%;
+    border-radius: 50%; /* Deixa os ícones redondos */
     color: var(--cor-texto-claro);
     font-size: 1.1rem;
     text-decoration: none;
@@ -1128,7 +1080,6 @@ footer {
     transform: translateY(-3px);
 }
 
-/* ---------- Coluna 2: links rápidos ---------- */
 .footer-coluna ul {
     list-style: none;
     padding: 0;
@@ -1147,10 +1098,9 @@ footer {
 
 .footer-coluna ul a:hover {
     color: var(--cor-secundaria);
-    padding-left: 5px;
+    padding-left: 5px; /* Desloca o link pra direita quando passa o mouse */
 }
 
-/* ---------- Coluna 3: contato ---------- */
 .footer-contato li {
     display: flex;
     align-items: flex-start;
@@ -1161,11 +1111,10 @@ footer {
 
 .footer-contato li i {
     color: var(--cor-secundaria);
-    margin-top: 3px;
+    margin-top: 3px; /* Alinha o ícone com a primeira linha do texto */
     min-width: 16px;
 }
 
-/* Botão WhatsApp grande */
 .btn-footer-whats {
     display: inline-flex;
     align-items: center;
@@ -1186,7 +1135,6 @@ footer {
     transform: scale(1.04);
 }
 
-/* ---------- Faixa inferior ---------- */
 .footer-base {
     border-top: 1px solid #1a1a1a;
     padding: 20px 40px;
@@ -1200,11 +1148,10 @@ footer {
     color: #666;
 }
 
-/* ---------- Botão "Voltar ao topo" ---------- */
 #btn-topo {
-    position: fixed;
-    bottom: 25px;
-    right: 25px;
+    position: fixed; /* Fixa o botão na tela, rolando junto com o usuário */
+    bottom: 25px; /* 25px do fundo da tela */
+    right: 25px; /* 25px da direita da tela */
     width: 46px;
     height: 46px;
     border-radius: 50%;
@@ -1216,16 +1163,16 @@ footer {
     display: flex;
     align-items: center;
     justify-content: center;
-    opacity: 0;
-    pointer-events: none;
+    opacity: 0; /* Invisível inicialmente */
+    pointer-events: none; /* Não pode ser clicado enquanto invisível */
     transition: opacity 0.3s, transform 0.3s;
     z-index: 999;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
 }
 
 #btn-topo.visivel {
-    opacity: 1;
-    pointer-events: auto;
+    opacity: 1; /* Fica visível quando o JS adiciona a classe */
+    pointer-events: auto; /* Permite o clique */
 }
 
 #btn-topo:hover {
@@ -1249,13 +1196,12 @@ footer {
     text-decoration: underline;
 }
 
-/* ---------- Responsividade ---------- */
 @media (max-width: 900px) {
     .footer-conteudo {
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr; /* Empilha as colunas no celular */
         gap: 35px;
         padding: 45px 25px 30px;
-        text-align: center;
+        text-align: center; /* Centraliza o texto no celular */
     }
 
     .footer-redes {
@@ -1281,7 +1227,6 @@ footer {
 }
 
 /* ===================== RESPONSIVIDADE GERAL ===================== */
-/* Ajustes para tablets e celulares grandes */
 @media (max-width: 768px) {
     #cabecalho {
         padding: 15px 20px;
@@ -1296,7 +1241,7 @@ footer {
     }
 
     .hero {
-        flex-direction: column-reverse;
+        flex-direction: column-reverse; /* Inverte a ordem: texto em cima, imagem embaixo */
         padding: 40px 20px;
         text-align: center;
     }
@@ -1318,7 +1263,7 @@ footer {
     }
 
     .hero-botoes .btn-amarelo {
-        flex: 1 1 100%;
+        flex: 1 1 100%; /* Faz os botões ocuparem a largura toda, um por linha */
     }
 
     .secao {
@@ -1338,7 +1283,6 @@ footer {
         max-width: 320px;
     }
 
-    /* Ajuste para a seção de planos em tablets/celulares */
     #planos {
         gap: 20px;
         padding: 40px 20px;
@@ -1358,7 +1302,6 @@ footer {
     }
 }
 
-/* Em telas menores que 600px, o menu e o header viram coluna ao invés de linha */
 @media (max-width: 600px) {
    .status-atual {
         font-size: 0.75rem;
@@ -1389,8 +1332,6 @@ footer {
 }
 
 /* ===================== RESPONSIVIDADE DO SELO LATERAL ===================== */
-
-/* Telas médias: reduz o espaço pra o selo não vazar */
 @media (max-width: 1100px) {
     .selo-lateral {
         right: -95px;
@@ -1399,7 +1340,6 @@ footer {
     }
 }
 
-/* Celular: selo vai pra CIMA do botão (fica mais legível) */
 @media (max-width: 768px) {
     .btn-com-selo-lateral {
         display: flex;
@@ -1410,21 +1350,21 @@ footer {
     }
 
     .selo-lateral {
-        position: static;
+        position: static; /* No celular, o selo perde o posicionamento absoluto */
         transform: none;
         animation: pulsar-selo-lateral-mobile 1.5s ease-in-out infinite;
-        order: -1;                        /* ← força o selo a ficar em cima */
+        order: -1; /* Força o selo a ir pra cima do botão */
         font-size: 0.7rem;
         padding: 8px 16px;
     }
 
-    /* Triângulo passa a apontar pra BAIXO (pro botão) */
+    /* No celular, a setinha do triângulo aponta pra baixo */
     .selo-lateral::before {
-        top: auto;
-        bottom: -10px;
+        top: auto; /* Tira do topo */
+        bottom: -10px; /* Joga pra baixo */
         left: 50%;
         transform: translateX(-50%);
-        border-top: 10px solid #cc0000;
+        border-top: 10px solid #cc0000; /* Inverte as bordas pro triângulo apontar pra baixo */
         border-bottom: none;
         border-left: 10px solid transparent;
         border-right: 10px solid transparent;
@@ -1436,8 +1376,7 @@ footer {
     50%      { transform: scale(1.06); }
 }
 
-/*==================================================================PAGINA LEGAL (PRIVACIDADE)====================================================================================*/
-
+/* ===================== PÁGINA LEGAL (PRIVACIDADE) ===================== */
 .pagina-legal {
     max-width: 900px;
     margin: 0 auto;
@@ -1486,7 +1425,7 @@ footer {
     margin-top: 40px;
     margin-bottom: 18px;
     padding-left: 15px;
-    border-left: 4px solid var(--cor-secundaria);
+    border-left: 4px solid var(--cor-secundaria); /* Barra amarela na esquerda do título */
 }
 
 .pagina-legal-conteudo h3 {
@@ -1509,7 +1448,7 @@ footer {
 }
 
 .pagina-legal-conteudo ul li::before {
-    content: "✔";
+    content: "✔"; /* Cria um check personalizado no lugar da bolinha */
     color: var(--cor-secundaria);
     position: absolute;
     left: 0;
@@ -1536,7 +1475,7 @@ footer {
     margin-top: 30px;
     padding: 20px 25px;
     background-color: #1a1a1a;
-    border-left: 4px solid var(--cor-secundaria);
+    border-left: 4px solid var(--cor-secundaria); /* Destaque lateral */
     border-radius: 8px;
     color: #d0d0d0;
     font-style: italic;
@@ -1554,7 +1493,6 @@ footer {
     gap: 8px;
 }
 
-/* ---------- Responsividade ---------- */
 @media (max-width: 768px) {
     .pagina-legal {
         padding: 50px 22px 70px;
@@ -1587,9 +1525,8 @@ footer {
     }
 }
 
-/*==================================================================PAGINA DE PRE PRE-MATRICULA====================================================================================*/
-
-.prematricula-subtitulo{
+/* ===================== PÁGINA DE PRÉ-MATRÍCULA ===================== */
+.prematricula-subtitulo {
     color: #b5b5b5;
     font-size: 1.05rem;
     line-height: 1.6;
@@ -1597,12 +1534,9 @@ footer {
     margin: 0 auto 35px;
 }
 
-/* ===================== FORMULÁRIO DE PRÉ-MATRÍCULA ===================== */
-/* Reaproveita .card, .btn-amarelo, .secao, .destaque do CSS atual */
-
 .form-matricula {
     display: flex;
-    flex-direction: column;
+    flex-direction: column; /* Campos um embaixo do outro */
     gap: 18px;
     max-width: 520px;
     margin: 0 auto;
@@ -1612,7 +1546,7 @@ footer {
 .form-matricula .campo {
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 6px; /* Espaço entre o label e o input */
 }
 
 .form-matricula label {
@@ -1636,15 +1570,16 @@ footer {
     transition: border-color 0.2s;
 }
 
+/* Quando o usuário clica no campo, a borda fica amarela */
 .form-matricula input:focus,
 .form-matricula select:focus {
-    outline: none;
+    outline: none; /* Remove aquele contorno azul/roxo padrão do navegador */
     border-color: var(--cor-secundaria);
 }
 
-/* Radio buttons */
+/* Estilo dos botões de rádio (PIX, Débito, Crédito) */
 .campo-radio {
-    border: none;
+    border: none; /* Tira a caixa que o HTML coloca por padrão no fieldset */
     padding: 0;
     display: flex;
     gap: 10px;
@@ -1672,15 +1607,23 @@ footer {
     transition: border-color 0.2s, background-color 0.2s;
 }
 
-.campo-radio label:hover { border-color: var(--cor-secundaria); }
-.campo-radio input[type="radio"] { display: none; }
+.campo-radio label:hover { 
+    border-color: var(--cor-secundaria); 
+}
+
+/* Esconde a bolinha padrão do rádio para criar um visual customizado */
+.campo-radio input[type="radio"] { 
+    display: none; 
+}
+
+/* :has() verifica se o input dentro do label está checado. Se sim, muda a cor da caixa inteira */
 .campo-radio label:has(input:checked) {
     border-color: var(--cor-secundaria);
     background-color: rgba(255, 214, 10, 0.1);
     color: var(--cor-secundaria);
 }
 
-/* Painel de pagamento */
+/* Painel de pagamento (aparece após o Mercado Pago) */
 .painel-pagamento {
     margin: 30px auto 0;
     max-width: 520px;
@@ -1697,10 +1640,10 @@ footer {
 }
 
 .qrcode-pix {
-    background: #fff;
+    background: #fff; /* Fundo branco porque o QR Code precisa de contraste */
     padding: 10px;
     border-radius: 10px;
-    width: fit-content;
+    width: fit-content; /* A caixa se ajusta ao tamanho do QR Code */
     margin: 20px auto;
 }
 
@@ -1720,7 +1663,7 @@ footer {
     padding: 10px;
     border-radius: 8px;
     font-size: 0.78rem;
-    font-family: monospace;
+    font-family: monospace; /* Fonte de código para o código do PIX ficar mais legível */
 }
 
 .aviso-pix {
@@ -1730,8 +1673,13 @@ footer {
 }
 
 @media (max-width: 600px) {
-    .campo-radio label { width: 100%; justify-content: center; }
-    .pix-copia-cola { flex-direction: column; }
+    .campo-radio label { 
+        width: 100%; /* Botões de rádio ocupam a linha toda no celular */
+        justify-content: center; 
+    }
+    .pix-copia-cola { 
+        flex-direction: column; /* O botão de copiar fica embaixo do input no celular */
+    }
 }
 
 /* ===================== AVISO DO PLANO DE PRÉ-MATRÍCULA ===================== */
@@ -1739,19 +1687,19 @@ footer {
     display: flex;
     align-items: flex-start;
     gap: 12px;
-    background-color: rgba(255, 214, 10, 0.08); /* Amarelo bem sutil */
+    background-color: rgba(255, 214, 10, 0.08); 
     border: 1px solid rgba(255, 214, 10, 0.3);
-    border-left: 4px solid var(--cor-secundaria); /* Linha amarela grossa na esquerda */
+    border-left: 4px solid var(--cor-secundaria); 
     padding: 14px 16px;
     border-radius: 8px;
     margin-top: 12px;
     font-size: 0.85rem;
     color: #d0d0d0;
     line-height: 1.5;
-    animation: fadeInAviso 0.4s ease-out; /* Animação suave ao aparecer */
+    animation: fadeInAviso 0.4s ease-out; 
 }
 
-/* Garante que o atributo hidden do HTML funcione e esconda a caixa */
+/* Garante que o atributo 'hidden' do HTML realmente esconda a caixa */
 .aviso-plano-prematricula[hidden] {
     display: none !important;
 }
@@ -1767,13 +1715,11 @@ footer {
 }
 
 @keyframes fadeInAviso {
-    from { opacity: 0; transform: translateY(-5px); }
-    to { opacity: 1; transform: translateY(0); }
+    from { opacity: 0; transform: translateY(-5px); } /* Começa invisível e um pouquinho pra cima */
+    to { opacity: 1; transform: translateY(0); } /* Fica visível e desce pro lugar */
 }
 
-/*==================================================================PAGINA DE PRE MATRICULA====================================================================================*/
-
-/* Botão "voltar" no cabeçalho */
+/* ===================== PÁGINA DE MATRÍCULA ===================== */
 .btn-voltar-header {
     color: var(--cor-texto-claro);
     text-decoration: none;
@@ -1784,7 +1730,7 @@ footer {
     gap: 8px;
     padding: 8px 16px;
     border: 1px solid #2a2a2a;
-    border-radius: 999px;
+    border-radius: 999px; /* Pílula */
     transition: border-color 0.3s, color 0.3s;
 }
 
@@ -1793,7 +1739,6 @@ footer {
     color: var(--cor-secundaria);
 }
 
-/* ---------- HERO DA PÁGINA ---------- */
 .matricula-hero {
     text-align: center;
     padding: 70px 20px 50px;
@@ -1806,7 +1751,7 @@ footer {
     font-size: 0.8rem;
     font-weight: bold;
     letter-spacing: 2px;
-    text-transform: uppercase;
+    text-transform: uppercase; /* Texto pequeno e espaçado acima do título */
 }
 
 .matricula-titulo {
@@ -1829,7 +1774,6 @@ footer {
     margin: 0 auto 35px;
 }
 
-/* Benefícios */
 .matricula-beneficios {
     display: flex;
     justify-content: center;
@@ -1851,20 +1795,12 @@ footer {
     font-size: 1.1rem;
 }
 
-/* ---------- CONTAINER DO FORMULÁRIO ---------- */
 .matricula-container {
     max-width: 700px;
     margin: 0 auto;
     padding: 0 20px 60px;
 }
 
-.form-matricula {
-    display: flex;
-    flex-direction: column;
-    gap: 30px;
-}
-
-/* Cada bloco do formulário */
 .form-bloco {
     background-color: #141414;
     border: 1px solid #1f1f1f;
@@ -1885,14 +1821,14 @@ footer {
     align-items: center;
     gap: 10px;
     padding-bottom: 14px;
-    border-bottom: 1px solid #1f1f1f;
+    border-bottom: 1px solid #1f1f1f; /* Linha separadora embaixo do título do bloco */
 }
 
 .form-bloco-titulo i {
     font-size: 1.1rem;
 }
 
-/* ---------- PREVIEW DO PLANO ---------- */
+/* Preview que mostra o valor antes de pagar */
 .preview-plano {
     background: linear-gradient(135deg, #1a1a1a 0%, #141414 100%);
     border: 2px solid var(--cor-secundaria);
@@ -1904,12 +1840,12 @@ footer {
 }
 
 .preview-plano[hidden] {
-    display: none !important;
+    display: none !important; /* Força o preview a sumir quando hidden estiver ativo */
 }
 
 .preview-linha {
     display: flex;
-    justify-content: space-between;
+    justify-content: space-between; /* Coloca o texto de um lado e o valor do outro */
     align-items: center;
     color: #b5b5b5;
     font-size: 0.95rem;
@@ -1922,16 +1858,15 @@ footer {
 
 .preview-valor {
     padding-top: 12px;
-    border-top: 1px solid #2a2a2a;
+    border-top: 1px solid #2a2a2a; /* Linha separando o total */
     font-size: 1.1rem;
 }
 
 .preview-valor strong {
     color: var(--cor-secundaria);
-    font-size: 1.6rem;
+    font-size: 1.6rem; /* Preço total bem grande */
 }
 
-/* ---------- AÇÕES DO FORMULÁRIO ---------- */
 .form-acoes {
     display: flex;
     gap: 14px;
@@ -1939,7 +1874,7 @@ footer {
 }
 
 .form-acoes .btn-voltar {
-    flex: 1;
+    flex: 1; /* Botão voltar ocupa menos espaço */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1961,10 +1896,9 @@ footer {
 }
 
 .form-acoes .btn-pagar {
-    flex: 2;
+    flex: 2; /* Botão de pagar ocupa 2x mais espaço que o de voltar */
 }
 
-/* ---------- SELO DE SEGURANÇA ---------- */
 .selo-seguranca {
     display: flex;
     align-items: center;
@@ -1977,7 +1911,7 @@ footer {
 }
 
 .selo-seguranca i {
-    color: #22c55e;
+    color: #22c55e; /* Cadeado verde */
     font-size: 1rem;
 }
 
@@ -1985,7 +1919,6 @@ footer {
     color: #999;
 }
 
-/* ---------- SEÇÃO DE AJUDA ---------- */
 .matricula-ajuda {
     text-align: center;
     padding: 60px 20px 80px;
@@ -2000,7 +1933,6 @@ footer {
     margin-bottom: 20px;
 }
 
-/* ---------- RESPONSIVIDADE ---------- */
 @media (max-width: 768px) {
     .matricula-hero {
         padding: 45px 20px 35px;
@@ -2027,7 +1959,7 @@ footer {
     }
 
     .form-acoes {
-        flex-direction: column-reverse;
+        flex-direction: column-reverse; /* No celular, o botão de pagar fica em cima do voltar */
     }
 
     .form-acoes .btn-voltar,
