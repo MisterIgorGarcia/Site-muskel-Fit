@@ -406,6 +406,7 @@ function tratarRetornoMercadoPago(status) {
     }
 
     localStorage.removeItem('dadosMatricula');
+    sessionStorage.removeItem('acessoMatricula'); //remove a sessão de acesso apos o usuario realizar a compra
 }
 
 /* ===================== BOOT ===================== */

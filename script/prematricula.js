@@ -414,6 +414,7 @@ function tratarRetornoMercadoPago(status) {
     }
 
     localStorage.removeItem('dadosPreMatricula');
+    sessionStorage.removeItem('acessoPreMatricula'); //remove a sessão de acesso apos o usuario realizar a compra
 }
 
 /* ===================== BOOT ===================== */
