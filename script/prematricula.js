@@ -206,7 +206,7 @@ async function redirecionarParaPagamento(dados) {
 
         localStorage.setItem('dadosPreMatricula', JSON.stringify(dados));
 
-        let segundos = 4;
+        let segundos = 5;
         
         // ✅ TRANSFORMA O BOTÃO NO AVISO COM CONTADOR
         if (botao) {
