@@ -46,9 +46,10 @@
         </div>
     </div>
 
-    <br></br>
+    <br>
 
     <section class="secao-sub">
+    <!-- O FORM COMEÇA AQUI -->
     <form id="form-matricula" class="form-matricula" novalidate>
 
         <div class="campo">
@@ -63,11 +64,9 @@
 
         <div class="campo">
             <label for="celular">Celular (WhatsApp) *</label>
-            <input type="tel" id="celular" name="celular"
-                   placeholder="(12) 99999-9999" required autocomplete="tel">
+            <input type="tel" id="celular" name="celular" placeholder="(12) 99999-9999" required autocomplete="tel">
         </div>
 
-        <!-- Unidade vem ANTES de plano/modalidade -->
         <div class="campo">
             <label for="unidade">Unidade *</label>
             <select id="unidade" name="unidade" required>
@@ -94,13 +93,12 @@
                 <span>A pré-matrícula dá direito a <strong>1 mês de academia</strong>. Após esse período, será aplicada a tabela de preços da matrícula da sua unidade.</span>
             </div>
         </div>
+        
         <!-- PREVIEW DOS VALORES FUTUROS -->
-            <div id="preview-matricula" class="preview-futuro-matricula" hidden>
-                <h4><i class="fa-solid fa-arrow-trend-up"></i> Valores dos planos partir do 2º mês</h4>
-                <div id="lista-futura-planos" class="lista-futura-planos">
-                    <!-- O JavaScript vai injetar os planos aqui -->
-                </div>
-            </div>
+        <div id="preview-matricula" class="preview-futuro-matricula" hidden>
+            <h4><i class="fa-solid fa-arrow-trend-up"></i> Valores dos planos partir do 2º mês</h4>
+            <div id="lista-futura-planos" class="lista-futura-planos"></div>
+        </div>
 
         <fieldset class="campo campo-radio">
             <legend>Forma de pagamento *</legend>
@@ -117,26 +115,27 @@
                 <i class="fa-solid fa-credit-card"></i> Crédito
             </label>
         </fieldset>
-        </section>
 
-        <br>
-        <a href="../index.html" class="btn-amarelo" onclick="sessionStorage.removeItem('acessoPreMatricula')"> <!---esses dois pontos (../) volta uma pasta-->
-            <i class="fa-solid fa-arrow-left"></i> Voltar.
-        </a>
-
-        <div class="btn-wrapper" style="display: flex; justify-content: center;">
-            <button type="submit" class="btn-amarelo" style="width: 100%;">
-                <i class="fa-solid fa-lock"></i> Ir para o pagamento.
+        <!-- ✅ BOTÕES AGORA ESTÃO DENTRO DO FORM -->
+        <div class="form-acoes">
+            <a href="../index.html" class="btn-voltar" onclick="sessionStorage.removeItem('acessoPreMatricula')">
+                <i class="fa-solid fa-arrow-left"></i> Voltar
+            </a>
+            
+            <button type="submit" class="btn-amarelo btn-pagar">
+                <i class="fa-solid fa-lock"></i> Ir para o pagamento
             </button>
         </div>
 
-        <br></br>
         <!-- Selo de segurança -->
         <div class="selo-seguranca">
             <i class="fa-solid fa-shield-halved"></i>
             <span>Pagamento processado com segurança pelo <strong>Mercado Pago</strong></span>
         </div>
+
     </form>
+    </section>
+
     <br>
     <section class="matricula-ajuda">
         <p>Ficou com dúvida? Fale com a gente antes de se matricular.</p>
@@ -154,8 +153,7 @@
     <button type="button" id="btn-enviar-whatsapp" class="btn-amarelo">
         <i class="fa-brands fa-whatsapp"></i> Enviar no WhatsApp
     </button>
-    <p class="aviso-pix" id="aviso-pix"> Algo deu errado...
-    </p>
+    <p class="aviso-pix" id="aviso-pix"> Algo deu errado... </p>
 </div>
 
 <script src="../script/prematricula.js"></script>

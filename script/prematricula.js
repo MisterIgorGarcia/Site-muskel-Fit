@@ -32,13 +32,6 @@ function validarNascimento(dataStr) {
     return null;
 }
 
-function definirCarregando(carregando) {
-    const botao = document.querySelector('#form-matricula button[type="submit"]');
-    if (!botao) return;
-    if (!botao.dataset.textoOriginal) botao.dataset.textoOriginal = botao.innerHTML;
-    botao.disabled = carregando;
-    botao.innerHTML = carregando ? 'Aguarde...' : botao.dataset.textoOriginal;
-}
 window.addEventListener('pageshow', (event) => {
     if (event.persisted) {
         if (contadorInterval) clearInterval(contadorInterval);
@@ -50,8 +43,6 @@ window.addEventListener('pageshow', (event) => {
             botao.style.padding = '14px 30px';
             botao.innerHTML = `<i class="fa-solid fa-lock"></i> Ir para o pagamento`;
         }
-    } else {
-        definirCarregando(false);
     }
 });
 
@@ -185,6 +176,7 @@ function atualizarPreviewMatricula() {
 /* ===================== REDIRECIONAMENTO ===================== */
 
 async function redirecionarParaPagamento(dados) {
+    // Agora o botão é encontrado corretamente pois está dentro do form
     const botao = document.querySelector('#form-matricula button[type="submit"]');
     
     // Desabilita o botão visualmente enquanto a API responde
@@ -199,7 +191,6 @@ async function redirecionarParaPagamento(dados) {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                tipo:       CONFIG.tipo,
                 unidade:    dados.unidade,
                 modalidade: dados.modalidade,
                 planoId:    dados.planoId,
@@ -253,7 +244,7 @@ async function redirecionarParaPagamento(dados) {
             botao.style.pointerEvents = 'auto';
             botao.style.flexDirection = 'row';
             botao.style.padding = '14px 30px';
-            botao.innerHTML = `<i class="fa-solid fa-lock"></i> Ir para o pagamento.`;
+            botao.innerHTML = `<i class="fa-solid fa-lock"></i> Ir para o pagamento`;
         }
         
         alert('Não foi possível iniciar o pagamento agora. Tente novamente em instantes ou fale com a academia pelo WhatsApp.');
