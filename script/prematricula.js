@@ -137,7 +137,6 @@ function atualizarPreviewMatricula() {
 
     if (!previewEl || !listaEl || !CATALOGO_PREVIEW) return;
 
-    // Só mostra se o plano for 'pre-matricula' e os campos anteriores estiverem preenchidos
     if (planoEl.value !== 'pre-matricula' || !unidadeEl.value || !modalidadeEl.value) {
         previewEl.hidden = true;
         return;
@@ -146,10 +145,8 @@ function atualizarPreviewMatricula() {
     const nomeUnidade = unidadeEl.value;
     const nomeModalidade = modalidadeEl.value;
     
-    // Acessa os dados agrupados
     const unidadePreview = CATALOGO_PREVIEW.respostaAPI[nomeUnidade];
 
-    // Se não houver preview para essa unidade ou para essa modalidade, esconde
     if (!unidadePreview || !unidadePreview[nomeModalidade]) {
         previewEl.hidden = true; 
         return;
@@ -244,7 +241,6 @@ async function iniciarFormulario() {
     preencherPlanosDaModalidade(unidadeEl.value, modalidadeEl.value);
     selecionarPorCorrespondencia(planoEl, params.get('plano'));
 
-    // Dispara as funções visuais ao carregar
     atualizarPreviewMatricula();
     verificarAvisoPlano();
 
@@ -345,6 +341,13 @@ function tratarRetornoMercadoPago(status) {
 
     if (!dadosSalvosRaw) {
         formEl.style.display = 'none';
+        
+        // ✅ NOVO: Esconde os botões e a seção de dúvidas
+        const secaoAjuda = document.querySelector('.matricula-ajuda');
+        if (secaoAjuda) secaoAjuda.style.display = 'none';
+        const botoesForm = document.querySelectorAll('.form-matricula .btn-amarelo');
+        botoesForm.forEach(btn => btn.style.display = 'none');
+
         painelConfirmacao.hidden = false;
         tituloEl.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> Dados não encontrados';
         textoEl.textContent = 'Não conseguimos recuperar seus dados. Preencha o formulário novamente.';
@@ -354,6 +357,12 @@ function tratarRetornoMercadoPago(status) {
 
     const dados = JSON.parse(dadosSalvosRaw);
     formEl.style.display = 'none';
+
+    // ✅ NOVO: Esconde os botões e a seção de dúvidas
+    const secaoAjuda = document.querySelector('.matricula-ajuda');
+    if (secaoAjuda) secaoAjuda.style.display = 'none';
+    const botoesForm = document.querySelectorAll('.form-matricula .btn-amarelo');
+    botoesForm.forEach(btn => btn.style.display = 'none');
 
     let icone, titulo, textoStatus;
     if (status === 'failure') {
@@ -414,7 +423,7 @@ function tratarRetornoMercadoPago(status) {
     }
 
     localStorage.removeItem('dadosPreMatricula');
-    sessionStorage.removeItem('acessoPreMatricula'); //remove a sessão de acesso apos o usuario realizar a compra
+    sessionStorage.removeItem('acessoPreMatricula');
 }
 
 /* ===================== BOOT ===================== */

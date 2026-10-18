@@ -1,7 +1,7 @@
 /* ===================== CONFIGURAÇÃO ===================== */
 const CONFIG = {
-    whatsapp: '5512991859267',           // número da academia
-    tipo: 'matricula'                     // 'matricula' ou 'pre-matricula'
+    whatsapp: '5512991859267',
+    tipo: 'matricula'
 };
 
 let CATALOGO = null;
@@ -44,8 +44,6 @@ window.addEventListener('pageshow', () => definirCarregando(false));
 
 async function carregarCatalogo() {
     if (CATALOGO) return CATALOGO;
-
-    // Passa o tipo como query string pra API saber qual catálogo usar
     const resp = await fetch(`/api/catalogo?tipo=${CONFIG.tipo}`, { cache: 'no-cache' });
     if (!resp.ok) throw new Error('Falha ao carregar catálogo de planos.');
     CATALOGO = await resp.json();
@@ -183,10 +181,7 @@ async function redirecionarParaPagamento(dados) {
     } catch (erro) {
         console.error('Erro ao criar pagamento:', erro);
         definirCarregando(false);
-        alert(
-            'Não foi possível iniciar o pagamento agora. ' +
-            'Tente novamente em instantes ou fale com a academia pelo WhatsApp.'
-        );
+        alert('Não foi possível iniciar o pagamento agora. Tente novamente em instantes ou fale com a academia pelo WhatsApp.');
     }
 }
 
@@ -226,22 +221,18 @@ async function iniciarFormulario() {
     preencherPlanosDaModalidade(unidadeEl.value, modalidadeEl.value);
     selecionarPorCorrespondencia(planoEl, params.get('plano'));
 
-    // ✅ Chama uma vez após pré-selecionar via URL
     atualizarPreviewPlano();
 
-    // ✅ Troca de unidade → repopula modalidades e atualiza preview
     unidadeEl.addEventListener('change', () => {
         preencherModalidadesDaUnidade(unidadeEl.value);
         atualizarPreviewPlano();
     });
 
-    // ✅ Troca de modalidade → repopula planos e atualiza preview
     modalidadeEl.addEventListener('change', () => {
         preencherPlanosDaModalidade(unidadeEl.value, modalidadeEl.value);
         atualizarPreviewPlano();
     });
 
-    // ✅ Troca de plano → atualiza o preview
     planoEl.addEventListener('change', () => {
         atualizarPreviewPlano();
     });
@@ -326,6 +317,13 @@ function tratarRetornoMercadoPago(status) {
 
     if (!dadosSalvosRaw) {
         formEl.style.display = 'none';
+        
+        // ✅ NOVO: Esconde os botões e a seção de dúvidas
+        const secaoAjuda = document.querySelector('.matricula-ajuda');
+        if (secaoAjuda) secaoAjuda.style.display = 'none';
+        const botoesForm = document.querySelectorAll('.form-matricula .btn-amarelo');
+        botoesForm.forEach(btn => btn.style.display = 'none');
+
         painelConfirmacao.hidden = false;
         tituloEl.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> Dados não encontrados';
         textoEl.textContent = 'Não conseguimos recuperar seus dados. Preencha o formulário novamente.';
@@ -336,6 +334,12 @@ function tratarRetornoMercadoPago(status) {
     const dados = JSON.parse(dadosSalvosRaw);
     formEl.style.display = 'none';
 
+    // ✅ NOVO: Esconde os botões e a seção de dúvidas
+    const secaoAjuda = document.querySelector('.matricula-ajuda');
+    if (secaoAjuda) secaoAjuda.style.display = 'none';
+    const botoesForm = document.querySelectorAll('.form-matricula .btn-amarelo');
+    botoesForm.forEach(btn => btn.style.display = 'none');
+
     let icone, titulo, textoStatus;
     if (status === 'failure') {
         icone = 'fa-solid fa-circle-xmark';
@@ -343,7 +347,6 @@ function tratarRetornoMercadoPago(status) {
         textoStatus = '❌ Pagamento não aprovado';
         textoEl.textContent = 'O pagamento não foi aprovado. Você pode tentar novamente ou entrar em contato com a academia pelo WhatsApp.';
 
-        // ⬇️ Texto específico para FALHA
         if (avisoEl) {
             avisoEl.innerHTML = 'Não se preocupe, você pode tentar novamente ou falar com a gente pelo WhatsApp.';
         }
@@ -353,7 +356,6 @@ function tratarRetornoMercadoPago(status) {
         textoStatus = '⏳ Pagamento em processamento';
         textoEl.textContent = 'Seu pagamento está em processamento. Envie seus dados no WhatsApp para a academia confirmar.';
 
-        // ⬇️ Texto específico para PENDENTE
         if (avisoEl) {
             avisoEl.innerHTML = 'Assim que o pagamento for confirmado, você receberá o aviso. Já pode enviar seus dados no WhatsApp.';
         }
@@ -363,7 +365,6 @@ function tratarRetornoMercadoPago(status) {
         textoStatus = '✅ Pagamento aprovado';
         textoEl.textContent = 'Seus dados estão prontos. Clique abaixo para enviar ao WhatsApp:';
 
-        // ⬇️ Texto específico para SUCESSO
         if (avisoEl) {
             avisoEl.innerHTML = `
             <strong>Pronto, Matricula concluida !</strong><br>
@@ -395,7 +396,6 @@ function tratarRetornoMercadoPago(status) {
 
     if (status === 'failure') {
         btnWhats.style.display = 'none';
-        // ⬆️ Removido o trecho antigo que sobrescrevia aviso.textContent
     } else {
         btnWhats.addEventListener('click', () => {
             window.open(
@@ -406,7 +406,7 @@ function tratarRetornoMercadoPago(status) {
     }
 
     localStorage.removeItem('dadosMatricula');
-    sessionStorage.removeItem('acessoMatricula'); //remove a sessão de acesso apos o usuario realizar a compra
+    sessionStorage.removeItem('acessoMatricula');
 }
 
 /* ===================== BOOT ===================== */
