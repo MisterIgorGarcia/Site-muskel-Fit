@@ -342,11 +342,15 @@ function tratarRetornoMercadoPago(status) {
     if (!dadosSalvosRaw) {
         formEl.style.display = 'none';
         
-        // ✅ NOVO: Esconde os botões e a seção de dúvidas
+        // Esconde a seção de ajuda, o selo de segurança e TODOS os botões amarelos, exceto o do WhatsApp
         const secaoAjuda = document.querySelector('.matricula-ajuda');
         if (secaoAjuda) secaoAjuda.style.display = 'none';
-        const botoesForm = document.querySelectorAll('.form-matricula .btn-amarelo');
-        botoesForm.forEach(btn => btn.style.display = 'none');
+        const seloSeguranca = document.querySelector('.selo-seguranca');
+        if (seloSeguranca) seloSeguranca.style.display = 'none';
+
+        document.querySelectorAll('.btn-amarelo').forEach(btn => {
+            if (btn.id !== 'btn-enviar-whatsapp') btn.style.display = 'none';
+        });
 
         painelConfirmacao.hidden = false;
         tituloEl.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> Dados não encontrados';
@@ -358,11 +362,15 @@ function tratarRetornoMercadoPago(status) {
     const dados = JSON.parse(dadosSalvosRaw);
     formEl.style.display = 'none';
 
-    // ✅ NOVO: Esconde os botões e a seção de dúvidas
+    // Esconde a seção de ajuda, o selo de segurança e TODOS os botões amarelos, exceto o do WhatsApp
     const secaoAjuda = document.querySelector('.matricula-ajuda');
     if (secaoAjuda) secaoAjuda.style.display = 'none';
-    const botoesForm = document.querySelectorAll('.form-matricula .btn-amarelo');
-    botoesForm.forEach(btn => btn.style.display = 'none');
+    const seloSeguranca = document.querySelector('.selo-seguranca');
+    if (seloSeguranca) seloSeguranca.style.display = 'none';
+
+    document.querySelectorAll('.btn-amarelo').forEach(btn => {
+        if (btn.id !== 'btn-enviar-whatsapp') btn.style.display = 'none';
+    });
 
     let icone, titulo, textoStatus;
     if (status === 'failure') {
