@@ -156,12 +156,17 @@ function atualizarPreviewPlano() {
 
 async function redirecionarParaPagamento(dados) {
     definirCarregando(true);
+    
+    // Pega o balão de aviso
+    const tooltip = document.getElementById('tooltip-pix');
+    const botao = document.querySelector('#form-matricula button[type="submit"]');
+    
     try {
         const resposta = await fetch('/api/criar-pagamento', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                tipo:       CONFIG.tipo,
+                tipo:       CONFIG.tipo, // Lembre de colocar 'unidade' e etc se for o prematricula
                 unidade:    dados.unidade,
                 modalidade: dados.modalidade,
                 planoId:    dados.planoId,
@@ -175,12 +180,25 @@ async function redirecionarParaPagamento(dados) {
             throw new Error(resultado.erro || 'Resposta inválida da API');
         }
 
-        localStorage.setItem('dadosMatricula', JSON.stringify(dados));
-        window.location.href = resultado.url;
+        // AVISO AO USUARIO
+        if (botao) botao.innerHTML = 'Aguarde o aviso...';
+        
+        if (tooltip) {
+            tooltip.classList.add('active'); // Mostra o balão
+        }
+
+        // Salva os dados (para não perder se ele demorar no app do banco)
+        localStorage.setItem('dadosMatricula', JSON.stringify(dados)); // Ou dadosPreMatricula
+
+        // Espera 4.5 segundos para o usuário ler, e depois redireciona
+        setTimeout(() => {
+            window.location.href = resultado.url;
+        }, 4500);
 
     } catch (erro) {
         console.error('Erro ao criar pagamento:', erro);
         definirCarregando(false);
+        if (tooltip) tooltip.classList.remove('active');
         alert('Não foi possível iniciar o pagamento agora. Tente novamente em instantes ou fale com a academia pelo WhatsApp.');
     }
 }
