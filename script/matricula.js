@@ -159,14 +159,14 @@ async function redirecionarParaPagamento(dados) {
     
     const tooltip = document.getElementById('tooltip-pix');
     const botao = document.querySelector('#form-matricula button[type="submit"]');
-    const timerEl = document.getElementById('timer-pix'); // Elemento do contador
+    const timerEl = document.getElementById('timer-pix'); // Contador do balão (opcional)
     
     try {
         const resposta = await fetch('/api/criar-pagamento', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                tipo:       CONFIG.tipo, // Lembre de ajustar isso se for o prematricula
+                tipo:       CONFIG.tipo, // Ajuste se necessário
                 unidade:    dados.unidade,
                 modalidade: dados.modalidade,
                 planoId:    dados.planoId,
@@ -180,22 +180,27 @@ async function redirecionarParaPagamento(dados) {
             throw new Error(resultado.erro || 'Resposta inválida da API');
         }
 
-        // ✅ MÁGICA DO AVISO COM CONTAGEM REGRESSIVA
-        if (botao) botao.innerHTML = 'Aguarde...';
-        
-        if (tooltip) {
-            tooltip.classList.add('active'); // Mostra o balão
-        }
+        // ✅ MÁGICA VISUAL NO BOTÃO E NO BALÃO
+        if (tooltip) tooltip.classList.add('active'); // Mostra o balão
 
         // Salva os dados antes de redirecionar
         localStorage.setItem('dadosMatricula', JSON.stringify(dados)); // Ou dadosPreMatricula
 
         let segundos = 4;
+        
+        // Transforma o botão em um contador
+        if (botao) {
+            botao.innerHTML = `<i class="fa-solid fa-hourglass-half fa-spin"></i> Redirecionando em <span id="timer-btn">${segundos}</span>s...`;
+        }
         if (timerEl) timerEl.textContent = segundos;
 
         // Atualiza a cada 1 segundo
         const intervalo = setInterval(() => {
             segundos--;
+            
+            // Atualiza o número tanto no botão quanto no balão
+            const timerBtnEl = document.getElementById('timer-btn');
+            if (timerBtnEl) timerBtnEl.textContent = segundos;
             if (timerEl) timerEl.textContent = segundos;
 
             // Quando chegar a 0, limpa o intervalo e vai pro Mercado Pago
