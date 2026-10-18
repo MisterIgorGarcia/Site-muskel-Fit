@@ -216,7 +216,7 @@ async function redirecionarParaPagamento(dados) {
             
             botao.innerHTML = `
                 <span style="font-size: 0.8rem; font-weight: normal; text-align: center; margin-bottom: 6px;">
-                    ⚠️ Após pagar o PIX, clique em <strong>"Voltar para Muskel Fit Academia"</strong> na tela do Mercado Pago!
+                    ⚠️ Após pagar o PIX, clique em <strong>"Voltar para Muskel Fit Academia"</strong> na tela do Mercado Pago para finalizar o pagamento!
                 </span>
                 <span style="font-weight: bold; font-size: 1.1rem; display: flex; align-items: center; gap: 8px;">
                     <i class="fa-solid fa-hourglass-half fa-spin"></i> Redirecionando em <span id="timer-btn">${segundos}</span>s...
