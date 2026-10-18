@@ -324,7 +324,7 @@ function tratarRetornoMercadoPago(status) {
         const seloSeguranca = document.querySelector('.selo-seguranca');
         if (seloSeguranca) seloSeguranca.style.display = 'none';
         const secaoHero = document.querySelector('.matricula-hero');
-        if (secaoHero) secaoAjuda.style.display = 'none';
+        if (secaoHero) secaoHero.style.display = 'none';
 
         document.querySelectorAll('.btn-amarelo').forEach(btn => {
             if (btn.id !== 'btn-enviar-whatsapp') btn.style.display = 'none';
@@ -346,7 +346,7 @@ function tratarRetornoMercadoPago(status) {
     const seloSeguranca = document.querySelector('.selo-seguranca');
     if (seloSeguranca) seloSeguranca.style.display = 'none';
     const secaoHero = document.querySelector('.matricula-hero');
-    if (secaoHero) secaoAjuda.style.display = 'none';
+    if (secaoHero) secaoHero.style.display = 'none';
 
     document.querySelectorAll('.btn-amarelo').forEach(btn => {
         if (btn.id !== 'btn-enviar-whatsapp') btn.style.display = 'none';
