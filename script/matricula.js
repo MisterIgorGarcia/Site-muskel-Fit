@@ -5,7 +5,7 @@ const CONFIG = {
 };
 
 let CATALOGO = null;
-let contadorInterval = null; // Controle do contador global
+let contadorInterval = null;
 
 /* ===================== HELPERS ===================== */
 
@@ -46,10 +46,10 @@ window.addEventListener('pageshow', (event) => {
         if (botao) {
             botao.disabled = false;
             botao.style.pointerEvents = 'auto';
+            botao.style.flexDirection = 'row';
+            botao.style.padding = '14px 30px';
             botao.innerHTML = `<i class="fa-solid fa-lock"></i> Ir para o pagamento`;
         }
-        const tooltip = document.getElementById('tooltip-pix');
-        if (tooltip) tooltip.classList.remove('active');
     } else {
         definirCarregando(false);
     }
@@ -170,9 +170,7 @@ function atualizarPreviewPlano() {
 /* ===================== REDIRECIONAMENTO PRO PAGAMENTO ===================== */
 
 async function redirecionarParaPagamento(dados) {
-    const tooltip = document.getElementById('tooltip-pix');
     const botao = document.querySelector('#form-matricula button[type="submit"]');
-    const timerEl = document.getElementById('timer-pix'); 
     
     // Desabilita o botão visualmente enquanto a API responde
     if (botao) {
@@ -203,22 +201,29 @@ async function redirecionarParaPagamento(dados) {
         // Salva os dados antes de redirecionar
         localStorage.setItem('dadosMatricula', JSON.stringify(dados));
 
-        if (tooltip) tooltip.classList.add('active');
-
         let segundos = 4;
         
-        // ✅ SUBSTITUI O CONTEÚDO DO BOTÃO TOTALMENTE
+        // ✅ TRANSFORMA O BOTÃO NO AVISO COM CONTADOR
         if (botao) {
-            botao.innerHTML = `<i class="fa-solid fa-hourglass-half fa-spin"></i> Redirecionando em <span id="timer-btn">${segundos}</span>s...`;
+            botao.style.flexDirection = 'column';
+            botao.style.padding = '12px 15px';
+            botao.style.lineHeight = '1.3';
+            
+            botao.innerHTML = `
+                <span style="font-size: 0.8rem; font-weight: normal; text-align: center; margin-bottom: 6px;">
+                    ⚠️ Após pagar o PIX, clique em <strong>"Voltar para Muskel Fit Academia"</strong> na tela do Mercado Pago!
+                </span>
+                <span style="font-weight: bold; font-size: 1.1rem; display: flex; align-items: center; gap: 8px;">
+                    <i class="fa-solid fa-hourglass-half fa-spin"></i> Redirecionando em <span id="timer-btn">${segundos}</span>s...
+                </span>
+            `;
         }
-        if (timerEl) timerEl.textContent = segundos;
 
         contadorInterval = setInterval(() => {
             segundos--;
             
             const timerBtnEl = document.getElementById('timer-btn');
             if (timerBtnEl) timerBtnEl.textContent = segundos;
-            if (timerEl) timerEl.textContent = segundos;
 
             if (segundos <= 0) {
                 clearInterval(contadorInterval);
@@ -233,9 +238,10 @@ async function redirecionarParaPagamento(dados) {
         if (botao) {
             botao.disabled = false;
             botao.style.pointerEvents = 'auto';
+            botao.style.flexDirection = 'row';
+            botao.style.padding = '14px 30px';
             botao.innerHTML = `<i class="fa-solid fa-lock"></i> Ir para o pagamento`;
         }
-        if (tooltip) tooltip.classList.remove('active');
         
         alert('Não foi possível iniciar o pagamento agora. Tente novamente em instantes ou fale com a academia pelo WhatsApp.');
     }

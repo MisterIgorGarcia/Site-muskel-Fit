@@ -1,150 +1,144 @@
-/* ===================== VARIÁVEIS DE COR =====================
-   O :root é a raiz do documento. Tudo que colocamos aqui vira uma "variável global".
-   Usar variáveis (--nome) permite trocar a cor do site inteiro em um lugar só. */
+/* ===================== VARIÁVEIS DE COR ===================== */
 :root {
-    --cor-primaria: #0d0d0d;   /* Preto profundo: fundo principal */
-    --cor-secundaria: #ffd60a; /* Amarelo vibrante: botões, destaques, títulos */
-    --cor-texto-claro: #f5f5f5; /* Branco suave: textos no fundo escuro */
-    --cor-card-fundo: rgb(24, 24, 24); /* Fundo de containers maiores */
-    --cor-card: #252525;       /* Cinza escuro: fundo de cards individuais */
+    --cor-primaria: #0d0d0d;
+    --cor-secundaria: #ffd60a;
+    --cor-texto-claro: #f5f5f5;
+    --cor-card-fundo: rgb(24, 24, 24);
+    --cor-card: #252525;
 }
 
-/* ===================== RESET BÁSICO =====================
-   O seletor '*' significa "todos os elementos da página".
-   Usamos isso para limpar os padrões dos navegadores (que variam) e nivelar tudo. */
+/* ===================== RESET BÁSICO ===================== */
 * {
-    margin: 0; /* Remove a margem padrão que o navegador coloca */
-    padding: 0; /* Remove o espaçamento interno padrão */
-    box-sizing: border-box; /* ⬅️ MUITO IMPORTANTE: faz o padding e a borda serem contados DENTRO da largura/altura do elemento, evitando que ele "estoure" para os lados */
-    font-family: Arial, Helvetica, sans-serif; /* Define a fonte padrão para o site todo */
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, Helvetica, sans-serif;
 }
 
 body {
-    background-color: var(--cor-primaria); /* Aplica o preto no fundo da página */
-    color: var(--cor-texto-claro); /* Deixa o texto branco por padrão */
-    line-height: 1.5; /* Espaçamento entre as linhas do texto (facilita a leitura) */
-    overflow-x: clip; /* Evita que a página crie uma barra de rolagem horizontal se algo "vazar" pra fora */
+    background-color: var(--cor-primaria);
+    color: var(--cor-texto-claro);
+    line-height: 1.5;
+    overflow-x: clip;
 }
 
 img,
 iframe {
-    max-width: 100%; /* Garante que imagens e mapas nunca fiquem maiores que a tela (importante pro celular) */
+    max-width: 100%;
 }
 
 /* ===================== CABEÇALHO ===================== */
 #cabecalho {
-    display: flex; /* Transforma o cabeçalho em um container flexível (alinha os itens na mesma linha) */
-    justify-content: space-between; /* Coloca a logo na esquerda e o menu na direita */
-    align-items: center; /* Alinha os itens verticalmente no centro */
-    padding: 20px 40px; /* Espaçamento interno: 20px em cima/baixo, 40px nas laterais */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 40px;
     background-color: var(--cor-primaria); 
-    border-bottom: 3px solid var(--cor-secundaria); /* A linha amarela que separa o topo */
+    border-bottom: 3px solid var(--cor-secundaria);
 }
 
 #cabecalho h1 {
-    color: var(--cor-secundaria); /* Logo "MUSKEL" em amarelo */
-    font-size: 1.8rem; /* Tamanho da fonte */
-    white-space: nowrap; /* Impede que a logo quebre de linha no celular */
+    color: var(--cor-secundaria);
+    font-size: 1.8rem;
+    white-space: nowrap;
 }
 
 #cabecalho h1 .spanfit {
-    color: var(--cor-texto-claro); /* A palavra "FIT" fica branca */
+    color: var(--cor-texto-claro);
 }
 
 #cabecalho h1 .spanm {
     color: var(--cor-secundaria);
-    font-size: 1.8em; /* O "M" fica quase o dobro do tamanho do resto */
-    font-weight: 900; /* Deixa o "M" super grosso */
-    line-height: 0.8; /* Aproxima as linhas para não esticar o cabeçalho */
-    vertical-align: -0.12em; /* Puxa o "M" um pouquinho pra baixo para alinhar a base com as outras letras */
-    margin-right: 1px; /* Dá 1 mísero pixel de respiro pra não colar no U */
+    font-size: 1.8em;
+    font-weight: 900;
+    line-height: 0.8;
+    vertical-align: -0.12em;
+    margin-right: 1px;
 }
 
 #cabecalho nav ul {
-    list-style: none; /* Tira as bolinhas (marcadores) da lista */
-    display: flex; /* Coloca os links um do lado do outro */
-    gap: 30px; /* Dá 30px de espaço entre um link e outro */
+    list-style: none;
+    display: flex;
+    gap: 30px;
 }
 
 #cabecalho nav a {
     color: var(--cor-texto-claro);
-    text-decoration: none; /* Tira o sublinhado feio dos links */
-    font-weight: bold; /* Deixa o texto grosso */
-    transition: color 0.3s; /* Efeito suave: a cor demora 0.3s pra mudar no hover */
+    text-decoration: none;
+    font-weight: bold;
+    transition: color 0.3s;
 }
 
 #cabecalho nav a:hover {
-    color: var(--cor-secundaria); /* Quando passa o mouse, o link fica amarelo */
+    color: var(--cor-secundaria);
 }
 
 /* ===================== MENU HAMBÚRGUER (MOBILE) ===================== */
 .btn-menu {
-    display: none; /* No computador, o menu hambúrguer fica escondido */
-    flex-direction: column; /* As 3 barrinhas ficam uma embaixo da outra */
-    justify-content: space-between; /* Distribui o espaço igualmente entre as barrinhas */
+    display: none;
+    flex-direction: column;
+    justify-content: space-between;
     width: 32px;
     height: 24px;
     background: transparent;
     border: none;
-    cursor: pointer; /* Muda o mouse para a mãozinha de clique */
+    cursor: pointer;
     padding: 0;
-    z-index: 1001; /* Coloca o botão "acima" de outras coisas na tela (eixo Z é a profundidade) */
+    z-index: 1001;
 }
 
 .btn-menu .linha {
     display: block;
-    height: 3px; /* Espessura da barrinha */
-    width: 100%; /* Ocupa toda a largura do botão */
+    height: 3px;
+    width: 100%;
     background-color: var(--cor-secundaria);
-    border-radius: 3px; /* Arredonda as pontas da barrinha */
-    transition: transform 0.3s, opacity 0.3s; /* Prepara a animação de virar um "X" */
+    border-radius: 3px;
+    transition: transform 0.3s, opacity 0.3s;
 }
 
-/* Quando o botão tem a classe 'ativo', as barrinhas se transformam num X */
 .btn-menu.ativo .linha:nth-child(1) {
-    transform: translateY(10px) rotate(45deg); /* A primeira desce e gira 45 graus */
+    transform: translateY(10px) rotate(45deg);
 }
 .btn-menu.ativo .linha:nth-child(2) {
-    opacity: 0; /* A do meio desaparece */
+    opacity: 0;
 }
 .btn-menu.ativo .linha:nth-child(3) {
-    transform: translateY(-10px) rotate(-45deg); /* A terceira sobe e gira -45 graus */
+    transform: translateY(-10px) rotate(-45deg);
 }
 
-/* ---------- Só no celular ---------- */
-@media (max-width: 768px) { /* Tudo aqui só funciona em telas menores que 768px */
+@media (max-width: 768px) {
     #cabecalho {
-        position: sticky; /* Faz o cabeçalho "colar" no topo da tela ao rolar a página */
-        top: 0; /* Diz que ele deve colar no topo (0px do topo) */
-        z-index: 1000; /* Fica acima do conteúdo que rola por baixo */
+        position: sticky;
+        top: 0;
+        z-index: 1000;
         flex-direction: row;
         justify-content: space-between;
         align-items: center;
     }
 
     .btn-menu {
-        display: flex; /* Mostra o botão hambúrguer no celular */
+        display: flex;
     }
 
     #menu-nav {
-        position: absolute; /* Tira o menu do fluxo normal e posiciona em relação ao cabeçalho */
-        top: 100%; /* Posiciona logo ABAIXO do cabeçalho */
+        position: absolute;
+        top: 100%;
         left: 0;
         width: 100%;
         background-color: var(--cor-primaria);
         border-bottom: 3px solid var(--cor-secundaria);
-        max-height: 0; /* Começa com altura 0 (escondido) */
-        overflow: hidden; /* Corta o que passar da altura, pro conteúdo não vazar */
-        transition: max-height 0.3s ease; /* Animação suave ao abrir/fechar */
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease;
         z-index: 1000;
     }
 
     #menu-nav.aberto {
-        max-height: 400px; /* Quando ganha a classe 'aberto', ele expande até 400px de altura */
+        max-height: 400px;
     }
 
     #menu-nav ul {
-        flex-direction: column; /* No celular, os links ficam em coluna */
+        flex-direction: column;
         gap: 0;
         padding: 10px 0;
     }
@@ -152,15 +146,15 @@ iframe {
     #menu-nav ul li {
         width: 100%;
         text-align: center;
-        border-bottom: 1px solid #222; /* Uma linha divisória bem sutil entre os links */
+        border-bottom: 1px solid #222;
     }
 
     #menu-nav ul li:last-child {
-        border-bottom: none; /* Remove a linha do último item (fica mais bonito) */
+        border-bottom: none;
     }
 
     #menu-nav ul li a {
-        display: block; /* Faz o link ocupar toda a largura, facilitando o toque no celular */
+        display: block;
         padding: 15px 20px;
         font-size: 1rem;
     }
@@ -172,65 +166,65 @@ iframe {
 
 /* ===================== LINHA SEPARADORA ===================== */
 .separador {
-    border: none; /* Remove a linha feia padrão do HTML */
-    height: 1px; /* Cria uma linha fininha de 1px */
-    background-color: rgba(255, 255, 255, 0.123); /* Cor branca com opacidade (quase transparente) */
+    border: none;
+    height: 1px;
+    background-color: rgba(255, 255, 255, 0.123);
     max-width: 1100px;
-    margin: 10px auto; /* 10px de espaço em cima/baixo, e 'auto' centraliza a linha */
+    margin: 10px auto;
 }
 
 /* ===================== BADGE DE STATUS ===================== */
 .status-atual {
-    display: inline-flex; /* Flexível, mas do tamanho do conteúdo, não quebra a linha */
+    display: inline-flex;
     align-items: center;
     gap: 10px;
     background-color: #1a1a1a;
     color: var(--cor-texto-claro);
     font-weight: bold;
     font-size: 0.85rem;
-    letter-spacing: 1px; /* Dá um espaço entre as letras do texto */
+    letter-spacing: 1px;
     padding: 8px 18px;
-    border-radius: 999px; /* Um valor alto de border-radius transforma a caixa numa "pílula" */
-    border: 1px solid #22c55e; /* Borda verde inicial */
+    border-radius: 999px;
+    border: 1px solid #22c55e;
     margin-bottom: 15px;
     transition: border-color 0.3s;
 }
 
 .bolinha {
-    position: relative; /* Necessário para posicionar o brilho (::after) por cima dela */
+    position: relative;
     display: inline-block;
     width: 10px;
     height: 10px;
     min-width: 10px;
     min-height: 10px;
-    flex-shrink: 0; /* Impede que a bolinha seja esmagada pelo texto ao lado */
+    flex-shrink: 0;
     background-color: #22c55e;
-    border-radius: 50%; /* Transforma o quadrado num círculo perfeito */
+    border-radius: 50%;
     transition: background-color 0.3s, box-shadow 0.3s;
 }
 
 .bolinha::after {
-    content: ""; /* Obrigatório para elementos ::after funcionarem (mesmo vazio) */
+    content: "";
     position: absolute;
     top: 50%;
     left: 50%;
     width: 10px;
     height: 10px;
-    transform: translate(-50%, -50%); /* Centraliza o brilho exatamente no meio da bolinha */
-    background-color: inherit; /* Puxa a mesma cor do elemento pai (.bolinha) */
+    transform: translate(-50%, -50%);
+    background-color: inherit;
     border-radius: 50%;
-    animation: pulsar-status 1.8s ease-out infinite; /* Aplica a animação de pulsar infinitamente */
-    pointer-events: none; /* O brilho não atrapalha se o usuário tentar clicar */
+    animation: pulsar-status 1.8s ease-out infinite;
+    pointer-events: none;
 }
 
 @keyframes pulsar-status {
     0% {
-        transform: translate(-50%, -50%) scale(1); /* Começa do tamanho normal */
-        opacity: 0.8; /* Um pouco transparente */
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 0.8;
     }
     100% {
-        transform: translate(-50%, -50%) scale(2.5); /* Cresce 2.5 vezes de tamanho */
-        opacity: 0; /* Fica invisível (some) */
+        transform: translate(-50%, -50%) scale(2.5);
+        opacity: 0;
     }
 }
 
@@ -243,13 +237,13 @@ iframe {
     padding: 80px 20px;
     background-color: var(--cor-primaria);
     text-align: left; 
-    max-width: 1100px; /* Limita a largura máxima para não ficar esticado em telas gigantes */
-    margin: 0 auto; /* O 'auto' nas laterais centraliza o bloco na tela */
-    flex-wrap: wrap; /* Se não couber lado a lado no celular, joga o texto pra baixo da imagem */
+    max-width: 1100px;
+    margin: 0 auto;
+    flex-wrap: wrap;
 }
 
 .hero-texto {
-    flex: 1; /* Pede para ocupar todo o espaço restante disponível */
+    flex: 1;
     max-width: 550px;
 }
 
@@ -257,7 +251,7 @@ iframe {
     flex: 1;
     display: flex;
     justify-content: center;
-    position: relative; /* Permite que o brilho (::before) seja posicionado em relação a esta div */
+    position: relative;
 }
 
 .hero-imagem::before {
@@ -265,19 +259,19 @@ iframe {
     position: absolute;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%); /* Centraliza perfeitamente */
-    width: min(280px, 70vw); /* O tamanho será o menor entre 280px e 70% da tela. Responsivo! */
+    transform: translate(-50%, -50%);
+    width: min(280px, 70vw);
     height: min(280px, 70vw);
     background: radial-gradient(
         circle,
-        rgba(255, 214, 10, 0.55) 0%, /* Amarelo forte no centro */
-        rgba(255, 214, 10, 0.25) 35%, /* Amarelo fraco no meio */
-        transparent 70% /* Transparente nas bordas */
+        rgba(255, 214, 10, 0.55) 0%,
+        rgba(255, 214, 10, 0.25) 35%,
+        transparent 70%
     );
     border-radius: 50%;
-    z-index: 0; /* Fica atrás da imagem */
+    z-index: 0;
     pointer-events: none;
-    filter: blur(20px); /* Deixa o brilho desfocado e suave */
+    filter: blur(20px);
 }
 
 .hero-imagem img {
@@ -285,9 +279,9 @@ iframe {
     max-width: 420px;
     height: auto;
     display: block;
-    animation: flutuar 3s ease-in-out infinite; /* Animação de subir e descer */
+    animation: flutuar 3s ease-in-out infinite;
     position: relative;
-    z-index: 1; /* Fica na frente do brilho */
+    z-index: 1;
 }
 
 .hero h2 {
@@ -303,7 +297,7 @@ iframe {
 
 .hero-botoes {
     display: flex;
-    flex-wrap: wrap; /* Se os botões não couberem na linha, vão pra de baixo */
+    flex-wrap: wrap;
     gap: 15px;
     margin-top: 20px;
 }
@@ -319,35 +313,35 @@ iframe {
     border-radius: 6px;
     cursor: pointer;
     transition: transform 0.2s, background-color 0.2s;
-    display: inline-flex; /* Permite alinhar ícone e texto */
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 8px; /* Espaço entre o ícone e o texto */
+    gap: 8px;
     text-align: center;
     text-decoration: none;
-    font-family: inherit; /* Botões HTML não herdam a fonte por padrão, isso força eles a usarem a fonte do site */
+    font-family: inherit;
     line-height: 1; 
     box-sizing: border-box; 
 }
 
 @keyframes flutuar {
-    0%, 100% { transform: translateY(0); } /* Começa e termina no lugar normal */
-    50%      { transform: translateY(-15px); } /* No meio da animação, sobe 15px */
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(-15px); }
 }
 
 .btn-amarelo:hover {
-    background-color: #ffe066; /* Clareia o amarelo */
-    transform: scale(1.05); /* Aumenta o botão em 5% */
+    background-color: #ffe066;
+    transform: scale(1.05);
 }
 
 /* ===================== BOTÃO AMARELO PREMIUM ===================== */
 .btn-amarelo-premium {
-    position: relative; /* Necessário para o 'shine' funcionar */
-    overflow: hidden; /* Corta o brilho que passar pra fora do botão */
-    background: linear-gradient(135deg, #ffe44d 0%, #ffd60a 50%, #ccaa00 100%); /* Gradiente de amarelos */
-    background-size: 200% 200%; /* Aumenta o fundo pro efeito de movimento funcionar */
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(135deg, #ffe44d 0%, #ffd60a 50%, #ccaa00 100%);
+    background-size: 200% 200%;
     color: var(--cor-primaria);
-    border: 2px solid #c0c0c0; /* Borda prateada */
+    border: 2px solid #c0c0c0;
     padding: 14px 30px;
     font-weight: bold;
     font-size: 1rem;
@@ -364,62 +358,61 @@ iframe {
     line-height: 1;
     box-sizing: border-box;
 
-    /* Sombra e brilho inicial */
     box-shadow: 0 0 20px rgba(255, 214, 10, 0.4), 0 0 40px rgba(255, 214, 10, 0.2);
-    animation: brilho 2s ease-in-out infinite; /* Pisca o brilho */
+    animation: brilho 2s ease-in-out infinite;
 }
 
 .btn-amarelo-premium::before {
     content: "";
     position: absolute;
     top: 0;
-    left: -100%; /* Começa escondido pra esquerda */
+    left: -100%;
     width: 100%;
     height: 100%;
-    background: linear-gradient(120deg, transparent 30%, rgba(255, 255, 255, 0.75) 50%, transparent 70%); /* Um feixe de luz branca */
-    animation: shine 3s ease-in-out infinite; /* Atravessa o botão */
+    background: linear-gradient(120deg, transparent 30%, rgba(255, 255, 255, 0.75) 50%, transparent 70%);
+    animation: shine 3s ease-in-out infinite;
     pointer-events: none;
 }
 
 @keyframes brilho {
-    50% { box-shadow: 0 0 30px rgba(255, 214, 10, 0.7), 0 0 60px rgba(255, 214, 10, 0.4); } /* Intensifica a sombra */
+    50% { box-shadow: 0 0 30px rgba(255, 214, 10, 0.7), 0 0 60px rgba(255, 214, 10, 0.4); }
 }
 
 @keyframes shine {
-    0%          { left: -100%; } /* Começa fora */
-    60%, 100%   { left: 100%; } /* Vai pra direita e fica lá até reiniciar */
+    0%          { left: -100%; }
+    60%, 100%   { left: 100%; }
 }
 
 .btn-amarelo-premium:hover {
-    background-position: 100% 100%; /* Move o gradiente */
+    background-position: 100% 100%;
     transform: scale(1.05);
     box-shadow: 0 0 30px rgba(255, 214, 10, 0.9), 0 0 60px rgba(255, 214, 10, 0.6);
-    animation-play-state: paused; /* Para a pulsação no hover */
+    animation-play-state: paused;
 }
 
 /* ===================== SELO DE POR TEMPO LIMITADO ===================== */
 .btn-com-selo-lateral {
-    position: relative; /* Para o selo se posicionar em relação ao botão */
+    position: relative;
     display: inline-block;
     max-width: 100%;
 }
 
 .selo-lateral {
     position: absolute;
-    top: 50%; /* Centraliza verticalmente em relação ao botão */
-    right: -110px; /* Joga pra fora do botão (direita) */
-    transform: translateY(-50%); /* Ajuste fino da centralização */
-    background: linear-gradient(135deg, #ff3b3b, #cc0000); /* Vermelho */
+    top: 50%;
+    right: -110px;
+    transform: translateY(-50%);
+    background: linear-gradient(135deg, #ff3b3b, #cc0000);
     color: #fff;
     font-size: 0.7rem;
     font-weight: 900;
     letter-spacing: 1px;
-    text-transform: uppercase; /* Tudo maiúsculo */
+    text-transform: uppercase;
     text-align: center;
     line-height: 1.1;
     padding: 10px 14px;
     border-radius: 8px;
-    white-space: nowrap; /* Não quebra o texto em várias linhas */
+    white-space: nowrap;
     z-index: 2;
     box-shadow: 0 6px 16px rgba(255, 59, 59, 0.5);
     animation: pulsar-selo-lateral 1.5s ease-in-out infinite;
@@ -430,18 +423,17 @@ iframe {
 
 .selo-lateral i {
     font-size: 1rem;
-    animation: balancar-fogo 0.6s ease-in-out infinite alternate; /* Faz o fogo balançar */
+    animation: balancar-fogo 0.6s ease-in-out infinite alternate;
 }
 
 .selo-lateral::before {
     content: "";
     position: absolute;
     top: 50%;
-    left: -10px; /* Joga pra esquerda pra fora da caixa */
+    left: -10px;
     transform: translateY(-50%);
     width: 0;
     height: 0;
-    /* Truque de CSS: bordas com cores transparentes criam um triângulo */
     border-top: 10px solid transparent;
     border-bottom: 10px solid transparent;
     border-right: 10px solid #cc0000; 
@@ -453,8 +445,8 @@ iframe {
 }
 
 @keyframes balancar-fogo {
-    0%   { transform: rotate(-8deg); } /* Inclina pra esquerda */
-    100% { transform: rotate(8deg); } /* Inclina pra direita */
+    0%   { transform: rotate(-8deg); }
+    100% { transform: rotate(8deg); }
 }
 
 /* ===================== SEÇÃO MAPA ===================== */
@@ -473,7 +465,7 @@ iframe {
 
 .mapa-texto {
     flex: 1;
-    min-width: 280px; /* Garante que não fique espremido */
+    min-width: 280px;
     max-width: 480px;
 }
 
@@ -483,7 +475,7 @@ iframe {
     margin-bottom: 25px;
     color: var(--cor-texto-claro);
     padding-bottom: 12px;
-    position: relative; /* Para a linha embaixo */
+    position: relative;
     display: inline-block;
 }
 
@@ -492,7 +484,7 @@ iframe {
     position: absolute;
     left: 0;
     bottom: 0;
-    width: 100%; /* Linha do tamanho do texto */
+    width: 100%;
     height: 4px;
     background-color: var(--cor-secundaria);
     border-radius: 2px;
@@ -503,7 +495,7 @@ iframe {
     padding: 0;
     margin: 0;
     display: flex;
-    flex-direction: column; /* Cards um embaixo do outro */
+    flex-direction: column;
     gap: 12px;
 }
 
@@ -516,24 +508,24 @@ iframe {
     border-radius: 10px;
     padding: 14px 18px;
     border: 1px solid #2a2a2a;
-    text-decoration: none; /* Tira o sublinhado do link */
+    text-decoration: none;
     color: var(--cor-texto-claro);
     transition: border-color 0.3s, transform 0.3s, background-color 0.3s;
     cursor: pointer;
 }
 
 .bloco-info:hover {
-    border-color: var(--cor-secundaria); /* Borda amarela ao passar o mouse */
+    border-color: var(--cor-secundaria);
     background-color: #222222;
-    transform: translateX(5px); /* "Empurra" o card um pouquinho pra direita */
+    transform: translateX(5px);
 }
 
 .bloco-info i {
     font-size: 1.6rem;
     color: var(--cor-secundaria);
-    min-width: 32px; /* Garante que os ícones fiquem alinhados mesmo com tamanhos diferentes */
+    min-width: 32px;
     text-align: center;
-    flex-shrink: 0; /* Não deixa o ícone amassar */
+    flex-shrink: 0;
 }
 
 .bloco-info div {
@@ -542,7 +534,7 @@ iframe {
     align-items: flex-start;
     text-align: left;
     gap: 3px;
-    min-width: 0; /* Truque para permitir que textos longos quebrem a linha no flexbox */
+    min-width: 0;
 }
 
 .bloco-info strong {
@@ -557,18 +549,18 @@ iframe {
     line-height: 1.4;
 }
 
-.bloco-instagram:hover { border-color: #E1306C; } /* Cor da marca do Instagram */
-.bloco-whatsapp:hover  { border-color: #25D366; } /* Cor da marca do WhatsApp */
+.bloco-instagram:hover { border-color: #E1306C; }
+.bloco-whatsapp:hover  { border-color: #25D366; }
 .bloco-endereco:hover  { border-color: var(--cor-secundaria); }
 
 .mapa-container {
-    flex: 1 1 600px; /* Cresce e encolhe, base de 600px */
+    flex: 1 1 600px;
     max-width: 700px;
-    aspect-ratio: 16 / 9; /* Mantém a proporção do mapa (widescreen) para não distorcer */
+    aspect-ratio: 16 / 9;
     min-height: 250px;
     border-radius: 10px;
     overflow: hidden;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4); /* Sombra pra dar profundidade */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
 }
 
 .mapa-container iframe {
@@ -580,7 +572,7 @@ iframe {
 
 @media (max-width: 768px) {
     #localizacao {
-        flex-direction: column; /* Mapa vai pra baixo do texto no celular */
+        flex-direction: column;
         text-align: center;
         padding: 50px 20px;
         gap: 30px;
@@ -591,7 +583,7 @@ iframe {
     }
 
     .mapa-texto h2 {
-        margin: 0 auto 20px; /* Centraliza a linha do título */
+        margin: 0 auto 20px;
     }
 
     .mapa-container {
@@ -604,7 +596,7 @@ iframe {
 /* ===================== SEÇÕES SOBRE (CARDS) ===================== */
 .card-sobre {
     background-color: var(--cor-card);
-    border: 2px solid transparent; /* Borda invisível (para não "pular" ao ganhar cor no hover) */
+    border: 2px solid transparent;
     border-radius: 10px;
     padding: 30px;
     width: 250px;
@@ -616,19 +608,19 @@ iframe {
 }
 
 .card-sobre h1 i {
-    color: var(--cor-secundaria); /* Ícone do card amarelo */
+    color: var(--cor-secundaria);
 }
 
 .card-sobre-grupo {
     display: flex;
-    flex-wrap: wrap; /* Permite que os cards desçam para a próxima linha */
+    flex-wrap: wrap;
     justify-content: center;
     gap: 30px;
     margin-top: 40px;
 }
 
 .card-sobre:hover {
-    border-color: var(--cor-secundaria); /* Mostra a borda amarela */
+    border-color: var(--cor-secundaria);
 }
 
 /* ===================== SEÇÕES GERAIS ===================== */
@@ -644,7 +636,7 @@ iframe {
 
 .secao p {
     max-width: 700px;
-    margin: 0 auto; /* Centraliza o parágrafo */
+    margin: 0 auto;
     color: #cccccc;
     line-height: 1.6;
 }
@@ -659,7 +651,7 @@ iframe {
     max-width: 600px;
     text-align: center;
     border-radius: 10px;
-    margin: 0 auto; /* Centraliza a caixa de fundo */
+    margin: 0 auto;
     background: #141414;
 }
 
@@ -672,29 +664,28 @@ iframe {
 }
 
 .destaque {
-    color: var(--cor-secundaria); /* Texto amarelo pra destacar */
+    color: var(--cor-secundaria);
 }
 
 .secao-escura {
-    background-color: #111111; /* Fundo um pouquinho mais claro que o body, pra criar contraste entre seções */
+    background-color: #111111;
 }
 
 /* ===================== SEÇÃO DE PLANOS ===================== */
 #planos {
-    display: grid; /* Grid é ótimo para alinhar cards em colunas perfeitas */
-    /* Cria colunas automáticas, com tamanho mínimo de 220px e máximo de 250px */
+    display: grid;
     grid-template-columns: repeat(auto-fit, minmax(220px, 250px));
-    justify-content: center; /* Centraliza os cards na tela */
+    justify-content: center;
     gap: 25px;
     max-width: 1200px; 
     margin: 0 auto; 
     padding: 60px 20px;
-    align-items: stretch; /* Faz todos os cards da mesma linha terem a mesma altura */
+    align-items: stretch;
 }
 
 #planos > h2,
 #planos > .titulo-grupo-planos {
-    grid-column: 1 / -1; /* Força o título a ocupar a linha inteira (da coluna 1 até a última) */
+    grid-column: 1 / -1;
     text-align: center;
     color: var(--cor-texto-claro);
 }
@@ -712,7 +703,7 @@ iframe {
 }
 
 .card {
-    background: linear-gradient(145deg, #2a2a2a 0%, #1e1e1e 100%); /* Gradiente diagonal pra dar 3D */
+    background: linear-gradient(145deg, #2a2a2a 0%, #1e1e1e 100%);
     border: 1px solid #333;
     border-radius: 12px;
     padding: 25px 15px 20px; 
@@ -733,19 +724,19 @@ iframe {
     left: 0;
     width: 100%;
     height: 4px;
-    background-color: var(--cor-secundaria); /* Linha amarela no topo do card */
+    background-color: var(--cor-secundaria);
     opacity: 0.7;
     transition: opacity 0.3s;
 }
 
 .card:hover {
-    transform: translateY(-5px); /* Card sobe ao passar o mouse */
+    transform: translateY(-5px);
     border-color: var(--cor-secundaria);
     box-shadow: 0 8px 25px rgba(255, 214, 10, 0.15);
 }
 
 .card:hover::before {
-    opacity: 1; /* Acende a linha do topo */
+    opacity: 1;
     box-shadow: 0 0 10px var(--cor-secundaria);
 }
 
@@ -767,7 +758,7 @@ iframe {
     font-size: 1.3rem;
     font-weight: bold;
     color: var(--cor-texto-claro);
-    background: rgba(0, 0, 0, 0.4); /* Caixa preta semi-transparente pro preço */
+    background: rgba(0, 0, 0, 0.4);
     padding: 8px 12px;
     border-radius: 8px;
     width: 100%;
@@ -789,7 +780,7 @@ iframe {
     padding: 0;
     text-align: left;
     width: 100%;
-    flex-grow: 1; /* Empurra o conteúdo pro fundo, alinhando os botões se um card for mais alto */
+    flex-grow: 1;
 }
 
 .card ul li {
@@ -803,7 +794,7 @@ iframe {
 }
 
 .card ul li .fa-triangle-exclamation {
-    color: #f97316; /* Laranja de aviso */
+    color: #f97316;
     margin-top: 2px;
 }
 
@@ -814,7 +805,7 @@ iframe {
     }
     
     #planos {
-        grid-template-columns: 1fr; /* 1 coluna só no celular */
+        grid-template-columns: 1fr;
         max-width: 320px; 
     }
 }
@@ -887,14 +878,14 @@ iframe {
     font-weight: bold;
     letter-spacing: 0.5px;
     text-transform: uppercase;
-    border-radius: 999px; /* Tag arredondada tipo pílula */
+    border-radius: 999px;
     border: 1px solid;
 }
 
 .horario-tag.aberto {
     color: #22c55e;
     border-color: #22c55e;
-    background-color: rgba(34, 197, 94, 0.1); /* Fundo verde bem clarinho */
+    background-color: rgba(34, 197, 94, 0.1);
 }
 
 .horario-tag.atencao {
@@ -929,7 +920,7 @@ iframe {
 /* ===================== CARD DO CRONÔMETRO ===================== */
 .horario-status-card {
     background-color: #1a1a1a;
-    border: 1px solid rgba(34, 197, 94, 0.4); /* Borda verde suave */
+    border: 1px solid rgba(34, 197, 94, 0.4);
     border-radius: 14px;
     padding: 22px 26px;
     align-items: center;
@@ -944,7 +935,7 @@ iframe {
 }
 
 .horario-status-card.fechado {
-    border-color: rgba(255, 214, 10, 0.4); /* Borda amarela quando fechado */
+    border-color: rgba(255, 214, 10, 0.4);
 }
 
 .horario-cronometro {
@@ -954,7 +945,7 @@ iframe {
     color: var(--cor-secundaria);
     font-size: 1.6rem;
     font-weight: bold;
-    font-variant-numeric: tabular-nums; /* Força os números a terem a MESMA largura, evitando que o cronômetro fique "pulando" de lado quando muda de 9 pra 10 */
+    font-variant-numeric: tabular-nums;
 }
 
 .horario-cronometro i {
@@ -1006,7 +997,7 @@ iframe {
 
 /* ===================== RODAPÉ ===================== */
 footer {
-    background-color: #000; /* Preto puro, mais escuro que o resto do site */
+    background-color: #000;
     border-top: 3px solid var(--cor-secundaria);
     color: #999;
     padding: 0; 
@@ -1014,7 +1005,7 @@ footer {
 
 .footer-conteudo {
     display: grid;
-    grid-template-columns: 1.3fr 1fr 1.3fr; /* Divide o rodapé em 3 colunas de tamanhos diferentes */
+    grid-template-columns: 1.3fr 1fr 1.3fr;
     gap: 50px;
     max-width: 1100px;
     margin: 0 auto;
@@ -1067,7 +1058,7 @@ footer {
     height: 40px;
     background-color: #1a1a1a;
     border: 1px solid #2a2a2a;
-    border-radius: 50%; /* Deixa os ícones redondos */
+    border-radius: 50%;
     color: var(--cor-texto-claro);
     font-size: 1.1rem;
     text-decoration: none;
@@ -1098,7 +1089,7 @@ footer {
 
 .footer-coluna ul a:hover {
     color: var(--cor-secundaria);
-    padding-left: 5px; /* Desloca o link pra direita quando passa o mouse */
+    padding-left: 5px;
 }
 
 .footer-contato li {
@@ -1111,7 +1102,7 @@ footer {
 
 .footer-contato li i {
     color: var(--cor-secundaria);
-    margin-top: 3px; /* Alinha o ícone com a primeira linha do texto */
+    margin-top: 3px;
     min-width: 16px;
 }
 
@@ -1149,9 +1140,9 @@ footer {
 }
 
 #btn-topo {
-    position: fixed; /* Fixa o botão na tela, rolando junto com o usuário */
-    bottom: 25px; /* 25px do fundo da tela */
-    right: 25px; /* 25px da direita da tela */
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
     width: 46px;
     height: 46px;
     border-radius: 50%;
@@ -1163,16 +1154,16 @@ footer {
     display: flex;
     align-items: center;
     justify-content: center;
-    opacity: 0; /* Invisível inicialmente */
-    pointer-events: none; /* Não pode ser clicado enquanto invisível */
+    opacity: 0;
+    pointer-events: none;
     transition: opacity 0.3s, transform 0.3s;
     z-index: 999;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
 }
 
 #btn-topo.visivel {
-    opacity: 1; /* Fica visível quando o JS adiciona a classe */
-    pointer-events: auto; /* Permite o clique */
+    opacity: 1;
+    pointer-events: auto;
 }
 
 #btn-topo:hover {
@@ -1198,10 +1189,10 @@ footer {
 
 @media (max-width: 900px) {
     .footer-conteudo {
-        grid-template-columns: 1fr; /* Empilha as colunas no celular */
+        grid-template-columns: 1fr;
         gap: 35px;
         padding: 45px 25px 30px;
-        text-align: center; /* Centraliza o texto no celular */
+        text-align: center;
     }
 
     .footer-redes {
@@ -1241,7 +1232,7 @@ footer {
     }
 
     .hero {
-        flex-direction: column-reverse; /* Inverte a ordem: texto em cima, imagem embaixo */
+        flex-direction: column-reverse;
         padding: 40px 20px;
         text-align: center;
     }
@@ -1263,7 +1254,7 @@ footer {
     }
 
     .hero-botoes .btn-amarelo {
-        flex: 1 1 100%; /* Faz os botões ocuparem a largura toda, um por linha */
+        flex: 1 1 100%;
     }
 
     .secao {
@@ -1303,7 +1294,7 @@ footer {
 }
 
 @media (max-width: 600px) {
-   .status-atual {
+    .status-atual {
         font-size: 0.75rem;
         padding: 6px 14px;
     }
@@ -1350,21 +1341,20 @@ footer {
     }
 
     .selo-lateral {
-        position: static; /* No celular, o selo perde o posicionamento absoluto */
+        position: static;
         transform: none;
         animation: pulsar-selo-lateral-mobile 1.5s ease-in-out infinite;
-        order: -1; /* Força o selo a ir pra cima do botão */
+        order: -1;
         font-size: 0.7rem;
         padding: 8px 16px;
     }
 
-    /* No celular, a setinha do triângulo aponta pra baixo */
     .selo-lateral::before {
-        top: auto; /* Tira do topo */
-        bottom: -10px; /* Joga pra baixo */
+        top: auto;
+        bottom: -10px;
         left: 50%;
         transform: translateX(-50%);
-        border-top: 10px solid #cc0000; /* Inverte as bordas pro triângulo apontar pra baixo */
+        border-top: 10px solid #cc0000;
         border-bottom: none;
         border-left: 10px solid transparent;
         border-right: 10px solid transparent;
@@ -1425,7 +1415,7 @@ footer {
     margin-top: 40px;
     margin-bottom: 18px;
     padding-left: 15px;
-    border-left: 4px solid var(--cor-secundaria); /* Barra amarela na esquerda do título */
+    border-left: 4px solid var(--cor-secundaria);
 }
 
 .pagina-legal-conteudo h3 {
@@ -1448,7 +1438,7 @@ footer {
 }
 
 .pagina-legal-conteudo ul li::before {
-    content: "✔"; /* Cria um check personalizado no lugar da bolinha */
+    content: "✔";
     color: var(--cor-secundaria);
     position: absolute;
     left: 0;
@@ -1475,7 +1465,7 @@ footer {
     margin-top: 30px;
     padding: 20px 25px;
     background-color: #1a1a1a;
-    border-left: 4px solid var(--cor-secundaria); /* Destaque lateral */
+    border-left: 4px solid var(--cor-secundaria);
     border-radius: 8px;
     color: #d0d0d0;
     font-style: italic;
@@ -1536,7 +1526,7 @@ footer {
 
 .form-matricula {
     display: flex;
-    flex-direction: column; /* Campos um embaixo do outro */
+    flex-direction: column;
     gap: 18px;
     max-width: 520px;
     margin: 0 auto;
@@ -1546,7 +1536,7 @@ footer {
 .form-matricula .campo {
     display: flex;
     flex-direction: column;
-    gap: 6px; /* Espaço entre o label e o input */
+    gap: 6px;
 }
 
 .form-matricula label {
@@ -1570,16 +1560,14 @@ footer {
     transition: border-color 0.2s;
 }
 
-/* Quando o usuário clica no campo, a borda fica amarela */
 .form-matricula input:focus,
 .form-matricula select:focus {
-    outline: none; /* Remove aquele contorno azul/roxo padrão do navegador */
+    outline: none;
     border-color: var(--cor-secundaria);
 }
 
-/* Estilo dos botões de rádio (PIX, Débito, Crédito) */
 .campo-radio {
-    border: none; /* Tira a caixa que o HTML coloca por padrão no fieldset */
+    border: none;
     padding: 0;
     display: flex;
     gap: 10px;
@@ -1611,19 +1599,16 @@ footer {
     border-color: var(--cor-secundaria); 
 }
 
-/* Esconde a bolinha padrão do rádio para criar um visual customizado */
 .campo-radio input[type="radio"] { 
     display: none; 
 }
 
-/* :has() verifica se o input dentro do label está checado. Se sim, muda a cor da caixa inteira */
 .campo-radio label:has(input:checked) {
     border-color: var(--cor-secundaria);
     background-color: rgba(255, 214, 10, 0.1);
     color: var(--cor-secundaria);
 }
 
-/* Painel de pagamento (aparece após o Mercado Pago) */
 .painel-pagamento {
     margin: 30px auto 0;
     max-width: 520px;
@@ -1640,10 +1625,10 @@ footer {
 }
 
 .qrcode-pix {
-    background: #fff; /* Fundo branco porque o QR Code precisa de contraste */
+    background: #fff;
     padding: 10px;
     border-radius: 10px;
-    width: fit-content; /* A caixa se ajusta ao tamanho do QR Code */
+    width: fit-content;
     margin: 20px auto;
 }
 
@@ -1663,7 +1648,7 @@ footer {
     padding: 10px;
     border-radius: 8px;
     font-size: 0.78rem;
-    font-family: monospace; /* Fonte de código para o código do PIX ficar mais legível */
+    font-family: monospace;
 }
 
 .aviso-pix {
@@ -1674,11 +1659,11 @@ footer {
 
 @media (max-width: 600px) {
     .campo-radio label { 
-        width: 100%; /* Botões de rádio ocupam a linha toda no celular */
+        width: 100%;
         justify-content: center; 
     }
     .pix-copia-cola { 
-        flex-direction: column; /* O botão de copiar fica embaixo do input no celular */
+        flex-direction: column;
     }
 }
 
@@ -1699,7 +1684,6 @@ footer {
     animation: fadeInAviso 0.4s ease-out; 
 }
 
-/* Garante que o atributo 'hidden' do HTML realmente esconda a caixa */
 .aviso-plano-prematricula[hidden] {
     display: none !important;
 }
@@ -1715,8 +1699,8 @@ footer {
 }
 
 @keyframes fadeInAviso {
-    from { opacity: 0; transform: translateY(-5px); } /* Começa invisível e um pouquinho pra cima */
-    to { opacity: 1; transform: translateY(0); } /* Fica visível e desce pro lugar */
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 /* ===================== PREVIEW DA MATRÍCULA FUTURA ===================== */
@@ -1779,7 +1763,7 @@ footer {
     gap: 8px;
     padding: 8px 16px;
     border: 1px solid #2a2a2a;
-    border-radius: 999px; /* Pílula */
+    border-radius: 999px;
     transition: border-color 0.3s, color 0.3s;
 }
 
@@ -1800,7 +1784,7 @@ footer {
     font-size: 0.8rem;
     font-weight: bold;
     letter-spacing: 2px;
-    text-transform: uppercase; /* Texto pequeno e espaçado acima do título */
+    text-transform: uppercase;
 }
 
 .matricula-titulo {
@@ -1870,14 +1854,13 @@ footer {
     align-items: center;
     gap: 10px;
     padding-bottom: 14px;
-    border-bottom: 1px solid #1f1f1f; /* Linha separadora embaixo do título do bloco */
+    border-bottom: 1px solid #1f1f1f;
 }
 
 .form-bloco-titulo i {
     font-size: 1.1rem;
 }
 
-/* Preview que mostra o valor antes de pagar */
 .preview-plano {
     background: linear-gradient(135deg, #1a1a1a 0%, #141414 100%);
     border: 2px solid var(--cor-secundaria);
@@ -1889,12 +1872,12 @@ footer {
 }
 
 .preview-plano[hidden] {
-    display: none !important; /* Força o preview a sumir quando hidden estiver ativo */
+    display: none !important;
 }
 
 .preview-linha {
     display: flex;
-    justify-content: space-between; /* Coloca o texto de um lado e o valor do outro */
+    justify-content: space-between;
     align-items: center;
     color: #b5b5b5;
     font-size: 0.95rem;
@@ -1907,13 +1890,13 @@ footer {
 
 .preview-valor {
     padding-top: 12px;
-    border-top: 1px solid #2a2a2a; /* Linha separando o total */
+    border-top: 1px solid #2a2a2a;
     font-size: 1.1rem;
 }
 
 .preview-valor strong {
     color: var(--cor-secundaria);
-    font-size: 1.6rem; /* Preço total bem grande */
+    font-size: 1.6rem;
 }
 
 .form-acoes {
@@ -1923,7 +1906,7 @@ footer {
 }
 
 .form-acoes .btn-voltar {
-    flex: 1; /* Botão voltar ocupa menos espaço */
+    flex: 1;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1945,7 +1928,7 @@ footer {
 }
 
 .form-acoes .btn-pagar {
-    flex: 2; /* Botão de pagar ocupa 2x mais espaço que o de voltar */
+    flex: 2;
 }
 
 .selo-seguranca {
@@ -1960,7 +1943,7 @@ footer {
 }
 
 .selo-seguranca i {
-    color: #22c55e; /* Cadeado verde */
+    color: #22c55e;
     font-size: 1rem;
 }
 
@@ -1982,94 +1965,6 @@ footer {
     margin-bottom: 20px;
 }
 
-/* ===================== TOOLTIP DE AVISO PIX ===================== */
-.btn-wrapper {
-    position: relative;
-    display: inline-block;
-    flex: 2; /* Para manter o tamanho original no flexbox do form-acoes */
-}
-
-.tooltip-pix {
-    position: absolute;
-    bottom: 100%; /* Fica logo acima do botão */
-    left: 50%;
-    transform: translateX(-50%) translateY(10px);
-    background-color: #ffd60a; /* Amarelo da marca */
-    color: #0d0d0d;
-    padding: 15px;
-    border-radius: 10px;
-    width: 300px;
-    text-align: center;
-    font-size: 0.9rem;
-    line-height: 1.4;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-    z-index: 100;
-    
-    /* Oculto por padrão */
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.3s, transform 0.3s;
-}
-
-/* Classe que o JS vai ativar */
-.tooltip-pix.active {
-    opacity: 1;
-    visibility: visible;
-    transform: translateX(-50%) translateY(-15px); /* Efeito de subida */
-}
-
-/* Setinha do balão apontando pra baixo */
-.tooltip-seta {
-    position: absolute;
-    bottom: -10px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 0;
-    height: 0;
-    border-left: 10px solid transparent;
-    border-right: 10px solid transparent;
-    border-top: 10px solid #ffd60a;
-}
-
-/* Animação de pulsar para chamar a atenção */
-@keyframes pulsarAviso {
-    0% { box-shadow: 0 0 0 0 rgba(255, 214, 10, 0.7); }
-    70% { box-shadow: 0 0 0 15px rgba(255, 214, 10, 0); }
-    100% { box-shadow: 0 0 0 0 rgba(255, 214, 10, 0); }
-}
-
-.tooltip-pix.active {
-    animation: pulsarAviso 1.5s infinite;
-}
-
-/* Responsividade para celular */
-@media (max-width: 600px) {
-    .tooltip-pix {
-        width: 260px;
-        font-size: 0.8rem;
-    }
-}
-
-/* ===================== CONTADOR DO TOOLTIP ===================== */
-.countdown-container {
-    margin-top: 12px;
-    padding-top: 10px;
-    border-top: 1px dashed rgba(0, 0, 0, 0.2); /* Linha separadora */
-    font-size: 1.1rem;
-    font-weight: bold;
-    color: #cc0000; /* Vermelho para dar senso de urgência */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-}
-
-.countdown-container i {
-    font-size: 1.2rem;
-}
-
-
-/*=================== UTILS =================================== */
 @media (max-width: 768px) {
     .matricula-hero {
         padding: 45px 20px 35px;
@@ -2096,7 +1991,7 @@ footer {
     }
 
     .form-acoes {
-        flex-direction: column-reverse; /* No celular, o botão de pagar fica em cima do voltar */
+        flex-direction: column-reverse;
     }
 
     .form-acoes .btn-voltar,
