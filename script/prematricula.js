@@ -342,14 +342,20 @@ function tratarRetornoMercadoPago(status) {
     if (!dadosSalvosRaw) {
         formEl.style.display = 'none';
         
-        // Esconde a seção de ajuda, o selo de segurança e TODOS os botões amarelos, exceto o do WhatsApp
+        // ✅ ESCONDE A SEÇÃO DE AJUDA, O SELO, A CAIXA CINZA (SECAO-SUB) E OS BOTÕES
         const secaoAjuda = document.querySelector('.matricula-ajuda');
         if (secaoAjuda) secaoAjuda.style.display = 'none';
+
         const seloSeguranca = document.querySelector('.selo-seguranca');
         if (seloSeguranca) seloSeguranca.style.display = 'none';
 
+        const secaoSub = document.querySelector('.secao-sub'); // ⬅️ NOVO: Esconde a caixa cinza
+        if (secaoSub) secaoSub.style.display = 'none';
+
         document.querySelectorAll('.btn-amarelo').forEach(btn => {
-            if (btn.id !== 'btn-enviar-whatsapp') btn.style.display = 'none';
+            if (btn.id !== 'btn-enviar-whatsapp') {
+                btn.style.display = 'none';
+            }
         });
 
         painelConfirmacao.hidden = false;
@@ -362,14 +368,20 @@ function tratarRetornoMercadoPago(status) {
     const dados = JSON.parse(dadosSalvosRaw);
     formEl.style.display = 'none';
 
-    // Esconde a seção de ajuda, o selo de segurança e TODOS os botões amarelos, exceto o do WhatsApp
+    // ✅ ESCONDE A SEÇÃO DE AJUDA, O SELO, A CAIXA CINZA (SECAO-SUB) E OS BOTÕES
     const secaoAjuda = document.querySelector('.matricula-ajuda');
     if (secaoAjuda) secaoAjuda.style.display = 'none';
+
     const seloSeguranca = document.querySelector('.selo-seguranca');
     if (seloSeguranca) seloSeguranca.style.display = 'none';
 
+    const secaoSub = document.querySelector('.secao-sub'); // Esconde a caixa cinza
+    if (secaoSub) secaoSub.style.display = 'none';
+
     document.querySelectorAll('.btn-amarelo').forEach(btn => {
-        if (btn.id !== 'btn-enviar-whatsapp') btn.style.display = 'none';
+        if (btn.id !== 'btn-enviar-whatsapp') {
+            btn.style.display = 'none';
+        }
     });
 
     let icone, titulo, textoStatus;
