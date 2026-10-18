@@ -5,6 +5,7 @@ const CONFIG = {
 };
 
 let CATALOGO = null;
+let contadorInterval = null; // Controle do contador global
 
 /* ===================== HELPERS ===================== */
 
@@ -38,7 +39,21 @@ function definirCarregando(carregando) {
     botao.disabled = carregando;
     botao.innerHTML = carregando ? 'Aguarde...' : botao.dataset.textoOriginal;
 }
-window.addEventListener('pageshow', () => definirCarregando(false));
+window.addEventListener('pageshow', (event) => {
+    if (event.persisted) {
+        if (contadorInterval) clearInterval(contadorInterval);
+        const botao = document.querySelector('#form-matricula button[type="submit"]');
+        if (botao) {
+            botao.disabled = false;
+            botao.style.pointerEvents = 'auto';
+            botao.innerHTML = `<i class="fa-solid fa-lock"></i> Ir para o pagamento`;
+        }
+        const tooltip = document.getElementById('tooltip-pix');
+        if (tooltip) tooltip.classList.remove('active');
+    } else {
+        definirCarregando(false);
+    }
+});
 
 /* ===================== CATÁLOGO ===================== */
 
@@ -155,18 +170,23 @@ function atualizarPreviewPlano() {
 /* ===================== REDIRECIONAMENTO PRO PAGAMENTO ===================== */
 
 async function redirecionarParaPagamento(dados) {
-    definirCarregando(true);
-    
     const tooltip = document.getElementById('tooltip-pix');
     const botao = document.querySelector('#form-matricula button[type="submit"]');
-    const timerEl = document.getElementById('timer-pix'); // Contador do balão (opcional)
+    const timerEl = document.getElementById('timer-pix'); 
     
+    // Desabilita o botão visualmente enquanto a API responde
+    if (botao) {
+        botao.disabled = true;
+        botao.style.pointerEvents = 'none';
+        botao.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Aguarde...`;
+    }
+
     try {
         const resposta = await fetch('/api/criar-pagamento', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                tipo:       CONFIG.tipo, // Ajuste se necessário
+                tipo:       CONFIG.tipo,
                 unidade:    dados.unidade,
                 modalidade: dados.modalidade,
                 planoId:    dados.planoId,
@@ -180,40 +200,43 @@ async function redirecionarParaPagamento(dados) {
             throw new Error(resultado.erro || 'Resposta inválida da API');
         }
 
-        // ✅ MÁGICA VISUAL NO BOTÃO E NO BALÃO
-        if (tooltip) tooltip.classList.add('active'); // Mostra o balão
-
         // Salva os dados antes de redirecionar
-        localStorage.setItem('dadosMatricula', JSON.stringify(dados)); // Ou dadosPreMatricula
+        localStorage.setItem('dadosMatricula', JSON.stringify(dados));
+
+        if (tooltip) tooltip.classList.add('active');
 
         let segundos = 4;
         
-        // Transforma o botão em um contador
+        // ✅ SUBSTITUI O CONTEÚDO DO BOTÃO TOTALMENTE
         if (botao) {
             botao.innerHTML = `<i class="fa-solid fa-hourglass-half fa-spin"></i> Redirecionando em <span id="timer-btn">${segundos}</span>s...`;
         }
         if (timerEl) timerEl.textContent = segundos;
 
-        // Atualiza a cada 1 segundo
-        const intervalo = setInterval(() => {
+        contadorInterval = setInterval(() => {
             segundos--;
             
-            // Atualiza o número tanto no botão quanto no balão
             const timerBtnEl = document.getElementById('timer-btn');
             if (timerBtnEl) timerBtnEl.textContent = segundos;
             if (timerEl) timerEl.textContent = segundos;
 
-            // Quando chegar a 0, limpa o intervalo e vai pro Mercado Pago
             if (segundos <= 0) {
-                clearInterval(intervalo);
+                clearInterval(contadorInterval);
                 window.location.href = resultado.url;
             }
         }, 1000);
 
     } catch (erro) {
         console.error('Erro ao criar pagamento:', erro);
-        definirCarregando(false);
+        
+        // Restaura o botão em caso de erro
+        if (botao) {
+            botao.disabled = false;
+            botao.style.pointerEvents = 'auto';
+            botao.innerHTML = `<i class="fa-solid fa-lock"></i> Ir para o pagamento`;
+        }
         if (tooltip) tooltip.classList.remove('active');
+        
         alert('Não foi possível iniciar o pagamento agora. Tente novamente em instantes ou fale com a academia pelo WhatsApp.');
     }
 }
@@ -351,7 +374,6 @@ function tratarRetornoMercadoPago(status) {
     if (!dadosSalvosRaw) {
         formEl.style.display = 'none';
         
-        // Esconde a seção de ajuda, o selo de segurança e TODOS os botões amarelos, exceto o do WhatsApp
         const secaoAjuda = document.querySelector('.matricula-ajuda');
         if (secaoAjuda) secaoAjuda.style.display = 'none';
         const seloSeguranca = document.querySelector('.selo-seguranca');
@@ -373,7 +395,6 @@ function tratarRetornoMercadoPago(status) {
     const dados = JSON.parse(dadosSalvosRaw);
     formEl.style.display = 'none';
 
-    // Esconde a seção de ajuda, o selo de segurança e TODOS os botões amarelos, exceto o do WhatsApp
     const secaoAjuda = document.querySelector('.matricula-ajuda');
     if (secaoAjuda) secaoAjuda.style.display = 'none';
     const seloSeguranca = document.querySelector('.selo-seguranca');
