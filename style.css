@@ -2050,6 +2050,26 @@ footer {
     }
 }
 
+/* ===================== CONTADOR DO TOOLTIP ===================== */
+.countdown-container {
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px dashed rgba(0, 0, 0, 0.2); /* Linha separadora */
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #cc0000; /* Vermelho para dar senso de urgência */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.countdown-container i {
+    font-size: 1.2rem;
+}
+
+
+/*=================== UTILS =================================== */
 @media (max-width: 768px) {
     .matricula-hero {
         padding: 45px 20px 35px;

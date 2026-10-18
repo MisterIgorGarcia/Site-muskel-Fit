@@ -157,16 +157,16 @@ function atualizarPreviewPlano() {
 async function redirecionarParaPagamento(dados) {
     definirCarregando(true);
     
-    // Pega o balão de aviso
     const tooltip = document.getElementById('tooltip-pix');
     const botao = document.querySelector('#form-matricula button[type="submit"]');
+    const timerEl = document.getElementById('timer-pix'); // Elemento do contador
     
     try {
         const resposta = await fetch('/api/criar-pagamento', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                tipo:       CONFIG.tipo, // Lembre de colocar 'unidade' e etc se for o prematricula
+                tipo:       CONFIG.tipo, // Lembre de ajustar isso se for o prematricula
                 unidade:    dados.unidade,
                 modalidade: dados.modalidade,
                 planoId:    dados.planoId,
@@ -180,20 +180,30 @@ async function redirecionarParaPagamento(dados) {
             throw new Error(resultado.erro || 'Resposta inválida da API');
         }
 
-        // AVISO AO USUARIO
-        if (botao) botao.innerHTML = 'Aguarde o aviso...';
+        // ✅ MÁGICA DO AVISO COM CONTAGEM REGRESSIVA
+        if (botao) botao.innerHTML = 'Aguarde...';
         
         if (tooltip) {
             tooltip.classList.add('active'); // Mostra o balão
         }
 
-        // Salva os dados (para não perder se ele demorar no app do banco)
+        // Salva os dados antes de redirecionar
         localStorage.setItem('dadosMatricula', JSON.stringify(dados)); // Ou dadosPreMatricula
 
-        // Espera 4.5 segundos para o usuário ler, e depois redireciona
-        setTimeout(() => {
-            window.location.href = resultado.url;
-        }, 4500);
+        let segundos = 4;
+        if (timerEl) timerEl.textContent = segundos;
+
+        // Atualiza a cada 1 segundo
+        const intervalo = setInterval(() => {
+            segundos--;
+            if (timerEl) timerEl.textContent = segundos;
+
+            // Quando chegar a 0, limpa o intervalo e vai pro Mercado Pago
+            if (segundos <= 0) {
+                clearInterval(intervalo);
+                window.location.href = resultado.url;
+            }
+        }, 1000);
 
     } catch (erro) {
         console.error('Erro ao criar pagamento:', erro);
