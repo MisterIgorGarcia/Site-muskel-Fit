@@ -146,7 +146,7 @@ iframe {
     #menu-nav ul {
         flex-direction: column; /* No celular, os links ficam em coluna */
         gap: 0;
-        padding: 10px 0;
+        padding: 5px 0;
     }
 
     #menu-nav ul li {
