@@ -18,12 +18,12 @@ async function carregarDados() {
 
         let valorTotal = 0;
 
-                // --- TABELA DE MATRÍCULAS ---
+        // --- TABELA DE MATRÍCULAS ---
         const tbodyMat = document.getElementById('tabela-matriculas-body');
         tbodyMat.innerHTML = '';
         
         if (dados.matriculas.length === 0) {
-            const colunas = cargo === 'dono' ? 7 : 6; // Mudou de 6:5 para 7:6
+            const colunas = cargo === 'dono' ? 7 : 6; 
             tbodyMat.innerHTML = `<tr><td colspan="${colunas}" style="text-align:center;">Nenhuma matrícula registrada.</td></tr>`;
         } else {
             dados.matriculas.forEach(item => {
@@ -31,10 +31,8 @@ async function carregarDados() {
                 const valor = Number(item.preco) || 0;
                 valorTotal += valor;
 
-                // Se for dono, mostra a coluna de valor. Se for funcionário, esconde.
                 const colunaValor = cargo === 'dono' ? `<td class="destaque-valor">R$ ${valor.toFixed(2).replace('.', ',')}</td>` : '';
                 
-                // NOVO: Botão de excluir (só aparece para o dono)
                 const colunaAcao = cargo === 'dono' 
                     ? `<td><button onclick="removerRegistro(${item.id}, 'matricula')" style="background: transparent; border: none; color: #ef4444; cursor: pointer;" title="Excluir"><i class="fa-solid fa-trash"></i></button></td>` 
                     : '';
@@ -58,7 +56,7 @@ async function carregarDados() {
         tbodyPre.innerHTML = '';
 
         if (dados.prematriculas.length === 0) {
-            const colunas = cargo === 'dono' ? 7 : 6; // Mudou de 6:5 para 7:6
+            const colunas = cargo === 'dono' ? 7 : 6; 
             tbodyPre.innerHTML = `<tr><td colspan="${colunas}" style="text-align:center;">Nenhuma pré-matrícula registrada.</td></tr>`;
         } else {
             dados.prematriculas.forEach(item => {
@@ -68,7 +66,6 @@ async function carregarDados() {
 
                 const colunaValor = cargo === 'dono' ? `<td class="destaque-valor">R$ ${valor.toFixed(2).replace('.', ',')}</td>` : '';
                 
-                // NOVO: Botão de excluir (só aparece para o dono)
                 const colunaAcao = cargo === 'dono' 
                     ? `<td><button onclick="removerRegistro(${item.id}, 'prematricula')" style="background: transparent; border: none; color: #ef4444; cursor: pointer;" title="Excluir"><i class="fa-solid fa-trash"></i></button></td>` 
                     : '';
@@ -90,10 +87,15 @@ async function carregarDados() {
         // --- ATUALIZAR CARDS ---
         document.getElementById('total-registros').innerText = dados.matriculas.length + dados.prematriculas.length;
         
-        // O valor total só existe na tela do dono
         const cardArrecadado = document.getElementById('total-arrecadado');
         if (cardArrecadado) {
             cardArrecadado.innerText = `R$ ${valorTotal.toFixed(2).replace('.', ',')}`;
+        }
+
+        // Junta todos os registros em uma única lista para os gráficos
+        if (cargo === 'dono') {
+            const todosOsRegistros = [...dados.matriculas, ...dados.prematriculas];
+            renderizarGraficos(todosOsRegistros);
         }
 
     } catch (erro) {
@@ -103,7 +105,6 @@ async function carregarDados() {
         if (btnAtualizar) btnAtualizar.innerHTML = '<i class="fa-solid fa-rotate-right"></i> Atualizar Dados';
     }
 }
-
 /* ===================== REMOVER REGISTRO INDIVIDUAL ===================== */
 
 async function removerRegistro(id, tipo) {
