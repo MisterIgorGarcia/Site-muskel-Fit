@@ -92,5 +92,109 @@ async function carregarDados() {
     }
 }
 
+/* ===================== GERENCIAR FUNCIONÁRIOS ===================== */
+
+// Assim que a página carregar, busca a lista de funcionários (apenas se os elementos existirem na tela)
+document.addEventListener('DOMContentLoaded', () => {
+    if (document.getElementById('tabela-usuarios-body')) {
+        carregarUsuarios();
+    }
+});
+
+// FUNÇÃO 1: Buscar e Listar
+async function carregarUsuarios() {
+    try {
+        const resposta = await fetch('/api/admin-controle-usuarios');
+        const usuarios = await resposta.json();
+        const tbody = document.getElementById('tabela-usuarios-body');
+        
+        if (!tbody) return;
+        tbody.innerHTML = '';
+
+        usuarios.forEach(user => {
+            // O dono principal (id 1) não pode ser excluído pela interface
+            let acoes = `<span style="color: #666; font-size: 0.8rem;"><i class="fa-solid fa-lock"></i> Protegido</span>`;
+            
+            if (user.id !== 1) {
+                acoes = `
+                    <button onclick="deletarUsuario(${user.id})" style="background: transparent; border: none; color: #ef4444; cursor: pointer; padding: 5px;" title="Remover Acesso">
+                        <i class="fa-solid fa-trash"></i> Remover
+                    </button>
+                `;
+            }
+
+            tbody.innerHTML += `
+                <tr>
+                    <td>#${user.id}</td>
+                    <td><strong>${user.usuario}</strong></td>
+                    <td><span style="background: ${user.cargo === 'dono' ? '#ffd60a' : '#333'}; color: ${user.cargo === 'dono' ? '#000' : '#fff'}; padding: 3px 8px; border-radius: 4px; font-size: 0.8rem;">${user.cargo}</span></td>
+                    <td>${acoes}</td>
+                </tr>
+            `;
+        });
+    } catch (erro) {
+        console.error('Erro ao carregar usuários:', erro);
+    }
+}
+
+// FUNÇÃO 2: Adicionar Funcionário
+async function adicionarFuncionario() {
+    const usuario = document.getElementById('novo-user').value.trim();
+    const senha = document.getElementById('nova-senha').value.trim();
+
+    if (!usuario || !senha) {
+        return alert('Preencha o nome de usuário e a senha para adicionar.');
+    }
+
+    try {
+        const resposta = await fetch('/api/admin-controle-usuarios', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ usuario, senha, cargo: 'funcionario' })
+        });
+
+        const resultado = await resposta.json();
+
+        if (!resposta.ok) throw new Error(resultado.erro || 'Erro ao adicionar funcionário');
+
+        alert('Funcionário adicionado com sucesso!');
+        
+        // Limpa os campos após adicionar
+        document.getElementById('novo-user').value = '';
+        document.getElementById('nova-senha').value = '';
+        
+        // Atualiza a tabela na tela
+        carregarUsuarios(); 
+
+    } catch (erro) {
+        alert(erro.message);
+    }
+}
+
+// FUNÇÃO 3: Remover Funcionário
+async function deletarUsuario(id) {
+    if (!confirm('Tem certeza que deseja remover o acesso deste funcionário? Ele não conseguirá mais fazer login.')) {
+        return;
+    }
+
+    try {
+        const resposta = await fetch('/api/admin-controle-usuarios', {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id })
+        });
+
+        const resultado = await resposta.json();
+
+        if (!resposta.ok) throw new Error(resultado.erro || 'Erro ao deletar usuário');
+
+        // Atualiza a tabela na tela
+        carregarUsuarios(); 
+
+    } catch (erro) {
+        alert(erro.message);
+    }
+}
+
 // Carrega os dados assim que a página abre
 document.addEventListener('DOMContentLoaded', carregarDados);

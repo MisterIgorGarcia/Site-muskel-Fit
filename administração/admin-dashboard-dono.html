@@ -80,6 +80,43 @@
                     </table>
                 </div>
             </div>
+            <!-- ===================== GERENCIAR FUNCIONÁRIOS ===================== -->
+            <div style="margin-top: 50px; padding-top: 30px; border-top: 1px solid #333;">
+                <h3><i class="fa-solid fa-users-gear"></i> Gerenciar Acessos da Equipe</h3>
+                
+                <!-- Formulário de Adição -->
+                <div class="admin-card" style="margin-top: 15px; align-items: flex-end; gap: 15px; flex-wrap: wrap; background-color: #141414; border-left-color: #3b82f6;">
+                    <div style="flex: 1; min-width: 150px;">
+                        <label style="color: #999; font-size: 0.85rem; margin-bottom: 5px; display: block;">Novo Usuário</label>
+                        <input type="text" id="novo-user" placeholder="Ex: joao.silva" style="width: 100%; padding: 12px; border-radius: 5px; border: 1px solid #333; background: #0d0d0d; color: #fff; outline: none;">
+                    </div>
+                    <div style="flex: 1; min-width: 150px;">
+                        <label style="color: #999; font-size: 0.85rem; margin-bottom: 5px; display: block;">Senha de Acesso</label>
+                        <input type="text" id="nova-senha" placeholder="Ex: senha123" style="width: 100%; padding: 12px; border-radius: 5px; border: 1px solid #333; background: #0d0d0d; color: #fff; outline: none;">
+                    </div>
+                    <button onclick="adicionarFuncionario()" class="btn-amarelo" style="padding: 12px 20px; height: 43px;">
+                        <i class="fa-solid fa-plus"></i> Adicionar
+                    </button>
+                </div>
+
+                <!-- Tabela de Funcionários -->
+                <div class="tabela-responsiva" style="margin-top: 20px;">
+                    <table class="tabela-admin">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Usuário</th>
+                                <th>Cargo</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabela-usuarios-body">
+                            <!-- O JavaScript vai injetar os funcionários aqui -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <!-- ===================== FIM GERENCIAR FUNCIONÁRIOS ===================== -->
         </main>
     </div>
 
