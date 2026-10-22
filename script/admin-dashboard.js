@@ -23,7 +23,7 @@ async function carregarDados() {
         tbodyMat.innerHTML = '';
         
         if (dados.matriculas.length === 0) {
-            const colunas = cargo === 'dono' ? 7 : 6; 
+            const colunas = cargo === 'dono' ? 8 : 7; 
             tbodyMat.innerHTML = `<tr><td colspan="${colunas}" style="text-align:center;">Nenhuma matrícula registrada.</td></tr>`;
         } else {
             dados.matriculas.forEach(item => {
@@ -43,6 +43,7 @@ async function carregarDados() {
                         <td><strong>${item.nome}</strong></td>
                         <td>${item.celular}</td>
                         <td>${item.unidade}</td>
+                        <td>${item.modalidade}</td>
                         <td>${item.plano}</td>
                         ${colunaValor}
                         ${colunaAcao}
@@ -56,7 +57,7 @@ async function carregarDados() {
         tbodyPre.innerHTML = '';
 
         if (dados.prematriculas.length === 0) {
-            const colunas = cargo === 'dono' ? 7 : 6; 
+            const colunas = cargo === 'dono' ? 8 : 7; 
             tbodyPre.innerHTML = `<tr><td colspan="${colunas}" style="text-align:center;">Nenhuma pré-matrícula registrada.</td></tr>`;
         } else {
             dados.prematriculas.forEach(item => {
@@ -76,6 +77,7 @@ async function carregarDados() {
                         <td><strong>${item.nome}</strong></td>
                         <td>${item.celular}</td>
                         <td>${item.unidade}</td>
+                        <td>${item.modalidade}</td>
                         <td>${item.plano}</td>
                         ${colunaValor}
                         ${colunaAcao}
