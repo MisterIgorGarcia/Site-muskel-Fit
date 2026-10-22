@@ -6,6 +6,10 @@ if (!cargo) {
     window.location.href = 'admin.html';
 }
 
+// Variáveis globais para o Gráfico Único com Filtros
+let instanciaGrafico = null;
+let dadosGlobais = { matriculas: [], prematriculas: [] };
+
 async function carregarDados() {
     const btnAtualizar = document.getElementById('btn-atualizar');
     if (btnAtualizar) btnAtualizar.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Buscando...';
@@ -94,10 +98,13 @@ async function carregarDados() {
             cardArrecadado.innerText = `R$ ${valorTotal.toFixed(2).replace('.', ',')}`;
         }
 
-        // Junta todos os registros em uma única lista para os gráficos
-        if (cargo === 'dono') {
-            const todosOsRegistros = [...dados.matriculas, ...dados.prematriculas];
-            renderizarGraficos(todosOsRegistros);
+        // ✅ SALVA OS DADOS NA MEMÓRIA GLOBAL PARA O GRÁFICO
+        dadosGlobais.matriculas = dados.matriculas;
+        dadosGlobais.prematriculas = dados.prematriculas;
+
+        // Desenha o gráfico apenas se for o dono e se o canvas existir na tela
+        if (cargo === 'dono' && document.getElementById('grafico-unico')) {
+            atualizarGraficoFiltrado();
         }
 
     } catch (erro) {
@@ -107,6 +114,75 @@ async function carregarDados() {
         if (btnAtualizar) btnAtualizar.innerHTML = '<i class="fa-solid fa-rotate-right"></i> Atualizar Dados';
     }
 }
+
+/* ===================== GRÁFICO ÚNICO COM FILTROS ===================== */
+
+function atualizarGraficoFiltrado() {
+    // Pega os valores dos filtros (se não existirem na tela, assume o padrão)
+    const origemEl = document.getElementById('filtro-origem');
+    const agrupamentoEl = document.getElementById('filtro-agrupamento');
+    
+    const origem = origemEl ? origemEl.value : 'todos';
+    const agrupamento = agrupamentoEl ? agrupamentoEl.value : 'plano';
+
+    // 1. Junta os dados baseados na origem selecionada
+    let dadosBase = [];
+    if (origem === 'todos') {
+        dadosBase = [...dadosGlobais.matriculas, ...dadosGlobais.prematriculas];
+    } else if (origem === 'matriculas') {
+        dadosBase = dadosGlobais.matriculas;
+    } else {
+        dadosBase = dadosGlobais.prematriculas;
+    }
+
+    // 2. Conta as ocorrências baseadas no agrupamento selecionado
+    const contagem = {};
+    dadosBase.forEach(item => {
+        const valor = item[agrupamento] || 'Não informado';
+        contagem[valor] = (contagem[valor] || 0) + 1;
+    });
+
+    const labels = Object.keys(contagem);
+    const data = Object.values(contagem);
+
+    // 3. Desenha ou atualiza o gráfico
+    const canvas = document.getElementById('grafico-unico');
+    if (!canvas) return;
+
+    const cores = ['#ffd60a', '#3b82f6', '#ef4444', '#22c55e', '#a855f7', '#f97316'];
+
+    if (instanciaGrafico) {
+        // Se o gráfico já existe, apenas atualiza os dados
+        instanciaGrafico.data.labels = labels;
+        instanciaGrafico.data.datasets[0].data = data;
+        instanciaGrafico.update();
+    } else {
+        // Se não existe, cria o gráfico do zero
+        instanciaGrafico = new Chart(canvas, {
+            type: 'pie',
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: data,
+                    backgroundColor: cores,
+                    borderWidth: 2,
+                    borderColor: '#141414'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { 
+                        position: 'right',
+                        labels: { color: '#ffffff', font: { size: 13, family: 'Arial' } } 
+                    }
+                }
+            }
+        });
+    }
+}
+
 /* ===================== REMOVER REGISTRO INDIVIDUAL ===================== */
 
 async function removerRegistro(id, tipo) {
@@ -131,13 +207,6 @@ async function removerRegistro(id, tipo) {
 }
 
 /* ===================== GERENCIAR FUNCIONÁRIOS ===================== */
-
-// Assim que a página carregar, busca a lista de funcionários (apenas se os elementos existirem na tela)
-document.addEventListener('DOMContentLoaded', () => {
-    if (document.getElementById('tabela-usuarios-body')) {
-        carregarUsuarios();
-    }
-});
 
 // FUNÇÃO 1: Buscar e Listar
 async function carregarUsuarios() {
@@ -234,83 +303,13 @@ async function deletarUsuario(id) {
     }
 }
 
-/* ===================== RENDERIZAR GRÁFICOS ===================== */
+/* ===================== INICIALIZAÇÃO ===================== */
 
-// Variável global para armazenar as instâncias dos gráficos (evita sobreposição ao atualizar)
-let graficos = {};
-
-function renderizarGraficos(todosOsRegistros) {
-    // Se não for dono, não desenha os gráficos
-    if (cargo !== 'dono') return;
-
-    // Função auxiliar para contar as ocorrências
-    function contarOcorrencias(array, propriedade) {
-        const contagem = {};
-        array.forEach(item => {
-            const valor = item[propriedade] || 'Não informado';
-            contagem[valor] = (contagem[valor] || 0) + 1;
-        });
-        return {
-            labels: Object.keys(contagem),
-            data: Object.values(contagem)
-        };
+// Carrega os dados e usuários assim que a página abre
+document.addEventListener('DOMContentLoaded', () => {
+    carregarDados();
+    
+    if (document.getElementById('tabela-usuarios-body')) {
+        carregarUsuarios();
     }
-
-    // Cores do tema da academia para os gráficos
-    const cores = ['#ffd60a', '#3b82f6', '#ef4444', '#22c55e', '#a855f7', '#f97316'];
-    const configuracaoBase = {
-        plugins: {
-            legend: { labels: { color: '#ffffff', font: { size: 11 } } }
-        }
-    };
-
-    // Se os gráficos já existirem, destrói eles antes de criar os novos
-    Object.values(graficos).forEach(grafico => grafico.destroy());
-
-    // 1. Gráfico de Planos
-    const dadosPlano = contarOcorrencias(todosOsRegistros, 'plano');
-    graficos.planos = new Chart(document.getElementById('chartPlanos'), {
-        type: 'pie',
-        data: {
-            labels: dadosPlano.labels,
-            datasets: [{ data: dadosPlano.data, backgroundColor: cores, borderWidth: 1 }]
-        },
-        options: configuracaoBase
-    });
-
-    // 2. Gráfico de Unidades
-    const dadosUnidade = contarOcorrencias(todosOsRegistros, 'unidade');
-    graficos.unidades = new Chart(document.getElementById('chartUnidades'), {
-        type: 'pie',
-        data: {
-            labels: dadosUnidade.labels,
-            datasets: [{ data: dadosUnidade.data, backgroundColor: cores, borderWidth: 1 }]
-        },
-        options: configuracaoBase
-    });
-
-    // 3. Gráfico de Modalidades
-    const dadosModalidade = contarOcorrencias(todosOsRegistros, 'modalidade');
-    graficos.modalidades = new Chart(document.getElementById('chartModalidades'), {
-        type: 'pie',
-        data: {
-            labels: dadosModalidade.labels,
-            datasets: [{ data: dadosModalidade.data, backgroundColor: cores, borderWidth: 1 }]
-        },
-        options: configuracaoBase
-    });
-
-    // 4. Gráfico de Pagamentos
-    const dadosPagamento = contarOcorrencias(todosOsRegistros, 'pagamento');
-    graficos.pagamentos = new Chart(document.getElementById('chartPagamentos'), {
-        type: 'pie',
-        data: {
-            labels: dadosPagamento.labels,
-            datasets: [{ data: dadosPagamento.data, backgroundColor: cores, borderWidth: 1 }]
-        },
-        options: configuracaoBase
-    });
-}
-
-// Carrega os dados assim que a página abre
-document.addEventListener('DOMContentLoaded', carregarDados);
+});

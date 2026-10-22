@@ -29,25 +29,36 @@
                 <button id="btn-atualizar" class="btn-amarelo" onclick="carregarDados()"><i class="fa-solid fa-rotate-right"></i> Atualizar Dados</button>
             </div>
 
-            <!-- ===================== GRÁFICOS ===================== -->
-            <div class="admin-charts-container">
-                <div class="chart-box">
-                    <h4>Por Plano</h4>
-                    <canvas id="chartPlanos"></canvas>
+            <!-- ===================== GRÁFICO COM FILTROS ===================== -->
+            <div class="admin-card" style="flex-direction: column; align-items: stretch; margin-bottom: 40px; background-color: #141414;">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; margin-bottom: 20px;">
+                    <h3 style="color: var(--cor-secundaria); font-size: 1.2rem; margin: 0;">
+                        <i class="fa-solid fa-chart-pie"></i> Análise de Dados
+                    </h3>
+                    
+                    <!-- Filtros -->
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                        <select id="filtro-origem" class="admin-select" onchange="atualizarGraficoFiltrado()">
+                            <option value="todos">Visão Geral (Tudo)</option>
+                            <option value="matriculas">Somente Matrículas</option>
+                            <option value="prematriculas">Somente Pré-Matrículas</option>
+                        </select>
+
+                        <select id="filtro-agrupamento" class="admin-select" onchange="atualizarGraficoFiltrado()">
+                            <option value="plano">Agrupar por Plano</option>
+                            <option value="unidade">Agrupar por Unidade</option>
+                            <option value="modalidade">Agrupar por Modalidade</option>
+                            <option value="pagamento">Agrupar por Pagamento</option>
+                        </select>
+                    </div>
                 </div>
-                <div class="chart-box">
-                    <h4>Por Unidade</h4>
-                    <canvas id="chartUnidades"></canvas>
-                </div>
-                <div class="chart-box">
-                    <h4>Por Modalidade</h4>
-                    <canvas id="chartModalidades"></canvas>
-                </div>
-                <div class="chart-box">
-                    <h4>Por Pagamento</h4>
-                    <canvas id="chartPagamentos"></canvas>
+
+                <!-- Área do Gráfico -->
+                <div style="position: relative; height: 350px; width: 100%; display: flex; justify-content: center;">
+                    <canvas id="grafico-unico"></canvas>
                 </div>
             </div>
+            
             <!-- ===================== FIM GRÁFICOS ===================== -->
 
             <div class="admin-cards">

@@ -2286,3 +2286,20 @@ footer {
     max-height: 250px;
     max-width: 100%;
 }
+
+/* ===================== SELECTS DO PAINEL ===================== */
+.admin-select {
+    background-color: #0d0d0d;
+    color: var(--cor-texto-claro);
+    border: 1px solid #333;
+    padding: 10px 15px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.admin-select:focus {
+    border-color: var(--cor-secundaria);
+}
