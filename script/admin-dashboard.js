@@ -104,6 +104,29 @@ async function carregarDados() {
     }
 }
 
+/* ===================== REMOVER REGISTRO INDIVIDUAL ===================== */
+
+async function removerRegistro(id, tipo) {
+    if (!confirm('Tem certeza que deseja apagar este registro? Essa ação não pode ser desfeita.')) {
+        return;
+    }
+
+    try {
+        const resposta = await fetch('/api/admin-dados', {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id, tipo })
+        });
+
+        if (!resposta.ok) throw new Error('Erro ao excluir registro');
+
+        carregarDados(); // Recarrega a tabela para o registro sumir da tela
+
+    } catch (erro) {
+        alert(erro.message);
+    }
+}
+
 /* ===================== GERENCIAR FUNCIONÁRIOS ===================== */
 
 // Assim que a página carregar, busca a lista de funcionários (apenas se os elementos existirem na tela)
