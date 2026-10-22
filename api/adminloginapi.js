@@ -16,7 +16,7 @@ export default async function handler(req, res) {
 
         // Procura o usuário no banco de dados
         const { data: userEncontrado, error } = await supabase
-            .from('usuarios')
+            .from('contas-salvas')
             .select('*')
             .eq('usuario', usuario)
             .eq('senha', senha)
