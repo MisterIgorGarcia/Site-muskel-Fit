@@ -71,11 +71,10 @@ export default async function handler(req, res) {
 
         // ================= DELETAR (DELETE) =================
         if (req.method === 'DELETE') {
-            const { tipo, id } = req.body;
-
-            if (!id) return res.status(400).json({ erro: 'O ID é obrigatório para deletar.' });
-
+            const { id, tipo } = req.body;
             const tabela = tipo === 'matricula' ? 'matriculas' : 'prematriculas';
+
+            if (!id) return res.status(400).json({ erro: 'ID não fornecido.' });
 
             const { error } = await supabase
                 .from(tabela)
@@ -83,7 +82,7 @@ export default async function handler(req, res) {
                 .eq('id', id);
 
             if (error) throw error;
-            return res.status(200).json({ sucesso: true, mensagem: 'Registro apagado com sucesso!' });
+            return res.status(200).json({ sucesso: true });
         }
 
         // Se tentar usar um método não mapeado (ex: PATCH)
