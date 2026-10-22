@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login — Muskel Fit</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body class="admin-body">
+
+    <div id="tela-login" class="admin-login-container">
+        <div class="admin-login-box">
+            <h1><span class="spanm">M</span>USKEL <span class="spanfit">FIT</span></h1>
+            <p>Acesso restrito à equipe.</p>
+            <form id="form-login">
+                <div class="campo" style="text-align: left;">
+                    <label>Usuário</label>
+                    <input type="text" id="admin-user" required autocomplete="username" style="width: 100%;">
+                </div>
+                <div class="campo" style="text-align: left; margin-top: 15px;">
+                    <label>Senha</label>
+                    <input type="password" id="admin-pass" required autocomplete="current-password" style="width: 100%;">
+                </div>
+                <button type="submit" id="btn-login" class="btn-amarelo" style="width: 100%; margin-top: 20px;">Entrar no Painel</button>
+                <p id="login-erro" style="color: #ef4444; font-size: 0.85rem; margin-top: 10px; display: none;"></p>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('form-login').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const user = document.getElementById('admin-user').value;
+            const pass = document.getElementById('admin-pass').value;
+            const erroEl = document.getElementById('login-erro');
+            const btn = document.getElementById('btn-login');
+
+            // Coloca o botão em modo de carregamento
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Verificando...';
+            btn.disabled = true;
+            erroEl.style.display = 'none';
+
+            try {
+                // ATENÇÃO: Aqui chamamos a sua API. 
+                // O nome '/api/adminloginapi' deve ser IGUAL ao nome do arquivo que você criou na pasta /api.
+                // Se você renomeou o arquivo para login.js, mude aqui para '/api/login'.
+                const resposta = await fetch('/api/adminloginapi', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ usuario: user, senha: pass })
+                });
+
+                const dados = await resposta.json();
+
+                if (resposta.ok && dados.sucesso) {
+                    // Login correto! Salva o cargo retornado pela API
+                    sessionStorage.setItem('adminLogado', 'sim');
+                    sessionStorage.setItem('adminCargo', dados.cargo);
+                    
+                    // Redireciona para a tela correta
+                    if (dados.cargo === 'dono') {
+                        window.location.href = 'admin-dashboard-dono.html';
+                    } else {
+                        window.location.href = 'admin-dashboard-funcionario.html';
+                    }
+                } else {
+                    // Erro de senha (retornado pela API)
+                    erroEl.textContent = 'Usuário ou senha incorretos.';
+                    erroEl.style.display = 'block';
+                    btn.innerHTML = 'Entrar no Painel';
+                    btn.disabled = false;
+                }
+
+            } catch (erro) {
+                // Erro de conexão ou erro 500 na API
+                console.error('Erro no login:', erro);
+                erroEl.textContent = 'Erro de conexão. Tente novamente mais tarde.';
+                erroEl.style.display = 'block';
+                btn.innerHTML = 'Entrar no Painel';
+                btn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>

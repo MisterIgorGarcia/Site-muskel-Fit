@@ -2117,3 +2117,142 @@ footer {
         padding: 45px 20px 60px;
     }
 }
+/* ============================================================================ PAINEL ADMIN ==================================================================================== */
+.admin-body {
+    background-color: #0d0d0d;
+    min-height: 100vh;
+}
+
+/* Tela de Login */
+.admin-login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.admin-login-box {
+    background-color: #141414;
+    border: 2px solid var(--cor-secundaria);
+    border-radius: 15px;
+    padding: 40px;
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+}
+
+.admin-login-box h1 {
+    color: var(--cor-secundaria);
+    margin-bottom: 5px;
+    font-size: 1.5rem;
+}
+
+.admin-login-box p {
+    color: #999;
+    margin-bottom: 25px;
+    font-size: 0.9rem;
+}
+
+/* Painel Principal */
+.admin-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px 60px;
+}
+
+.admin-header-titulo {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.admin-header-titulo h2 {
+    font-size: 1.8rem;
+    color: var(--cor-texto-claro);
+}
+
+/* Cards de Resumo */
+.admin-cards {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 40px;
+    flex-wrap: wrap;
+}
+
+.admin-card {
+    background-color: #1a1a1a;
+    border-left: 4px solid var(--cor-secundaria);
+    border-radius: 10px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex: 1;
+    min-width: 200px;
+}
+
+.admin-card i {
+    font-size: 2rem;
+    color: var(--cor-secundaria);
+}
+
+.admin-card h3 {
+    font-size: 1.8rem;
+    color: var(--cor-texto-claro);
+    margin: 0;
+}
+
+.admin-card p {
+    color: #999;
+    font-size: 0.85rem;
+    margin: 0;
+}
+
+/* Tabelas */
+.admin-tabelas h3 {
+    color: var(--cor-texto-claro);
+    margin-bottom: 15px;
+    font-size: 1.2rem;
+}
+
+.tabela-responsiva {
+    overflow-x: auto; /* Permite rolar para o lado no celular */
+    background-color: #141414;
+    border-radius: 10px;
+    border: 1px solid #222;
+}
+
+.tabela-admin {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    white-space: nowrap;
+}
+
+.tabela-admin th {
+    background-color: #1a1a1a;
+    color: var(--cor-secundaria);
+    padding: 15px;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-bottom: 2px solid #222;
+}
+
+.tabela-admin td {
+    padding: 15px;
+    color: #cccccc;
+    border-bottom: 1px solid #222;
+    font-size: 0.9rem;
+}
+
+.tabela-admin tr:hover td {
+    background-color: #1a1a1a;
+}
+
+.tabela-admin td.destaque-valor {
+    color: var(--cor-secundaria);
+    font-weight: bold;
+}
