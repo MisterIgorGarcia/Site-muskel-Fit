@@ -15,9 +15,12 @@ export default async function handler(req, res) {
         // Recebe os dados do frontend (os nomes batem com as colunas do Supabase)
         const { nome, data_nascimento, celular, unidade, modalidade, plano, preco, pagamento, tipo } = req.body;
 
-        // Insere no banco de dados
+        // Define a tabela correta baseada no tipo
+        const tabelaDestino = tipo === 'pre-matricula' ? 'prematriculas' : 'matriculas';
+
+        // Insere no banco de dados na tabela correta
         const { data, error } = await supabase
-            .from('matriculas')
+            .from(tabelaDestino) // ⬅️ Agora usa a variável em vez do nome fixo
             .insert([
                 {
                     nome,
