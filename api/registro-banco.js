@@ -20,7 +20,7 @@ export default async function handler(req, res) {
 
         // Insere no banco de dados na tabela correta
         const { data, error } = await supabase
-            .from(tabelaDestino) // ⬅️ Agora usa a variável em vez do nome fixo
+            .from(tabelaDestino) // Usa a variável em vez do nome fixo
             .insert([
                 {
                     nome,
