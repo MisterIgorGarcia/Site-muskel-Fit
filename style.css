@@ -140,7 +140,7 @@ iframe {
     }
 
     #menu-nav.aberto {
-        max-height: 400px; /* Quando ganha a classe 'aberto', ele expande até 400px de altura */
+        max-height: 600px; /* Quando ganha a classe 'aberto'*/
     }
 
     #menu-nav ul {
