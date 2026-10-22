@@ -231,5 +231,83 @@ async function deletarUsuario(id) {
     }
 }
 
+/* ===================== RENDERIZAR GRÁFICOS ===================== */
+
+// Variável global para armazenar as instâncias dos gráficos (evita sobreposição ao atualizar)
+let graficos = {};
+
+function renderizarGraficos(todosOsRegistros) {
+    // Se não for dono, não desenha os gráficos
+    if (cargo !== 'dono') return;
+
+    // Função auxiliar para contar as ocorrências
+    function contarOcorrencias(array, propriedade) {
+        const contagem = {};
+        array.forEach(item => {
+            const valor = item[propriedade] || 'Não informado';
+            contagem[valor] = (contagem[valor] || 0) + 1;
+        });
+        return {
+            labels: Object.keys(contagem),
+            data: Object.values(contagem)
+        };
+    }
+
+    // Cores do tema da academia para os gráficos
+    const cores = ['#ffd60a', '#3b82f6', '#ef4444', '#22c55e', '#a855f7', '#f97316'];
+    const configuracaoBase = {
+        plugins: {
+            legend: { labels: { color: '#ffffff', font: { size: 11 } } }
+        }
+    };
+
+    // Se os gráficos já existirem, destrói eles antes de criar os novos
+    Object.values(graficos).forEach(grafico => grafico.destroy());
+
+    // 1. Gráfico de Planos
+    const dadosPlano = contarOcorrencias(todosOsRegistros, 'plano');
+    graficos.planos = new Chart(document.getElementById('chartPlanos'), {
+        type: 'pie',
+        data: {
+            labels: dadosPlano.labels,
+            datasets: [{ data: dadosPlano.data, backgroundColor: cores, borderWidth: 1 }]
+        },
+        options: configuracaoBase
+    });
+
+    // 2. Gráfico de Unidades
+    const dadosUnidade = contarOcorrencias(todosOsRegistros, 'unidade');
+    graficos.unidades = new Chart(document.getElementById('chartUnidades'), {
+        type: 'pie',
+        data: {
+            labels: dadosUnidade.labels,
+            datasets: [{ data: dadosUnidade.data, backgroundColor: cores, borderWidth: 1 }]
+        },
+        options: configuracaoBase
+    });
+
+    // 3. Gráfico de Modalidades
+    const dadosModalidade = contarOcorrencias(todosOsRegistros, 'modalidade');
+    graficos.modalidades = new Chart(document.getElementById('chartModalidades'), {
+        type: 'pie',
+        data: {
+            labels: dadosModalidade.labels,
+            datasets: [{ data: dadosModalidade.data, backgroundColor: cores, borderWidth: 1 }]
+        },
+        options: configuracaoBase
+    });
+
+    // 4. Gráfico de Pagamentos
+    const dadosPagamento = contarOcorrencias(todosOsRegistros, 'pagamento');
+    graficos.pagamentos = new Chart(document.getElementById('chartPagamentos'), {
+        type: 'pie',
+        data: {
+            labels: dadosPagamento.labels,
+            datasets: [{ data: dadosPagamento.data, backgroundColor: cores, borderWidth: 1 }]
+        },
+        options: configuracaoBase
+    });
+}
+
 // Carrega os dados assim que a página abre
 document.addEventListener('DOMContentLoaded', carregarDados);

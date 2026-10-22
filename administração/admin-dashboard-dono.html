@@ -6,7 +6,8 @@
     <title>Painel do Dono — Muskel Fit</title>
     <link rel="stylesheet" href="../style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    
+    <!-- BIBLIOTECA DO CHARTS -->
+     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- TRAVA DE SEGURANÇA -->
     <script>
         if (sessionStorage.getItem('adminLogado') !== 'sim' || sessionStorage.getItem('adminCargo') !== 'dono') {
@@ -27,6 +28,27 @@
                 <h2>Visão Geral da Academia</h2>
                 <button id="btn-atualizar" class="btn-amarelo" onclick="carregarDados()"><i class="fa-solid fa-rotate-right"></i> Atualizar Dados</button>
             </div>
+
+            <!-- ===================== GRÁFICOS ===================== -->
+            <div class="admin-charts-container">
+                <div class="chart-box">
+                    <h4>Por Plano</h4>
+                    <canvas id="chartPlanos"></canvas>
+                </div>
+                <div class="chart-box">
+                    <h4>Por Unidade</h4>
+                    <canvas id="chartUnidades"></canvas>
+                </div>
+                <div class="chart-box">
+                    <h4>Por Modalidade</h4>
+                    <canvas id="chartModalidades"></canvas>
+                </div>
+                <div class="chart-box">
+                    <h4>Por Pagamento</h4>
+                    <canvas id="chartPagamentos"></canvas>
+                </div>
+            </div>
+            <!-- ===================== FIM GRÁFICOS ===================== -->
 
             <div class="admin-cards">
                 <div class="admin-card">
