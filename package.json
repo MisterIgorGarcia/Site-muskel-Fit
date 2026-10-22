@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "@supabase/supabase-js": "^2.118.0",
     "@vercel/edge-config": "^1.5.1"
   }
 }
