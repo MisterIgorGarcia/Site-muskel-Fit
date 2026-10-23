@@ -11,16 +11,19 @@ let instanciaGraficoHistorico = null;
 let intervaloAtualizacao = null;
 let carregando = false;
 let instanciaGrafico = null;
-let dadosGlobais = { matriculas: [], prematriculas: [] };
 let funcionarioEditandoUnidadeId = null;
 
-// Variável global para controlar a paginação
+// Cache para os dados completos (Gráficos e Excel)
+let dadosGlobaisCompletos = { matriculas: [], prematriculas: [] };
+let dadosCarregados = false;
+
+// Controle de Paginação Server-Side
 let paginacao = {
-    matriculas: { pagina: 1, itensPorPagina: 10 },
-    prematriculas: { pagina: 1, itensPorPagina: 10 }
+    matriculas: { pagina: 1, limite: 10, total: 0 },
+    prematriculas: { pagina: 1, limite: 10, total: 0 }
 };
 
-// ===================== CARREGAR DADOS =====================
+// ===================== CARREGAR DADOS DAS TABELAS (PAGINADO) =====================
 async function carregarDados(manual = false) {
     if (carregando) return;
     carregando = true;
@@ -31,41 +34,14 @@ async function carregarDados(manual = false) {
     }
 
     try {
-        const minhaUnidade = sessionStorage.getItem('adminUnidade');
-        let url = '/api/admin-dados';
-        
-        if (cargo === 'funcionario' && minhaUnidade && minhaUnidade.trim() !== '') {
-            url += `?unidade=${encodeURIComponent(minhaUnidade)}`;
-        }
+        await Promise.all([
+            buscarPaginaTabela('matriculas'),
+            buscarPaginaTabela('prematriculas')
+        ]);
 
-        const resposta = await fetch(url);
-        const dados = await resposta.json();
-
-        if (!resposta.ok) throw new Error('Erro ao buscar');
-
-        let valorTotal = 0;
-
-        // --- CALCULAR VALOR TOTAL E GUARDAR DADOS ---
-        dados.matriculas.forEach(item => { valorTotal += (Number(item.preco) || 0); });
-        dados.prematriculas.forEach(item => { valorTotal += (Number(item.preco) || 0); });
-
-        dadosGlobais.matriculas = dados.matriculas;
-        dadosGlobais.prematriculas = dados.prematriculas;
-
-        // --- ATUALIZAR CARDS ---
-        document.getElementById('total-registros').innerText = dados.matriculas.length + dados.prematriculas.length;
-        const cardArrecadado = document.getElementById('total-arrecadado');
-        if (cardArrecadado) {
-            cardArrecadado.innerText = `R$ ${valorTotal.toFixed(2).replace('.', ',')}`;
-        }
-
-        // --- RENDERIZAR AS TABELAS COM PAGINAÇÃO ---
-        renderizarTabelaMatriculas();
-        renderizarTabelaPrematriculas();
-
-        // --- ATUALIZAR GRÁFICOS ---
-        if (cargo === 'dono' && document.getElementById('grafico-unico')) {
-            atualizarGraficos();
+        // Se for manual ou a primeira carga, atualiza os cards e gráficos também
+        if (manual || !dadosCarregados) {
+            atualizarCardsEGraficos();
         }
 
     } catch (erro) {
@@ -79,30 +55,37 @@ async function carregarDados(manual = false) {
     }
 }
 
-/* ===================== FUNÇÕES DE RENDERIZAÇÃO DAS TABELAS ===================== */
-function renderizarTabelaMatriculas() {
+async function buscarPaginaTabela(tipo) {
+    const minhaUnidade = sessionStorage.getItem('adminUnidade');
+    let url = `/api/admin-dados?tipo=${tipo === 'matriculas' ? 'matricula' : 'prematricula'}&page=${paginacao[tipo].pagina}&limit=${paginacao[tipo].limite}`;
+    
+    if (cargo === 'funcionario' && minhaUnidade && minhaUnidade.trim() !== '') {
+        url += `&unidade=${encodeURIComponent(minhaUnidade)}`;
+    }
+
+    const resposta = await fetch(url);
+    const json = await resposta.json();
+    if (!resposta.ok) throw new Error('Erro ao buscar');
+
+    paginacao[tipo].total = json.total;
+    
+    if (tipo === 'matriculas') renderizarTabelaMatriculas(json.dados);
+    else renderizarTabelaPrematriculas(json.dados);
+}
+
+// ===================== RENDERIZAÇÃO DAS TABELAS =====================
+function renderizarTabelaMatriculas(dados) {
     const tbody = document.getElementById('tabela-matriculas-body');
     if (!tbody) return;
     tbody.innerHTML = '';
-
-    const dados = dadosGlobais.matriculas;
-    const { pagina, itensPorPagina } = paginacao.matriculas;
-    const totalPaginas = Math.ceil(dados.length / itensPorPagina) || 1;
-
-    if (pagina > totalPaginas) paginacao.matriculas.pagina = totalPaginas;
-
-    const inicio = (paginacao.matriculas.pagina - 1) * itensPorPagina;
-    const fim = inicio + itensPorPagina;
-    const dadosPaginados = dados.slice(inicio, fim);
 
     if (dados.length === 0) {
         const colunas = cargo === 'dono' ? 8 : 7; 
         tbody.innerHTML = `<tr><td colspan="${colunas}" style="text-align:center;">Nenhuma matrícula registrada.</td></tr>`;
     } else {
-        dadosPaginados.forEach(item => {
+        dados.forEach(item => {
             const data = new Date(item.created_at).toLocaleDateString('pt-BR');
             const valor = Number(item.preco) || 0;
-
             const colunaValor = cargo === 'dono' ? `<td class="destaque-valor">R$ ${valor.toFixed(2).replace('.', ',')}</td>` : '';
             const colunaAcao = cargo === 'dono' ? `<td><button onclick="removerRegistro(${item.id}, 'matricula')" style="background: transparent; border: none; color: #ef4444; cursor: pointer;" title="Excluir"><i class="fa-solid fa-trash"></i></button></td>` : '';
 
@@ -120,32 +103,21 @@ function renderizarTabelaMatriculas() {
             `;
         });
     }
-    renderizarBotoesPaginacao('matriculas', totalPaginas);
+    renderizarBotoesPaginacao('matriculas');
 }
 
-function renderizarTabelaPrematriculas() {
+function renderizarTabelaPrematriculas(dados) {
     const tbody = document.getElementById('tabela-prematriculas-body');
     if (!tbody) return;
     tbody.innerHTML = '';
-
-    const dados = dadosGlobais.prematriculas;
-    const { pagina, itensPorPagina } = paginacao.prematriculas;
-    const totalPaginas = Math.ceil(dados.length / itensPorPagina) || 1;
-
-    if (pagina > totalPaginas) paginacao.prematriculas.pagina = totalPaginas;
-
-    const inicio = (paginacao.prematriculas.pagina - 1) * itensPorPagina;
-    const fim = inicio + itensPorPagina;
-    const dadosPaginados = dados.slice(inicio, fim);
 
     if (dados.length === 0) {
         const colunas = cargo === 'dono' ? 8 : 7; 
         tbody.innerHTML = `<tr><td colspan="${colunas}" style="text-align:center;">Nenhuma pré-matrícula registrada.</td></tr>`;
     } else {
-        dadosPaginados.forEach(item => {
+        dados.forEach(item => {
             const data = new Date(item.created_at).toLocaleDateString('pt-BR');
             const valor = Number(item.preco) || 0;
-
             const colunaValor = cargo === 'dono' ? `<td class="destaque-valor">R$ ${valor.toFixed(2).replace('.', ',')}</td>` : '';
             const colunaAcao = cargo === 'dono' ? `<td><button onclick="removerRegistro(${item.id}, 'prematricula')" style="background: transparent; border: none; color: #ef4444; cursor: pointer;" title="Excluir"><i class="fa-solid fa-trash"></i></button></td>` : '';
 
@@ -163,18 +135,21 @@ function renderizarTabelaPrematriculas() {
             `;
         });
     }
-    renderizarBotoesPaginacao('prematriculas', totalPaginas);
+    renderizarBotoesPaginacao('prematriculas');
 }
 
-/* ===================== CONTROLE DOS BOTÕES DE PAGINAÇÃO ===================== */
-function renderizarBotoesPaginacao(tipo, totalPaginas) {
+// ===================== BOTÕES DE PAGINAÇÃO =====================
+function renderizarBotoesPaginacao(tipo) {
     const container = document.getElementById(`paginacao-${tipo}`);
     if (!container) return;
 
     container.innerHTML = '';
-    if (totalPaginas <= 1) return;
-
+    const total = paginacao[tipo].total;
+    const limite = paginacao[tipo].limite;
+    const totalPaginas = Math.ceil(total / limite) || 1;
     const paginaAtual = paginacao[tipo].pagina;
+
+    if (totalPaginas <= 1) return;
 
     const btnPrev = document.createElement('button');
     btnPrev.className = 'btn-pagina';
@@ -209,10 +184,47 @@ function renderizarBotoesPaginacao(tipo, totalPaginas) {
 
 function mudarPagina(tipo, novaPagina) {
     paginacao[tipo].pagina = novaPagina;
-    if (tipo === 'matriculas') {
-        renderizarTabelaMatriculas();
-    } else {
-        renderizarTabelaPrematriculas();
+    buscarPaginaTabela(tipo);
+}
+
+// ===================== BUSCAR TUDO (PARA GRÁFICOS E EXCEL) =====================
+async function buscarTodosOsDados() {
+    if (dadosCarregados) return dadosGlobaisCompletos;
+
+    const minhaUnidade = sessionStorage.getItem('adminUnidade');
+    let queryUnidade = '';
+    if (cargo === 'funcionario' && minhaUnidade && minhaUnidade.trim() !== '') {
+        queryUnidade = `&unidade=${encodeURIComponent(minhaUnidade)}`;
+    }
+
+    const [resMat, resPre] = await Promise.all([
+        fetch(`/api/admin-dados?tipo=matricula&all=true${queryUnidade}`),
+        fetch(`/api/admin-dados?tipo=prematricula&all=true${queryUnidade}`)
+    ]);
+
+    const dataMat = await resMat.json();
+    const dataPre = await resPre.json();
+
+    dadosGlobaisCompletos.matriculas = dataMat.dados || [];
+    dadosGlobaisCompletos.prematriculas = dataPre.dados || [];
+    dadosCarregados = true;
+
+    return dadosGlobaisCompletos;
+}
+
+async function atualizarCardsEGraficos() {
+    const dados = await buscarTodosOsDados();
+    
+    let valorTotal = 0;
+    dados.matriculas.forEach(item => { valorTotal += (Number(item.preco) || 0); });
+    dados.prematriculas.forEach(item => { valorTotal += (Number(item.preco) || 0); });
+
+    document.getElementById('total-registros').innerText = dados.matriculas.length + dados.prematriculas.length;
+    const cardArrecadado = document.getElementById('total-arrecadado');
+    if (cardArrecadado) cardArrecadado.innerText = `R$ ${valorTotal.toFixed(2).replace('.', ',')}`;
+
+    if (cargo === 'dono' && document.getElementById('grafico-unico')) {
+        atualizarGraficos();
     }
 }
 
@@ -221,6 +233,7 @@ function iniciarAtualizacaoAutomatica() {
     if (intervaloAtualizacao) clearInterval(intervaloAtualizacao);
     intervaloAtualizacao = setInterval(() => {
         if (document.visibilityState === 'visible') {
+            dadosCarregados = false; // Limpa o cache para forçar buscar novos dados depois
             carregarDados(false); 
         }
     }, 10000); 
@@ -248,28 +261,25 @@ function mudarAba(aba) {
     atualizarGraficos(); 
 }
 
-function atualizarGraficos() {
+async function atualizarGraficos() {
     if (abaAtual === 'composicao') {
-        atualizarGraficoPizza();
+        await atualizarGraficoPizza();
     } else {
-        atualizarGraficoHistorico();
+        await atualizarGraficoHistorico();
     }
 }
 
-function atualizarGraficoPizza() {
+async function atualizarGraficoPizza() {
+    const dados = await buscarTodosOsDados();
     const origemEl = document.getElementById('filtro-origem');
     const agrupamentoEl = document.getElementById('filtro-agrupamento');
     const origem = origemEl ? origemEl.value : 'todos';
     const agrupamento = agrupamentoEl ? agrupamentoEl.value : 'plano';
 
     let dadosBase = [];
-    if (origem === 'todos') {
-        dadosBase = [...dadosGlobais.matriculas, ...dadosGlobais.prematriculas];
-    } else if (origem === 'matriculas') {
-        dadosBase = dadosGlobais.matriculas;
-    } else {
-        dadosBase = dadosGlobais.prematriculas;
-    }
+    if (origem === 'todos') dadosBase = [...dados.matriculas, ...dados.prematriculas];
+    else if (origem === 'matriculas') dadosBase = dados.matriculas;
+    else dadosBase = dados.prematriculas;
 
     const contagem = {};
     dadosBase.forEach(item => {
@@ -277,101 +287,54 @@ function atualizarGraficoPizza() {
         contagem[valor] = (contagem[valor] || 0) + 1;
     });
 
-    const labels = Object.keys(contagem);
-    const data = Object.values(contagem);
     const canvas = document.getElementById('grafico-unico');
     if (!canvas) return;
-
     if (instanciaGrafico) instanciaGrafico.destroy();
-
-    const cores = ['#ffd60a', '#3b82f6', '#ef4444', '#22c55e', '#a855f7', '#f97316'];
 
     instanciaGrafico = new Chart(canvas, {
         type: 'pie',
         data: {
-            labels: labels,
-            datasets: [{ data: data, backgroundColor: cores, borderWidth: 2, borderColor: '#141414' }]
+            labels: Object.keys(contagem),
+            datasets: [{ data: Object.values(contagem), backgroundColor: ['#ffd60a', '#3b82f6', '#ef4444', '#22c55e', '#a855f7', '#f97316'], borderWidth: 2, borderColor: '#141414' }]
         },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { position: 'right', labels: { color: '#ffffff', font: { size: 13, family: 'Arial' } } }
-            }
-        }
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { color: '#ffffff' } } } }
     });
 }
 
-function atualizarGraficoHistorico() {
+async function atualizarGraficoHistorico() {
+    const dados = await buscarTodosOsDados();
     const origemEl = document.getElementById('filtro-origem');
     const agrupamentoEl = document.getElementById('filtro-agrupamento');
     const origem = origemEl ? origemEl.value : 'todos';
     const agrupamento = agrupamentoEl ? agrupamentoEl.value : 'plano';
 
     let dadosBase = [];
-    if (origem === 'todos') {
-        dadosBase = [...dadosGlobais.matriculas, ...dadosGlobais.prematriculas];
-    } else if (origem === 'matriculas') {
-        dadosBase = dadosGlobais.matriculas;
-    } else {
-        dadosBase = dadosGlobais.prematriculas;
-    }
+    if (origem === 'todos') dadosBase = [...dados.matriculas, ...dados.prematriculas];
+    else if (origem === 'matriculas') dadosBase = dados.matriculas;
+    else dadosBase = dados.prematriculas;
 
     const datasUnicas = [...new Set(dadosBase.map(item => new Date(item.created_at).toLocaleDateString('pt-BR')))].sort((a, b) => {
-        const [diaA, mesA, anoA] = a.split('/');
-        const [diaB, mesB, anoB] = b.split('/');
-        return new Date(anoA, mesA - 1, diaA) - new Date(anoB, mesB - 1, diaB);
+        const [dA, mA, aA] = a.split('/'); const [dB, mB, aB] = b.split('/');
+        return new Date(aA, mA - 1, dA) - new Date(aB, mB - 1, dB);
     });
 
     const categoriasUnicas = [...new Set(dadosBase.map(item => item[agrupamento] || 'Não informado'))];
-    const cores = ['#ffd60a', '#3b82f6', '#ef4444', '#22c55e', '#a855f7', '#f97316', '#06b6d4', '#ec4899'];
+    const cores = ['#ffd60a', '#3b82f6', '#ef4444', '#22c55e', '#a855f7', '#f97316'];
 
-    const datasets = categoriasUnicas.map((categoria, index) => {
-        const dataValues = datasUnicas.map(data => {
-            return dadosBase.filter(item => 
-                (item[agrupamento] || 'Não informado') === categoria && 
-                new Date(item.created_at).toLocaleDateString('pt-BR') === data
-            ).length;
-        });
-
-        const cor = cores[index % cores.length];
-
-        return {
-            label: categoria,
-            data: dataValues,
-            borderColor: cor,
-            backgroundColor: cor + '33',
-            borderWidth: 2,
-            tension: 0.3,
-            fill: false,
-            pointBackgroundColor: cor,
-            pointBorderColor: '#0d0d0d',
-            pointRadius: 4
-        };
+    const datasets = categoriasUnicas.map((cat, i) => {
+        const dataVals = datasUnicas.map(data => dadosBase.filter(item => (item[agrupamento] || 'Não informado') === cat && new Date(item.created_at).toLocaleDateString('pt-BR') === data).length);
+        const cor = cores[i % cores.length];
+        return { label: cat, data: dataVals, borderColor: cor, backgroundColor: cor + '33', borderWidth: 2, tension: 0.3, fill: false, pointBackgroundColor: cor };
     });
 
     const canvas = document.getElementById('grafico-historico');
     if (!canvas) return;
-
     if (instanciaGraficoHistorico) instanciaGraficoHistorico.destroy();
 
     instanciaGraficoHistorico = new Chart(canvas, {
         type: 'line',
-        data: {
-            labels: datasUnicas,
-            datasets: datasets
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { labels: { color: '#ffffff', font: { size: 13, family: 'Arial' } } }
-            },
-            scales: {
-                x: { ticks: { color: '#aaaaaa' }, grid: { color: '#333' } },
-                y: { beginAtZero: true, ticks: { color: '#aaaaaa', stepSize: 1 }, grid: { color: '#333' } }
-            }
-        }
+        data: { labels: datasUnicas, datasets: datasets },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: '#ffffff' } } }, scales: { x: { ticks: { color: '#aaaaaa' }, grid: { color: '#333' } }, y: { beginAtZero: true, ticks: { color: '#aaaaaa', stepSize: 1 }, grid: { color: '#333' } } } }
     });
 }
 
@@ -383,9 +346,11 @@ async function removerRegistro(id, tipo) {
         const resposta = await fetch('/api/admin-dados', {
             method: 'DELETE',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ id, tipo })
+            body: JSON.stringify({ id, tipo: tipo === 'matricula' ? 'matricula' : 'prematricula' })
         });
         if (!resposta.ok) throw new Error('Erro ao excluir registro');
+        
+        dadosCarregados = false; // Limpa o cache para atualizar os gráficos depois
         carregarDados(true); 
     } catch (erro) {
         alert(erro.message);
@@ -606,46 +571,6 @@ async function mudarPropriaSenha() {
     } catch (erro) {
         alert(erro.message);
     }
-}
-
-/* ===================== EXPORTAR PARA EXCEL ===================== */
-function exportarExcel() {
-    if (dadosGlobais.matriculas.length === 0 && dadosGlobais.prematriculas.length === 0) {
-        return alert('Não há dados cadastrados para exportar no momento.');
-    }
-
-    const todosOsDados = [...dadosGlobais.matriculas, ...dadosGlobais.prematriculas];
-    const dadosFormatados = todosOsDados.map(item => {
-        return {
-            Data: new Date(item.created_at).toLocaleDateString('pt-BR'),
-            Tipo: item.tipo === 'pre-matricula' ? 'Pré-Matrícula' : 'Matrícula',
-            Nome: item.nome,
-            Celular: item.celular,
-            Unidade: item.unidade,
-            Modalidade: item.modalidade,
-            Plano: item.plano,
-            Valor: item.preco,
-            Pagamento: item.pagamento
-        };
-    }).sort((a, b) => {
-        const [diaA, mesA, anoA] = a.Data.split('/');
-        const [diaB, mesB, anoB] = b.Data.split('/');
-        return new Date(anoB, mesB - 1, diaB) - new Date(anoA, mesA - 1, diaA);
-    });
-
-    const wb = XLSX.utils.book_new();
-    const ws = XLSX.utils.json_to_sheet(dadosFormatados);
-    XLSX.utils.book_append_sheet(wb, ws, "Todos os Registros");
-
-    const agora = new Date();
-    const dia = String(agora.getDate()).padStart(2, '0');
-    const mes = String(agora.getMonth() + 1).padStart(2, '0');
-    const ano = agora.getFullYear();
-    const hora = String(agora.getHours()).padStart(2, '0');
-    const minuto = String(agora.getMinutes()).padStart(2, '0');
-
-    const nomeArquivo = `DadosMuskelfit-${dia}-${mes}-${ano}-${hora}-${minuto}.xlsx`;
-    XLSX.writeFile(wb, nomeArquivo);
 }
 
 /* ===================== INICIALIZAÇÃO ===================== */
