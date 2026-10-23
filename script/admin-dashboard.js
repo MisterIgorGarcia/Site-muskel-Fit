@@ -133,13 +133,13 @@ function iniciarAtualizacaoAutomatica() {
     // Limpa qualquer intervalo anterior para evitar duplicidade
     if (intervaloAtualizacao) clearInterval(intervaloAtualizacao);
 
-    // Atualiza a cada 30 segundos (30.000 ms)
+    // Atualiza a cada ms (Mili-segundos)
     intervaloAtualizacao = setInterval(() => {
         // Só atualiza se a aba do navegador estiver visível (evita gastar recursos à toa)
         if (document.visibilityState === 'visible') {
             carregarDados(false); // Passa false para não mexer no botão
         }
-    }, 30000); 
+    }, 10000); 
 }
 
 /* ===================== GRÁFICO ÚNICO COM FILTROS ===================== */
