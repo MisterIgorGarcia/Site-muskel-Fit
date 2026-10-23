@@ -12,17 +12,20 @@ let intervaloAtualizacao = null;
 let carregando = false;
 let instanciaGrafico = null;
 let dadosGlobais = { matriculas: [], prematriculas: [] };
-let funcionarioEditandoUnidadeId = null; // Variável global para o Modal
+let funcionarioEditandoUnidadeId = null;
+
+// Variável global para controlar a paginação
+let paginacao = {
+    matriculas: { pagina: 1, itensPorPagina: 10 },
+    prematriculas: { pagina: 1, itensPorPagina: 10 }
+};
 
 // ===================== CARREGAR DADOS =====================
-// O parâmetro 'manual' indica se o usuário clicou no botão (true) ou se é atualização automática (false)
 async function carregarDados(manual = false) {
-    // Evita atualizações simultâneas (ex: clicar no botão enquanto o automático roda)
     if (carregando) return;
     carregando = true;
 
     const btnAtualizar = document.getElementById('btn-atualizar');
-    // Só mostra o loading no botão se a atualização foi manual
     if (btnAtualizar && manual) {
         btnAtualizar.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Buscando...';
     }
@@ -42,67 +45,12 @@ async function carregarDados(manual = false) {
 
         let valorTotal = 0;
 
-        // --- TABELA DE MATRÍCULAS ---
-        const tbodyMat = document.getElementById('tabela-matriculas-body');
-        tbodyMat.innerHTML = '';
-        
-        if (dados.matriculas.length === 0) {
-            const colunas = cargo === 'dono' ? 8 : 7; 
-            tbodyMat.innerHTML = `<tr><td colspan="${colunas}" style="text-align:center;">Nenhuma matrícula registrada.</td></tr>`;
-        } else {
-            dados.matriculas.forEach(item => {
-                const data = new Date(item.created_at).toLocaleDateString('pt-BR');
-                const valor = Number(item.preco) || 0;
-                valorTotal += valor;
+        // --- CALCULAR VALOR TOTAL E GUARDAR DADOS ---
+        dados.matriculas.forEach(item => { valorTotal += (Number(item.preco) || 0); });
+        dados.prematriculas.forEach(item => { valorTotal += (Number(item.preco) || 0); });
 
-                const colunaValor = cargo === 'dono' ? `<td class="destaque-valor">R$ ${valor.toFixed(2).replace('.', ',')}</td>` : '';
-                const colunaAcao = cargo === 'dono' ? `<td><button onclick="removerRegistro(${item.id}, 'matricula')" style="background: transparent; border: none; color: #ef4444; cursor: pointer;" title="Excluir"><i class="fa-solid fa-trash"></i></button></td>` : '';
-
-                tbodyMat.innerHTML += `
-                    <tr>
-                        <td>${data}</td>
-                        <td><strong>${item.nome}</strong></td>
-                        <td>${item.celular}</td>
-                        <td>${item.unidade}</td>
-                        <td>${item.modalidade}</td>
-                        <td>${item.plano}</td>
-                        ${colunaValor}
-                        ${colunaAcao}
-                    </tr>
-                `;
-            });
-        }
-
-        // --- TABELA DE PRÉ-MATRÍCULAS ---
-        const tbodyPre = document.getElementById('tabela-prematriculas-body');
-        tbodyPre.innerHTML = '';
-
-        if (dados.prematriculas.length === 0) {
-            const colunas = cargo === 'dono' ? 8 : 7; 
-            tbodyPre.innerHTML = `<tr><td colspan="${colunas}" style="text-align:center;">Nenhuma pré-matrícula registrada.</td></tr>`;
-        } else {
-            dados.prematriculas.forEach(item => {
-                const data = new Date(item.created_at).toLocaleDateString('pt-BR');
-                const valor = Number(item.preco) || 0;
-                valorTotal += valor;
-
-                const colunaValor = cargo === 'dono' ? `<td class="destaque-valor">R$ ${valor.toFixed(2).replace('.', ',')}</td>` : '';
-                const colunaAcao = cargo === 'dono' ? `<td><button onclick="removerRegistro(${item.id}, 'prematricula')" style="background: transparent; border: none; color: #ef4444; cursor: pointer;" title="Excluir"><i class="fa-solid fa-trash"></i></button></td>` : '';
-
-                tbodyPre.innerHTML += `
-                    <tr>
-                        <td>${data}</td>
-                        <td><strong>${item.nome}</strong></td>
-                        <td>${item.celular}</td>
-                        <td>${item.unidade}</td>
-                        <td>${item.modalidade}</td>
-                        <td>${item.plano}</td>
-                        ${colunaValor}
-                        ${colunaAcao}
-                    </tr>
-                `;
-            });
-        }
+        dadosGlobais.matriculas = dados.matriculas;
+        dadosGlobais.prematriculas = dados.prematriculas;
 
         // --- ATUALIZAR CARDS ---
         document.getElementById('total-registros').innerText = dados.matriculas.length + dados.prematriculas.length;
@@ -111,16 +59,17 @@ async function carregarDados(manual = false) {
             cardArrecadado.innerText = `R$ ${valorTotal.toFixed(2).replace('.', ',')}`;
         }
 
-        dadosGlobais.matriculas = dados.matriculas;
-        dadosGlobais.prematriculas = dados.prematriculas;
+        // --- RENDERIZAR AS TABELAS COM PAGINAÇÃO ---
+        renderizarTabelaMatriculas();
+        renderizarTabelaPrematriculas();
 
+        // --- ATUALIZAR GRÁFICOS ---
         if (cargo === 'dono' && document.getElementById('grafico-unico')) {
             atualizarGraficos();
         }
 
     } catch (erro) {
         console.error('Erro:', erro);
-        // Só mostra alerta se o usuário clicou no botão manualmente, para não encher a tela de alertas de background
         if (manual) alert('Erro ao carregar os dados do banco.');
     } finally {
         carregando = false;
@@ -130,22 +79,154 @@ async function carregarDados(manual = false) {
     }
 }
 
+/* ===================== FUNÇÕES DE RENDERIZAÇÃO DAS TABELAS ===================== */
+function renderizarTabelaMatriculas() {
+    const tbody = document.getElementById('tabela-matriculas-body');
+    if (!tbody) return;
+    tbody.innerHTML = '';
+
+    const dados = dadosGlobais.matriculas;
+    const { pagina, itensPorPagina } = paginacao.matriculas;
+    const totalPaginas = Math.ceil(dados.length / itensPorPagina) || 1;
+
+    if (pagina > totalPaginas) paginacao.matriculas.pagina = totalPaginas;
+
+    const inicio = (paginacao.matriculas.pagina - 1) * itensPorPagina;
+    const fim = inicio + itensPorPagina;
+    const dadosPaginados = dados.slice(inicio, fim);
+
+    if (dados.length === 0) {
+        const colunas = cargo === 'dono' ? 8 : 7; 
+        tbody.innerHTML = `<tr><td colspan="${colunas}" style="text-align:center;">Nenhuma matrícula registrada.</td></tr>`;
+    } else {
+        dadosPaginados.forEach(item => {
+            const data = new Date(item.created_at).toLocaleDateString('pt-BR');
+            const valor = Number(item.preco) || 0;
+
+            const colunaValor = cargo === 'dono' ? `<td class="destaque-valor">R$ ${valor.toFixed(2).replace('.', ',')}</td>` : '';
+            const colunaAcao = cargo === 'dono' ? `<td><button onclick="removerRegistro(${item.id}, 'matricula')" style="background: transparent; border: none; color: #ef4444; cursor: pointer;" title="Excluir"><i class="fa-solid fa-trash"></i></button></td>` : '';
+
+            tbody.innerHTML += `
+                <tr>
+                    <td>${data}</td>
+                    <td><strong>${item.nome}</strong></td>
+                    <td>${item.celular}</td>
+                    <td>${item.unidade}</td>
+                    <td>${item.modalidade}</td>
+                    <td>${item.plano}</td>
+                    ${colunaValor}
+                    ${colunaAcao}
+                </tr>
+            `;
+        });
+    }
+    renderizarBotoesPaginacao('matriculas', totalPaginas);
+}
+
+function renderizarTabelaPrematriculas() {
+    const tbody = document.getElementById('tabela-prematriculas-body');
+    if (!tbody) return;
+    tbody.innerHTML = '';
+
+    const dados = dadosGlobais.prematriculas;
+    const { pagina, itensPorPagina } = paginacao.prematriculas;
+    const totalPaginas = Math.ceil(dados.length / itensPorPagina) || 1;
+
+    if (pagina > totalPaginas) paginacao.prematriculas.pagina = totalPaginas;
+
+    const inicio = (paginacao.prematriculas.pagina - 1) * itensPorPagina;
+    const fim = inicio + itensPorPagina;
+    const dadosPaginados = dados.slice(inicio, fim);
+
+    if (dados.length === 0) {
+        const colunas = cargo === 'dono' ? 8 : 7; 
+        tbody.innerHTML = `<tr><td colspan="${colunas}" style="text-align:center;">Nenhuma pré-matrícula registrada.</td></tr>`;
+    } else {
+        dadosPaginados.forEach(item => {
+            const data = new Date(item.created_at).toLocaleDateString('pt-BR');
+            const valor = Number(item.preco) || 0;
+
+            const colunaValor = cargo === 'dono' ? `<td class="destaque-valor">R$ ${valor.toFixed(2).replace('.', ',')}</td>` : '';
+            const colunaAcao = cargo === 'dono' ? `<td><button onclick="removerRegistro(${item.id}, 'prematricula')" style="background: transparent; border: none; color: #ef4444; cursor: pointer;" title="Excluir"><i class="fa-solid fa-trash"></i></button></td>` : '';
+
+            tbody.innerHTML += `
+                <tr>
+                    <td>${data}</td>
+                    <td><strong>${item.nome}</strong></td>
+                    <td>${item.celular}</td>
+                    <td>${item.unidade}</td>
+                    <td>${item.modalidade}</td>
+                    <td>${item.plano}</td>
+                    ${colunaValor}
+                    ${colunaAcao}
+                </tr>
+            `;
+        });
+    }
+    renderizarBotoesPaginacao('prematriculas', totalPaginas);
+}
+
+/* ===================== CONTROLE DOS BOTÕES DE PAGINAÇÃO ===================== */
+function renderizarBotoesPaginacao(tipo, totalPaginas) {
+    const container = document.getElementById(`paginacao-${tipo}`);
+    if (!container) return;
+
+    container.innerHTML = '';
+    if (totalPaginas <= 1) return;
+
+    const paginaAtual = paginacao[tipo].pagina;
+
+    const btnPrev = document.createElement('button');
+    btnPrev.className = 'btn-pagina';
+    btnPrev.innerHTML = '«';
+    btnPrev.disabled = paginaAtual === 1;
+    btnPrev.onclick = () => mudarPagina(tipo, paginaAtual - 1);
+    container.appendChild(btnPrev);
+
+    for (let i = 1; i <= totalPaginas; i++) {
+        if (i === 1 || i === totalPaginas || (i >= paginaAtual - 2 && i <= paginaAtual + 2)) {
+            const btn = document.createElement('button');
+            btn.className = `btn-pagina ${i === paginaAtual ? 'ativo' : ''}`;
+            btn.innerText = i;
+            btn.onclick = () => mudarPagina(tipo, i);
+            container.appendChild(btn);
+        } else if (i === paginaAtual - 3 || i === paginaAtual + 3) {
+            const span = document.createElement('span');
+            span.innerText = '...';
+            span.style.color = '#666';
+            span.style.padding = '0 5px';
+            container.appendChild(span);
+        }
+    }
+
+    const btnNext = document.createElement('button');
+    btnNext.className = 'btn-pagina';
+    btnNext.innerHTML = '»';
+    btnNext.disabled = paginaAtual === totalPaginas;
+    btnNext.onclick = () => mudarPagina(tipo, paginaAtual + 1);
+    container.appendChild(btnNext);
+}
+
+function mudarPagina(tipo, novaPagina) {
+    paginacao[tipo].pagina = novaPagina;
+    if (tipo === 'matriculas') {
+        renderizarTabelaMatriculas();
+    } else {
+        renderizarTabelaPrematriculas();
+    }
+}
+
 // ===================== ATUALIZAÇÃO AUTOMÁTICA =====================
 function iniciarAtualizacaoAutomatica() {
-    // Limpa qualquer intervalo anterior para evitar duplicidade
     if (intervaloAtualizacao) clearInterval(intervaloAtualizacao);
-
-    // Atualiza a cada ms (Mili-segundos)
     intervaloAtualizacao = setInterval(() => {
-        // Só atualiza se a aba do navegador estiver visível (evita gastar recursos à toa)
         if (document.visibilityState === 'visible') {
-            carregarDados(false); // Passa false para não mexer no botão
+            carregarDados(false); 
         }
     }, 10000); 
 }
 
-/* ===================== GRÁFICO ÚNICO COM FILTROS ===================== */
-// 1. Função para controlar qual aba está visível
+/* ===================== GRÁFICOS ===================== */
 function mudarAba(aba) {
     abaAtual = aba;
     const btnComp = document.getElementById('btn-aba-composicao');
@@ -164,12 +245,9 @@ function mudarAba(aba) {
         divComp.style.display = 'none';
         divHist.style.display = 'flex';
     }
-    // REMOVIDO: A linha que escondia o filtro de agrupamento (filtroAgrupamento.style.display = 'none')
-    
-    atualizarGraficos(); // Chama a atualização
+    atualizarGraficos(); 
 }
 
-// 2. Função central que decide qual gráfico desenhar
 function atualizarGraficos() {
     if (abaAtual === 'composicao') {
         atualizarGraficoPizza();
@@ -178,7 +256,6 @@ function atualizarGraficos() {
     }
 }
 
-// 3. O Gráfico de Pizza (Mantido igual)
 function atualizarGraficoPizza() {
     const origemEl = document.getElementById('filtro-origem');
     const agrupamentoEl = document.getElementById('filtro-agrupamento');
@@ -225,7 +302,6 @@ function atualizarGraficoPizza() {
     });
 }
 
-// 4. O Novo Gráfico de Histórico com Múltiplas Linhas (Filtros aplicados)
 function atualizarGraficoHistorico() {
     const origemEl = document.getElementById('filtro-origem');
     const agrupamentoEl = document.getElementById('filtro-agrupamento');
@@ -241,22 +317,16 @@ function atualizarGraficoHistorico() {
         dadosBase = dadosGlobais.prematriculas;
     }
 
-    // 1. Extrai todas as datas únicas e ordena cronologicamente
     const datasUnicas = [...new Set(dadosBase.map(item => new Date(item.created_at).toLocaleDateString('pt-BR')))].sort((a, b) => {
         const [diaA, mesA, anoA] = a.split('/');
         const [diaB, mesB, anoB] = b.split('/');
         return new Date(anoA, mesA - 1, diaA) - new Date(anoB, mesB - 1, diaB);
     });
 
-    // 2. Extrai todas as categorias únicas do filtro selecionado (ex: planos diferentes)
     const categoriasUnicas = [...new Set(dadosBase.map(item => item[agrupamento] || 'Não informado'))];
-
-    // 3. Paleta de cores
     const cores = ['#ffd60a', '#3b82f6', '#ef4444', '#22c55e', '#a855f7', '#f97316', '#06b6d4', '#ec4899'];
 
-    // 4. Cria um dataset (linha) para cada categoria
     const datasets = categoriasUnicas.map((categoria, index) => {
-        // Para cada data, conta quantos registros existem DESSA categoria
         const dataValues = datasUnicas.map(data => {
             return dadosBase.filter(item => 
                 (item[agrupamento] || 'Não informado') === categoria && 
@@ -270,10 +340,10 @@ function atualizarGraficoHistorico() {
             label: categoria,
             data: dataValues,
             borderColor: cor,
-            backgroundColor: cor + '33', // Adiciona transparência (20%)
+            backgroundColor: cor + '33',
             borderWidth: 2,
-            tension: 0.3, // Deixa a linha curvada
-            fill: false, // Mude para true se quiser que a área embaixo da linha fique colorida
+            tension: 0.3,
+            fill: false,
             pointBackgroundColor: cor,
             pointBorderColor: '#0d0d0d',
             pointRadius: 4
@@ -298,15 +368,8 @@ function atualizarGraficoHistorico() {
                 legend: { labels: { color: '#ffffff', font: { size: 13, family: 'Arial' } } }
             },
             scales: {
-                x: {
-                    ticks: { color: '#aaaaaa' },
-                    grid: { color: '#333' }
-                },
-                y: {
-                    beginAtZero: true,
-                    ticks: { color: '#aaaaaa', stepSize: 1 }, // Garante números inteiros
-                    grid: { color: '#333' }
-                }
+                x: { ticks: { color: '#aaaaaa' }, grid: { color: '#333' } },
+                y: { beginAtZero: true, ticks: { color: '#aaaaaa', stepSize: 1 }, grid: { color: '#333' } }
             }
         }
     });
@@ -323,7 +386,7 @@ async function removerRegistro(id, tipo) {
             body: JSON.stringify({ id, tipo })
         });
         if (!resposta.ok) throw new Error('Erro ao excluir registro');
-        carregarDados(true); // Passa true para forçar a atualização da tela
+        carregarDados(true); 
     } catch (erro) {
         alert(erro.message);
     }
@@ -371,7 +434,6 @@ async function carregarUsuarios() {
     }
 }
 
-// Adicionar Funcionário
 async function adicionarFuncionario() {
     const usuario = document.getElementById('novo-user').value.trim();
     const senha = document.getElementById('nova-senha').value.trim();
@@ -402,7 +464,6 @@ async function adicionarFuncionario() {
     }
 }
 
-// Remover Funcionário
 async function deletarUsuario(id) {
     if (!confirm('Tem certeza que deseja remover o acesso deste funcionário?')) return;
 
@@ -420,7 +481,6 @@ async function deletarUsuario(id) {
     }
 }
 
-/* ===================== FUNÇÕES DE SENHA E UNIDADE ===================== */
 async function editarFuncionario(id, usuarioAtual) {
     const novoUsuario = prompt("Edite o nome de login:", usuarioAtual);
     if (novoUsuario === null) return;
@@ -447,7 +507,6 @@ async function editarFuncionario(id, usuarioAtual) {
     }
 }
 
-// --- LÓGICA DO MODAL DE MUDAR UNIDADE ---
 function abrirModalUnidade(id, unidadeAtual) {
     funcionarioEditandoUnidadeId = id;
     const select = document.getElementById('select-mudar-unidade');
@@ -484,7 +543,6 @@ async function salvarNovaUnidade() {
     }
 }
 
-// Buscar unidades disponíveis no Edge Config
 async function carregarOpcoesDeUnidades() {
     try {
         const [resMatricula, resPreMatricula] = await Promise.all([
@@ -528,7 +586,6 @@ async function carregarOpcoesDeUnidades() {
     }
 }
 
-// Mudar a própria senha
 async function mudarPropriaSenha() {
     const id = sessionStorage.getItem('adminId');
     const usuario = sessionStorage.getItem('adminUsuario');
@@ -593,10 +650,7 @@ function exportarExcel() {
 
 /* ===================== INICIALIZAÇÃO ===================== */
 document.addEventListener('DOMContentLoaded', () => {
-    // Carga inicial (manual = true para mostrar o loading no botão)
     carregarDados(true);
-    
-    // Inicia o timer de atualização automática (30s)
     iniciarAtualizacaoAutomatica();
 
     if (document.getElementById('tabela-usuarios-body')) {
@@ -604,7 +658,6 @@ document.addEventListener('DOMContentLoaded', () => {
         carregarOpcoesDeUnidades(); 
     }
 
-    // Preencher o nome do usuário logado
     const nomeUsuarioEl = document.getElementById('nome-usuario-logado');
     if (nomeUsuarioEl) {
         const nomeLogado = sessionStorage.getItem('adminUsuario');
@@ -616,15 +669,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Preencher a Badge da Unidade
     const textoUnidadeEl = document.getElementById('texto-unidade-badge');
     if (textoUnidadeEl) {
         let unidadeSalva = sessionStorage.getItem('adminUnidade');
-        
         if (!unidadeSalva || unidadeSalva.trim() === '') {
             unidadeSalva = 'Acesso Global';
         }
-        
         textoUnidadeEl.textContent = unidadeSalva;
     }
 });

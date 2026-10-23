@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="../estilos/style.css">
     <link rel="stylesheet" href="../estilos/styleadmin.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <!-- BIBLIOTECA DO CHARTS (Adicionada) -->
+    <!-- BIBLIOTECA DO CHARTS -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- BIBLIOTECA PARA GERAR EXCELL -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -60,7 +60,7 @@
                 </div>
             </div>
 
-            <!-- GRÁFICO COM FILTROS E ABAS (Adicionado para Funcionário) -->
+            <!-- GRÁFICO COM FILTROS E ABAS -->
             <div class="admin-card" style="flex-direction: column; align-items: stretch; margin-bottom: 40px; background-color: #141414;">
                 
                 <!-- Cabeçalho e Abas -->
@@ -129,6 +129,7 @@
                         <tbody id="tabela-matriculas-body"></tbody>
                     </table>
                 </div>
+                <div id="paginacao-matriculas" class="paginacao-container"></div>
 
                 <h3 style="margin-top: 40px;">Últimas Pré-Matrículas</h3>
                 <div class="tabela-responsiva">
@@ -146,6 +147,7 @@
                         <tbody id="tabela-prematriculas-body"></tbody>
                     </table>
                 </div>
+                <div id="paginacao-prematriculas" class="paginacao-container"></div>
             </div>
         </main>
     </div>

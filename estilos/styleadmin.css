@@ -80,6 +80,44 @@
     color: var(--cor-texto-claro);
 }
 
+/* ===================== PAGINAÇÃO ===================== */
+.paginacao-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    margin-top: 15px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.btn-pagina {
+    background-color: #1a1a1a;
+    color: var(--cor-texto-claro);
+    border: 1px solid #333;
+    padding: 8px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.2s ease;
+}
+
+.btn-pagina:hover:not(:disabled) {
+    border-color: var(--cor-secundaria);
+    color: var(--cor-secundaria);
+}
+
+.btn-pagina.ativo {
+    background-color: var(--cor-secundaria);
+    color: var(--cor-primaria);
+    border-color: var(--cor-secundaria);
+}
+
+.btn-pagina:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
 /* ===================== RESPONSIVIDADE DO PAINEL ADMIN ===================== */
 @media (max-width: 768px) {
     .admin-body #cabecalho { flex-direction: column !important; align-items: flex-start !important; gap: 15px; padding: 15px 20px !important; }
