@@ -226,7 +226,7 @@ async function atualizarCardsEGraficos() {
         const cardArrecadado = document.getElementById('total-arrecadado');
         if (cardArrecadado) cardArrecadado.innerText = `R$ ${valorTotal.toFixed(2).replace('.', ',')}`;
 
-        if (cargo === 'dono' && document.getElementById('grafico-unico')) {
+        if (document.getElementById('grafico-unico')) {
             await atualizarGraficos();
         }
     } catch (erro) {
