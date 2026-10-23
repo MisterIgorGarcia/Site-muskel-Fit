@@ -303,6 +303,50 @@ async function deletarUsuario(id) {
     }
 }
 
+/* ===================== EXPORTAR PARA EXCEL ===================== */
+
+function exportarExcel() {
+    // Verifica se há dados para exportar
+    if (dadosGlobais.matriculas.length === 0 && dadosGlobais.prematriculas.length === 0) {
+        return alert('Não há dados cadastrados para exportar no momento.');
+    }
+
+    // 1. Cria um novo arquivo de planilha (Workbook)
+    const wb = XLSX.utils.book_new();
+
+    // 2. Cria a aba de Matrículas (se houver dados)
+    if (dadosGlobais.matriculas.length > 0) {
+        // Converte o JSON em planilha
+        const wsMat = XLSX.utils.json_to_sheet(dadosGlobais.matriculas);
+        // Adiciona a planilha ao arquivo com o nome "Matrículas"
+        XLSX.utils.book_append_sheet(wb, wsMat, "Matrículas");
+    }
+
+    // 3. Cria a aba de Pré-Matrículas (se houver dados)
+    if (dadosGlobais.prematriculas.length > 0) {
+        const wsPre = XLSX.utils.json_to_sheet(dadosGlobais.prematriculas);
+        XLSX.utils.book_append_sheet(wb, wsPre, "Pré-Matrículas");
+    }
+
+    // 4. Gera o nome do arquivo com Data e Hora atual
+    const agora = new Date();
+    
+    // Formata Data para DD-MM-YYYY
+    const dia = String(agora.getDate()).padStart(2, '0');
+    const mes = String(agora.getMonth() + 1).padStart(2, '0');
+    const ano = agora.getFullYear();
+    
+    // Formata Hora para HH-MM
+    const hora = String(agora.getHours()).padStart(2, '0');
+    const minuto = String(agora.getMinutes()).padStart(2, '0');
+
+    // Junta tudo: DadosMuskelfit-25-10-2024-14-30.xlsx
+    const nomeArquivo = `DadosMuskelfit-${dia}-${mes}-${ano}-${hora}-${minuto}.xlsx`;
+
+    // 5. Baixa o arquivo
+    XLSX.writeFile(wb, nomeArquivo);
+}
+
 /* ===================== INICIALIZAÇÃO ===================== */
 
 // Carrega os dados e usuários assim que a página abre

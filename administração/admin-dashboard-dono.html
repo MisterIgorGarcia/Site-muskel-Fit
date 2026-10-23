@@ -8,6 +8,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <!-- BIBLIOTECA DO CHARTS -->
      <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- BIBLIOTECA PARA GERAR EXCELL -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <!-- TRAVA DE SEGURANÇA -->
     <script>
         if (sessionStorage.getItem('adminLogado') !== 'sim' || sessionStorage.getItem('adminCargo') !== 'dono') {
@@ -26,6 +28,7 @@
         <main class="admin-container">
             <div class="admin-header-titulo">
                 <h2>Visão Geral da Academia</h2>
+                <button onclick="exportarExcel()" class="btn-amarelo" style="background-color: #22c55e; color: #fff;"><i class="fa-solid fa-file-excel"></i> Exportar Excel</button>
                 <button id="btn-atualizar" class="btn-amarelo" onclick="carregarDados()"><i class="fa-solid fa-rotate-right"></i> Atualizar Dados</button>
             </div>
 
@@ -58,7 +61,7 @@
                     <canvas id="grafico-unico"></canvas>
                 </div>
             </div>
-            
+
             <!-- ===================== FIM GRÁFICOS ===================== -->
 
             <div class="admin-cards">
