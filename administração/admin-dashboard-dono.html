@@ -143,7 +143,10 @@
                     </div>
                     <div style="flex: 1; min-width: 150px;">
                         <label style="color: #999; font-size: 0.85rem; margin-bottom: 5px; display: block;">Unidade</label>
-                        <input type="text" id="nova-unidade" placeholder="Ex: Cruzeiro - SP" style="width: 100%; padding: 12px; border-radius: 5px; border: 1px solid #333; background: #0d0d0d; color: #fff; outline: none;">
+                        <!-- ALTERAÇÃO 1: Input substituído por Select -->
+                        <select id="nova-unidade" class="admin-select" style="width: 100%; padding: 12px; border-radius: 5px; border: 1px solid #333; background: #0d0d0d; color: #fff; outline: none;">
+                            <option value="">Carregando unidades...</option>
+                        </select>
                     </div>
                     <button onclick="adicionarFuncionario()" class="btn-amarelo" style="padding: 12px 20px; height: 43px;">
                         <i class="fa-solid fa-plus" style="color: rgb(0, 0, 0);"></i> Adicionar
@@ -170,6 +173,25 @@
             </div>
             <!-- ===================== FIM GERENCIAR FUNCIONÁRIOS ===================== -->
         </main>
+    </div>
+
+    <!-- ALTERAÇÃO 2: MODAL PARA MUDAR UNIDADE -->
+    <div id="modal-mudar-unidade" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 9999; justify-content: center; align-items: center;">
+        <div style="background: #1a1a1a; padding: 30px; border-radius: 10px; border: 1px solid var(--cor-secundaria); width: 90%; max-width: 400px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+            <h3 style="color: var(--cor-secundaria); margin-bottom: 20px; font-size: 1.2rem;">
+                <i class="fa-solid fa-building"></i> Mudar Unidade do Funcionário
+            </h3>
+            
+            <label style="color: #999; font-size: 0.9rem; margin-bottom: 8px; display: block;">Selecione a nova unidade:</label>
+            <select id="select-mudar-unidade" class="admin-select" style="width: 100%; margin-bottom: 25px; padding: 12px; font-size: 1rem;">
+                <!-- As opções serão preenchidas via JavaScript -->
+            </select>
+            
+            <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                <button onclick="fecharModalUnidade()" class="btn-voltar-header" style="padding: 10px 20px;">Cancelar</button>
+                <button onclick="salvarNovaUnidade()" class="btn-amarelo" style="padding: 10px 20px;">Salvar</button>
+            </div>
+        </div>
     </div>
 
     <script src="../script/admin-dashboard.js"></script>

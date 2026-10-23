@@ -1,25 +1,24 @@
 // script/admin-dashboard.js
 
-// Verifica se a pessoa tem permissão para ver a página (redundância de segurança)
+// Verifica se a pessoa tem permissão para ver a página
 const cargo = sessionStorage.getItem('adminCargo');
 if (!cargo) {
     window.location.href = 'admin.html';
 }
 
-// Variáveis globais para o Gráfico Único com Filtros
 let instanciaGrafico = null;
 let dadosGlobais = { matriculas: [], prematriculas: [] };
+let funcionarioEditandoUnidadeId = null; // Variável global para o Modal
 
+// ===================== CARREGAR DADOS =====================
 async function carregarDados() {
     const btnAtualizar = document.getElementById('btn-atualizar');
     if (btnAtualizar) btnAtualizar.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Buscando...';
 
     try {
-        // Pega a unidade do funcionário logado
         const minhaUnidade = sessionStorage.getItem('adminUnidade');
-        
-        // Monta a URL. Se for dono ou não tiver unidade, busca tudo. Se for funcionário com unidade, envia o filtro.
         let url = '/api/admin-dados';
+        
         if (cargo === 'funcionario' && minhaUnidade && minhaUnidade.trim() !== '') {
             url += `?unidade=${encodeURIComponent(minhaUnidade)}`;
         }
@@ -45,10 +44,7 @@ async function carregarDados() {
                 valorTotal += valor;
 
                 const colunaValor = cargo === 'dono' ? `<td class="destaque-valor">R$ ${valor.toFixed(2).replace('.', ',')}</td>` : '';
-                
-                const colunaAcao = cargo === 'dono' 
-                    ? `<td><button onclick="removerRegistro(${item.id}, 'matricula')" style="background: transparent; border: none; color: #ef4444; cursor: pointer;" title="Excluir"><i class="fa-solid fa-trash"></i></button></td>` 
-                    : '';
+                const colunaAcao = cargo === 'dono' ? `<td><button onclick="removerRegistro(${item.id}, 'matricula')" style="background: transparent; border: none; color: #ef4444; cursor: pointer;" title="Excluir"><i class="fa-solid fa-trash"></i></button></td>` : '';
 
                 tbodyMat.innerHTML += `
                     <tr>
@@ -79,10 +75,7 @@ async function carregarDados() {
                 valorTotal += valor;
 
                 const colunaValor = cargo === 'dono' ? `<td class="destaque-valor">R$ ${valor.toFixed(2).replace('.', ',')}</td>` : '';
-                
-                const colunaAcao = cargo === 'dono' 
-                    ? `<td><button onclick="removerRegistro(${item.id}, 'prematricula')" style="background: transparent; border: none; color: #ef4444; cursor: pointer;" title="Excluir"><i class="fa-solid fa-trash"></i></button></td>` 
-                    : '';
+                const colunaAcao = cargo === 'dono' ? `<td><button onclick="removerRegistro(${item.id}, 'prematricula')" style="background: transparent; border: none; color: #ef4444; cursor: pointer;" title="Excluir"><i class="fa-solid fa-trash"></i></button></td>` : '';
 
                 tbodyPre.innerHTML += `
                     <tr>
@@ -101,17 +94,14 @@ async function carregarDados() {
 
         // --- ATUALIZAR CARDS ---
         document.getElementById('total-registros').innerText = dados.matriculas.length + dados.prematriculas.length;
-        
         const cardArrecadado = document.getElementById('total-arrecadado');
         if (cardArrecadado) {
             cardArrecadado.innerText = `R$ ${valorTotal.toFixed(2).replace('.', ',')}`;
         }
 
-        //SALVA OS DADOS NA MEMÓRIA GLOBAL PARA O GRÁFICO
         dadosGlobais.matriculas = dados.matriculas;
         dadosGlobais.prematriculas = dados.prematriculas;
 
-        // Desenha o gráfico apenas se for o dono e se o canvas existir na tela
         if (cargo === 'dono' && document.getElementById('grafico-unico')) {
             atualizarGraficoFiltrado();
         }
@@ -125,16 +115,12 @@ async function carregarDados() {
 }
 
 /* ===================== GRÁFICO ÚNICO COM FILTROS ===================== */
-
 function atualizarGraficoFiltrado() {
-    // Pega os valores dos filtros (se não existirem na tela, assume o padrão)
     const origemEl = document.getElementById('filtro-origem');
     const agrupamentoEl = document.getElementById('filtro-agrupamento');
-    
     const origem = origemEl ? origemEl.value : 'todos';
     const agrupamento = agrupamentoEl ? agrupamentoEl.value : 'plano';
 
-    // 1. Junta os dados baseados na origem selecionada
     let dadosBase = [];
     if (origem === 'todos') {
         dadosBase = [...dadosGlobais.matriculas, ...dadosGlobais.prematriculas];
@@ -144,7 +130,6 @@ function atualizarGraficoFiltrado() {
         dadosBase = dadosGlobais.prematriculas;
     }
 
-    // 2. Conta as ocorrências baseadas no agrupamento selecionado
     const contagem = {};
     dadosBase.forEach(item => {
         const valor = item[agrupamento] || 'Não informado';
@@ -153,51 +138,36 @@ function atualizarGraficoFiltrado() {
 
     const labels = Object.keys(contagem);
     const data = Object.values(contagem);
-
-    // 3. Desenha ou atualiza o gráfico
     const canvas = document.getElementById('grafico-unico');
     if (!canvas) return;
 
     const cores = ['#ffd60a', '#3b82f6', '#ef4444', '#22c55e', '#a855f7', '#f97316'];
 
     if (instanciaGrafico) {
-        // Se o gráfico já existe, apenas atualiza os dados
         instanciaGrafico.data.labels = labels;
         instanciaGrafico.data.datasets[0].data = data;
         instanciaGrafico.update();
     } else {
-        // Se não existe, cria o gráfico do zero
         instanciaGrafico = new Chart(canvas, {
             type: 'pie',
             data: {
                 labels: labels,
-                datasets: [{
-                    data: data,
-                    backgroundColor: cores,
-                    borderWidth: 2,
-                    borderColor: '#141414'
-                }]
+                datasets: [{ data: data, backgroundColor: cores, borderWidth: 2, borderColor: '#141414' }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: {
-                    legend: { 
-                        position: 'right',
-                        labels: { color: '#ffffff', font: { size: 13, family: 'Arial' } } 
-                    }
+                    legend: { position: 'right', labels: { color: '#ffffff', font: { size: 13, family: 'Arial' } } }
                 }
             }
         });
     }
 }
 
-/* ===================== REMOVER REGISTRO INDIVIDUAL ===================== */
-
+/* ===================== REMOVER REGISTRO ===================== */
 async function removerRegistro(id, tipo) {
-    if (!confirm('Tem certeza que deseja apagar este registro? Essa ação não pode ser desfeita.')) {
-        return;
-    }
+    if (!confirm('Tem certeza que deseja apagar este registro? Essa ação não pode ser desfeita.')) return;
 
     try {
         const resposta = await fetch('/api/admin-dados', {
@@ -205,19 +175,14 @@ async function removerRegistro(id, tipo) {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ id, tipo })
         });
-
         if (!resposta.ok) throw new Error('Erro ao excluir registro');
-
-        carregarDados(); // Recarrega a tabela para o registro sumir da tela
-
+        carregarDados();
     } catch (erro) {
         alert(erro.message);
     }
 }
 
 /* ===================== GERENCIAR FUNCIONÁRIOS ===================== */
-
-// FUNÇÃO 1: Buscar e Listar
 async function carregarUsuarios() {
     try {
         const resposta = await fetch('/api/admin-controle-usuarios');
@@ -228,7 +193,6 @@ async function carregarUsuarios() {
         tbody.innerHTML = '';
 
         usuarios.forEach(user => {
-            // O dono principal (id 1) não pode ser excluído ou editado pela interface de funcionários
             let acoes = `<span style="color: #666; font-size: 0.8rem;"><i class="fa-solid fa-lock"></i> Protegido</span>`;
             
             if (user.id !== 1) {
@@ -236,7 +200,7 @@ async function carregarUsuarios() {
                     <button onclick="editarFuncionario(${user.id}, '${user.usuario}')" style="background: transparent; border: none; color: #3b82f6; cursor: pointer; padding: 5px; margin-right: 10px;" title="Editar Login/Senha">
                         <i class="fa-solid fa-pen"></i> Editar
                     </button>
-                    <button onclick="mudarUnidadeFuncionario(${user.id}, '${user.unidade || ''}')" style="background: transparent; border: none; color: #eab308; cursor: pointer; padding: 5px; margin-right: 10px;" title="Mudar Unidade">
+                    <button onclick="abrirModalUnidade(${user.id}, '${user.unidade || ''}')" style="background: transparent; border: none; color: #eab308; cursor: pointer; padding: 5px; margin-right: 10px;" title="Mudar Unidade">
                         <i class="fa-solid fa-building"></i> Mudar Unidade
                     </button>
                     <button onclick="deletarUsuario(${user.id})" style="background: transparent; border: none; color: #ef4444; cursor: pointer; padding: 5px;" title="Remover Acesso">
@@ -260,33 +224,30 @@ async function carregarUsuarios() {
     }
 }
 
-// FUNÇÃO 2: Adicionar Funcionário
+// Adicionar Funcionário
 async function adicionarFuncionario() {
     const usuario = document.getElementById('novo-user').value.trim();
     const senha = document.getElementById('nova-senha').value.trim();
-    const unidade = document.getElementById('nova-unidade').value.trim();
+    const unidade = document.getElementById('nova-unidade').value; // Pega o valor do select
 
     if (!usuario || !senha || !unidade) {
-        return alert('Preencha o usuário, a senha e a unidade para adicionar.');
+        return alert('Preencha o usuário, a senha e selecione a unidade para adicionar.');
     }
 
     try {
         const resposta = await fetch('/api/admin-controle-usuarios', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ usuario, senha, unidade, cargo: 'funcionario' }) //
+            body: JSON.stringify({ usuario, senha, unidade, cargo: 'funcionario' })
         });
 
         const resultado = await resposta.json();
-
         if (!resposta.ok) throw new Error(resultado.erro || 'Erro ao adicionar funcionário');
 
         alert('Funcionário adicionado com sucesso!');
-        
         document.getElementById('novo-user').value = '';
         document.getElementById('nova-senha').value = '';
         document.getElementById('nova-unidade').value = '';
-        
         carregarUsuarios(); 
 
     } catch (erro) {
@@ -294,11 +255,9 @@ async function adicionarFuncionario() {
     }
 }
 
-// FUNÇÃO 3: Remover Funcionário
+// Remover Funcionário
 async function deletarUsuario(id) {
-    if (!confirm('Tem certeza que deseja remover o acesso deste funcionário? Ele não conseguirá mais fazer login.')) {
-        return;
-    }
+    if (!confirm('Tem certeza que deseja remover o acesso deste funcionário?')) return;
 
     try {
         const resposta = await fetch('/api/admin-controle-usuarios', {
@@ -306,34 +265,25 @@ async function deletarUsuario(id) {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ id })
         });
-
         const resultado = await resposta.json();
-
         if (!resposta.ok) throw new Error(resultado.erro || 'Erro ao deletar usuário');
-
-        // Atualiza a tabela na tela
         carregarUsuarios(); 
-
     } catch (erro) {
         alert(erro.message);
     }
 }
 
-/* ===================== FUNÇÕES DE SENHA ===================== */
-
-// 1. Função para o Dono editar um Funcionário
+/* ===================== FUNÇÕES DE SENHA E UNIDADE ===================== */
 async function editarFuncionario(id, usuarioAtual) {
     const novoUsuario = prompt("Edite o nome de login:", usuarioAtual);
-    if (novoUsuario === null) return; // Cancelou
+    if (novoUsuario === null) return;
     if (novoUsuario.trim() === '') return alert('O login não pode ficar vazio.');
 
     const novaSenha = prompt("Digite a NOVA senha (ou deixe em branco para não alterar):");
-    if (novaSenha === null) return; // Cancelou
+    if (novaSenha === null) return;
 
     const dadosAtualizar = { id: id, usuario: novoUsuario.trim() };
-    if (novaSenha.trim() !== '') {
-        dadosAtualizar.senha = novaSenha.trim();
-    }
+    if (novaSenha.trim() !== '') dadosAtualizar.senha = novaSenha.trim();
 
     try {
         const resposta = await fetch('/api/admin-controle-usuarios', {
@@ -341,12 +291,45 @@ async function editarFuncionario(id, usuarioAtual) {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(dadosAtualizar)
         });
+        const resultado = await resposta.json();
+        if (!resposta.ok) throw new Error(resultado.erro || 'Erro ao editar funcionário');
+        alert('Dados do funcionário atualizados com sucesso!');
+        carregarUsuarios(); 
+    } catch (erro) {
+        alert(erro.message);
+    }
+}
+
+// --- LÓGICA DO MODAL DE MUDAR UNIDADE ---
+function abrirModalUnidade(id, unidadeAtual) {
+    funcionarioEditandoUnidadeId = id;
+    const select = document.getElementById('select-mudar-unidade');
+    select.value = unidadeAtual; // Tenta selecionar a unidade atual
+    document.getElementById('modal-mudar-unidade').style.display = 'flex';
+}
+
+function fecharModalUnidade() {
+    document.getElementById('modal-mudar-unidade').style.display = 'none';
+    funcionarioEditandoUnidadeId = null;
+}
+
+async function salvarNovaUnidade() {
+    if (!funcionarioEditandoUnidadeId) return;
+    
+    const novaUnidade = document.getElementById('select-mudar-unidade').value;
+
+    try {
+        const resposta = await fetch('/api/admin-controle-usuarios', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: funcionarioEditandoUnidadeId, unidade: novaUnidade })
+        });
 
         const resultado = await resposta.json();
+        if (!resposta.ok) throw new Error(resultado.erro || 'Erro ao mudar unidade');
 
-        if (!resposta.ok) throw new Error(resultado.erro || 'Erro ao editar funcionário');
-
-        alert('Dados do funcionário atualizados com sucesso!');
+        alert('Unidade do funcionário atualizada com sucesso! Ele deve relogar para ver a mudança.');
+        fecharModalUnidade();
         carregarUsuarios(); 
 
     } catch (erro) {
@@ -354,41 +337,62 @@ async function editarFuncionario(id, usuarioAtual) {
     }
 }
 
-// 1.1 Função para o Dono editar a Unidade do Funcionário (NOVA FUNÇÃO ADICIONADA)
-async function mudarUnidadeFuncionario(id, unidadeAtual) {
-    const novaUnidade = prompt(`Digite a NOVA unidade para este funcionário:\n(Deixe em branco para ele ver TODAS as unidades)`, unidadeAtual);
-    
-    if (novaUnidade === null) return; // Cancelou
-
+// Buscar unidades disponíveis no Edge Config
+async function carregarOpcoesDeUnidades() {
     try {
-        const resposta = await fetch('/api/admin-controle-usuarios', {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ id: id, unidade: novaUnidade.trim() })
-        });
+        const [resMatricula, resPreMatricula] = await Promise.all([
+            fetch('/api/catalogo?tipo=matricula'),
+            fetch('/api/catalogo?tipo=pre-matricula')
+        ]);
 
-        const resultado = await resposta.json();
+        const dataMatricula = await resMatricula.json();
+        const dataPreMatricula = await resPreMatricula.json();
 
-        if (!resposta.ok) throw new Error(resultado.erro || 'Erro ao mudar unidade');
+        let unidades = [];
 
-        alert('Unidade do funcionário atualizada com sucesso! Ele deve relogar para ver a mudança.');
-        carregarUsuarios(); // Recarrega a tabela
+        // Pega as chaves (nomes das unidades) de cada retorno
+        if (dataMatricula.respostaAPI) {
+            unidades = unidades.concat(Object.keys(dataMatricula.respostaAPI));
+        }
+        if (dataPreMatricula.respostaAPI) {
+            unidades = unidades.concat(Object.keys(dataPreMatricula.respostaAPI));
+        }
+
+        // Remove duplicatas e ordena alfabeticamente
+        unidades = [...new Set(unidades)].sort();
+
+        // 1. Popula o Select de ADICIONAR Funcionário
+        const selectAdd = document.getElementById('nova-unidade');
+        if (selectAdd) {
+            selectAdd.innerHTML = '<option value="">Selecione a unidade...</option>';
+            unidades.forEach(u => {
+                selectAdd.innerHTML += `<option value="${u}">${u}</option>`;
+            });
+        }
+
+        // 2. Popula o Select do MODAL de Mudar Unidade
+        const selectModal = document.getElementById('select-mudar-unidade');
+        if (selectModal) {
+            selectModal.innerHTML = '<option value="">Todas as Unidades (Acesso Global)</option>';
+            unidades.forEach(u => {
+                selectModal.innerHTML += `<option value="${u}">${u}</option>`;
+            });
+        }
 
     } catch (erro) {
-        alert(erro.message);
+        console.error('Erro ao buscar unidades do Edge Config:', erro);
+        alert('Aviso: Não foi possível carregar a lista de unidades.');
     }
 }
 
-// 2. Função para o usuário logado mudar a própria senha
+// Mudar a própria senha
 async function mudarPropriaSenha() {
     const id = sessionStorage.getItem('adminId');
     const usuario = sessionStorage.getItem('adminUsuario');
-
     if (!id) return alert('Erro ao identificar o usuário. Faça login novamente.');
 
     const novaSenha = prompt(`Olá, ${usuario}! Digite a sua NOVA senha de acesso:`);
-    
-    if (novaSenha === null) return; // Cancelou
+    if (novaSenha === null) return;
     if (novaSenha.trim().length < 4) return alert('A senha precisa ter pelo menos 4 caracteres.');
 
     try {
@@ -397,9 +401,7 @@ async function mudarPropriaSenha() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ id: Number(id), senha: novaSenha.trim() })
         });
-
         if (!resposta.ok) throw new Error('Erro ao atualizar a senha.');
-
         alert('Sua senha foi alterada com sucesso!');
     } catch (erro) {
         alert(erro.message);
@@ -407,17 +409,12 @@ async function mudarPropriaSenha() {
 }
 
 /* ===================== EXPORTAR PARA EXCEL ===================== */
-
 function exportarExcel() {
-    // Verifica se há dados para exportar
     if (dadosGlobais.matriculas.length === 0 && dadosGlobais.prematriculas.length === 0) {
         return alert('Não há dados cadastrados para exportar no momento.');
     }
 
-    // 1. Junta os dois arrays (Matrículas + Pré-Matrículas)
     const todosOsDados = [...dadosGlobais.matriculas, ...dadosGlobais.prematriculas];
-
-    // 2. Formata os dados: Adiciona o campo "Tipo" e ordena pela data de criação
     const dadosFormatados = todosOsDados.map(item => {
         return {
             Data: new Date(item.created_at).toLocaleDateString('pt-BR'),
@@ -431,60 +428,39 @@ function exportarExcel() {
             Pagamento: item.pagamento
         };
     }).sort((a, b) => {
-        // Ordena da data mais recente para a mais antiga
         const [diaA, mesA, anoA] = a.Data.split('/');
         const [diaB, mesB, anoB] = b.Data.split('/');
         return new Date(anoB, mesB - 1, diaB) - new Date(anoA, mesA - 1, diaA);
     });
 
-    // 3. Cria um novo arquivo de planilha (Workbook)
     const wb = XLSX.utils.book_new();
-
-    // 4. Converte os dados formatados em uma única planilha
     const ws = XLSX.utils.json_to_sheet(dadosFormatados);
-
-    // 5. Adiciona a planilha ao arquivo
     XLSX.utils.book_append_sheet(wb, ws, "Todos os Registros");
 
-    // 6. Gera o nome do arquivo com Data e Hora atual
     const agora = new Date();
-    
-    // Formata Data para DD-MM-YYYY
     const dia = String(agora.getDate()).padStart(2, '0');
     const mes = String(agora.getMonth() + 1).padStart(2, '0');
     const ano = agora.getFullYear();
-    
-    // Formata Hora para HH-MM
     const hora = String(agora.getHours()).padStart(2, '0');
     const minuto = String(agora.getMinutes()).padStart(2, '0');
 
-    // Junta tudo: DadosMuskelfit-25-10-2024-14-30.xlsx
     const nomeArquivo = `DadosMuskelfit-${dia}-${mes}-${ano}-${hora}-${minuto}.xlsx`;
-
-    // 7. Baixa o arquivo
     XLSX.writeFile(wb, nomeArquivo);
 }
 
 /* ===================== INICIALIZAÇÃO ===================== */
-
-// Carrega os dados e usuários assim que a página abre
 document.addEventListener('DOMContentLoaded', () => {
     carregarDados();
     
     if (document.getElementById('tabela-usuarios-body')) {
         carregarUsuarios();
+        carregarOpcoesDeUnidades(); // <-- Busca as unidades no Edge Config ao abrir
     }
 
-    //Preencher o nome da unidade no cabeçalho
     const headerUnidadeEl = document.getElementById('header-unidade');
     if (headerUnidadeEl) {
         let unidadeSalva = sessionStorage.getItem('adminUnidade');
-        
-        // Se for vazio, nulo ou só espaços, define como GERAL
-        if (!unidadeSalva || unidadeSalva.trim() === '') {
-            unidadeSalva = 'GERAL';
-        }
-        
+        if (!unidadeSalva || unidadeSalva.trim() === '') unidadeSalva = 'GERAL';
         headerUnidadeEl.textContent = `| UNIDADE: ${unidadeSalva}`;
     }
 });
