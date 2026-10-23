@@ -1771,16 +1771,21 @@ footer {
 /* ===================== PÁGINA DE MATRÍCULA ===================== */
 .btn-voltar-header {
     color: var(--cor-texto-claro);
+    
+    background-color: transparent; /* Tira o fundo branco padrão */
+    border: 1px solid #2a2a2a;     /* Define apenas a sua borda fininha */
+    font-family: inherit;          /* Faz o botão usar a fonte do site */
+    
     text-decoration: none;
     font-weight: bold;
     font-size: 0.9rem;
-    display: flex;
+    display: inline-flex;
     align-items: center;
     gap: 8px;
     padding: 8px 16px;
-    border: 1px solid #2a2a2a;
     border-radius: 999px; /* Pílula */
     transition: border-color 0.3s, color 0.3s;
+    cursor: pointer;
 }
 
 .btn-voltar-header:hover {
