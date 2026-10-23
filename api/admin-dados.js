@@ -1,5 +1,6 @@
 // api/admin-dados.js
 import { createClient } from '@supabase/supabase-js';
+import { get } from '@vercel/edge-config';
 
 const supabase = createClient(
     process.env.SUPABASE_URL,
@@ -10,17 +11,45 @@ export default async function handler(req, res) {
     try {
         // ================= LISTAR (READ) =================
         if (req.method === 'GET') {
-            // Busca as matrículas
-            const { data: matriculas, error: err1 } = await supabase
+            const { unidade } = req.query;
+
+            let queryMatriculas = supabase
                 .from('matriculas')
                 .select('*')
                 .order('created_at', { ascending: false });
 
-            // Busca as pré-matrículas
-            const { data: prematriculas, error: err2 } = await supabase
+            let queryPrematriculas = supabase
                 .from('prematriculas')
                 .select('*')
                 .order('created_at', { ascending: false });
+
+            // Se uma unidade foi passada na URL (funcionário restrito)
+            if (unidade && unidade.trim() !== '') {
+                try {
+                    // Busca as chaves exatas do Edge Config
+                    const [catalogoMatricula, catalogoPreMatricula] = await Promise.all([
+                        get('matricula'),
+                        get('pre-matricula')
+                    ]);
+
+                    const unidadesMatricula = Object.keys(catalogoMatricula || {});
+                    const unidadesPreMatricula = Object.keys(catalogoPreMatricula || {});
+                    const todasAsUnidadesValidas = [...new Set([...unidadesMatricula, ...unidadesPreMatricula])];
+
+                    if (!todasAsUnidadesValidas.includes(unidade)) {
+                        return res.status(403).json({ erro: 'Acesso negado: Unidade inválida.' });
+                    }
+                } catch (edgeError) {
+                    console.error('Aviso: Erro ao validar Edge Config, permitindo acesso por segurança.', edgeError);
+                }
+
+                // FILTRO DIRETO NO BANCO DE DADOS
+                queryMatriculas = queryMatriculas.eq('unidade', unidade);
+                queryPrematriculas = queryPrematriculas.eq('unidade', unidade);
+            }
+
+            const { data: matriculas, error: err1 } = await queryMatriculas;
+            const { data: prematriculas, error: err2 } = await queryPrematriculas;
 
             if (err1) console.error('Erro ao buscar matrículas:', err1);
             if (err2) console.error('Erro ao buscar pré-matrículas:', err2);
@@ -34,8 +63,6 @@ export default async function handler(req, res) {
         // ================= CRIAR (CREATE) =================
         if (req.method === 'POST') {
             const { tipo, ...dadosAluno } = req.body;
-
-            // Define em qual tabela vai salvar (matriculas ou prematriculas)
             const tabela = tipo === 'matricula' ? 'matriculas' : 'prematriculas';
 
             if (!dadosAluno.nome || !dadosAluno.celular) {
@@ -85,7 +112,6 @@ export default async function handler(req, res) {
             return res.status(200).json({ sucesso: true });
         }
 
-        // Se tentar usar um método não mapeado (ex: PATCH)
         return res.status(405).json({ erro: 'Método não permitido' });
 
     } catch (erro) {

@@ -15,23 +15,19 @@ async function carregarDados() {
     if (btnAtualizar) btnAtualizar.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Buscando...';
 
     try {
-        const resposta = await fetch('/api/admin-dados');
+        // Pega a unidade do funcionário logado
+        const minhaUnidade = sessionStorage.getItem('adminUnidade');
+        
+        // Monta a URL. Se for dono ou não tiver unidade, busca tudo. Se for funcionário com unidade, envia o filtro.
+        let url = '/api/admin-dados';
+        if (cargo === 'funcionario' && minhaUnidade && minhaUnidade.trim() !== '') {
+            url += `?unidade=${encodeURIComponent(minhaUnidade)}`;
+        }
+
+        const resposta = await fetch(url);
         const dados = await resposta.json();
 
         if (!resposta.ok) throw new Error('Erro ao buscar');
-
-        // FILTRO POR UNIDADE AQUI
-        if (cargo === 'funcionario') {
-            const minhaUnidade = sessionStorage.getItem('adminUnidade');
-            
-            // Se o funcionário TIVER uma unidade, filtramos os dados.
-            if (minhaUnidade && minhaUnidade.trim() !== '') {
-                dados.matriculas = dados.matriculas.filter(item => item.unidade === minhaUnidade);
-                dados.prematriculas = dados.prematriculas.filter(item => item.unidade === minhaUnidade);
-            }
-            // Se NÃO tiver unidade (vazio), o código não faz nada, 
-            // ou seja, ele mantém a lista completa e vê todos os alunos.
-        }
 
         let valorTotal = 0;
 
@@ -240,6 +236,9 @@ async function carregarUsuarios() {
                     <button onclick="editarFuncionario(${user.id}, '${user.usuario}')" style="background: transparent; border: none; color: #3b82f6; cursor: pointer; padding: 5px; margin-right: 10px;" title="Editar Login/Senha">
                         <i class="fa-solid fa-pen"></i> Editar
                     </button>
+                    <button onclick="mudarUnidadeFuncionario(${user.id}, '${user.unidade || ''}')" style="background: transparent; border: none; color: #eab308; cursor: pointer; padding: 5px; margin-right: 10px;" title="Mudar Unidade">
+                        <i class="fa-solid fa-building"></i> Mudar Unidade
+                    </button>
                     <button onclick="deletarUsuario(${user.id})" style="background: transparent; border: none; color: #ef4444; cursor: pointer; padding: 5px;" title="Remover Acesso">
                         <i class="fa-solid fa-trash"></i> Remover
                     </button>
@@ -355,6 +354,31 @@ async function editarFuncionario(id, usuarioAtual) {
     }
 }
 
+// 1.1 Função para o Dono editar a Unidade do Funcionário (NOVA FUNÇÃO ADICIONADA)
+async function mudarUnidadeFuncionario(id, unidadeAtual) {
+    const novaUnidade = prompt(`Digite a NOVA unidade para este funcionário:\n(Deixe em branco para ele ver TODAS as unidades)`, unidadeAtual);
+    
+    if (novaUnidade === null) return; // Cancelou
+
+    try {
+        const resposta = await fetch('/api/admin-controle-usuarios', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: id, unidade: novaUnidade.trim() })
+        });
+
+        const resultado = await resposta.json();
+
+        if (!resposta.ok) throw new Error(resultado.erro || 'Erro ao mudar unidade');
+
+        alert('Unidade do funcionário atualizada com sucesso! Ele deve relogar para ver a mudança.');
+        carregarUsuarios(); // Recarrega a tabela
+
+    } catch (erro) {
+        alert(erro.message);
+    }
+}
+
 // 2. Função para o usuário logado mudar a própria senha
 async function mudarPropriaSenha() {
     const id = sessionStorage.getItem('adminId');
@@ -449,5 +473,18 @@ document.addEventListener('DOMContentLoaded', () => {
     
     if (document.getElementById('tabela-usuarios-body')) {
         carregarUsuarios();
+    }
+
+    //Preencher o nome da unidade no cabeçalho
+    const headerUnidadeEl = document.getElementById('header-unidade');
+    if (headerUnidadeEl) {
+        let unidadeSalva = sessionStorage.getItem('adminUnidade');
+        
+        // Se for vazio, nulo ou só espaços, define como GERAL
+        if (!unidadeSalva || unidadeSalva.trim() === '') {
+            unidadeSalva = 'GERAL';
+        }
+        
+        headerUnidadeEl.textContent = `| UNIDADE: ${unidadeSalva}`;
     }
 });

@@ -1,14 +1,36 @@
 // api/admin-controle-usuarios.js
 import { createClient } from '@supabase/supabase-js';
+import { get } from '@vercel/edge-config';
 
 const supabase = createClient(
     process.env.SUPABASE_URL,
     process.env.SUPABASE_ANON_KEY
 );
 
+// Função auxiliar corrigida
+async function validarUnidadeNoCatalogo(unidade) {
+    if (!unidade || unidade.trim() === '') return true;
+    
+    try {
+        // BUSCA CORRETA BASEADA NA SUA API CATALOGO
+        const [catalogoMatricula, catalogoPreMatricula] = await Promise.all([
+            get('matricula'),
+            get('pre-matricula')
+        ]);
+
+        const unidadesMatricula = Object.keys(catalogoMatricula || {});
+        const unidadesPreMatricula = Object.keys(catalogoPreMatricula || {});
+        const todasAsUnidades = [...new Set([...unidadesMatricula, ...unidadesPreMatricula])];
+
+        return todasAsUnidades.includes(unidade.trim());
+    } catch (error) {
+        console.error("Erro ao ler Edge Config:", error);
+        return true; 
+    }
+}
+
 export default async function handler(req, res) {
     try {
-        // ================= LISTAR (READ) =================
         if (req.method === 'GET') {
             const { data, error } = await supabase
                 .from('contas_salvas')
@@ -19,7 +41,6 @@ export default async function handler(req, res) {
             return res.status(200).json(data);
         }
 
-        // ================= CRIAR (CREATE) =================
         if (req.method === 'POST') {
             const { usuario, senha, cargo, unidade } = req.body; 
 
@@ -27,9 +48,14 @@ export default async function handler(req, res) {
                 return res.status(400).json({ erro: 'Usuário e senha são obrigatórios' });
             }
 
+            const unidadeValida = await validarUnidadeNoCatalogo(unidade);
+            if (!unidadeValida) {
+                return res.status(400).json({ erro: 'Unidade não encontrada no catálogo da academia.' });
+            }
+
             const { data, error } = await supabase
                 .from('contas_salvas')
-                .insert([{ usuario, senha, cargo: cargo || 'funcionario' }])
+                .insert([{ usuario, senha, cargo: cargo || 'funcionario', unidade }])
                 .select();
 
             if (error) {
@@ -39,16 +65,22 @@ export default async function handler(req, res) {
             return res.status(201).json({ sucesso: true, dados: data[0] });
         }
 
-        // ================= ATUALIZAR (UPDATE) =================
         if (req.method === 'PUT') {
-            const { id, usuario, senha } = req.body;
+            const { id, usuario, senha, unidade } = req.body;
             
             if (!id) return res.status(400).json({ erro: 'ID é obrigatório' });
             
-            // Monta o objeto apenas com o que foi enviado para atualizar
+            if (unidade !== undefined) {
+                const unidadeValida = await validarUnidadeNoCatalogo(unidade);
+                if (!unidadeValida) {
+                    return res.status(400).json({ erro: 'Unidade não encontrada no catálogo da academia.' });
+                }
+            }
+
             const updates = {};
             if (usuario) updates.usuario = usuario;
             if (senha) updates.senha = senha;
+            if (unidade !== undefined) updates.unidade = unidade;
 
             const { data, error } = await supabase
                 .from('contas_salvas')
@@ -63,7 +95,6 @@ export default async function handler(req, res) {
             return res.status(200).json({ sucesso: true, dados: data[0] });
         }
 
-        // ================= DELETAR (DELETE) =================
         if (req.method === 'DELETE') {
             const { id } = req.body;
             
