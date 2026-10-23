@@ -41,7 +41,7 @@ async function carregarDados(manual = false) {
 
         // Se for manual ou a primeira carga, atualiza os cards e gráficos também
         if (manual || !dadosCarregados) {
-            atualizarCardsEGraficos();
+            await atualizarCardsEGraficos();
         }
 
     } catch (erro) {
@@ -202,6 +202,8 @@ async function buscarTodosOsDados() {
         fetch(`/api/admin-dados?tipo=prematricula&all=true${queryUnidade}`)
     ]);
 
+    if (!resMat.ok || !resPre.ok) throw new Error('Falha ao buscar dados no servidor');
+
     const dataMat = await resMat.json();
     const dataPre = await resPre.json();
 
@@ -213,18 +215,22 @@ async function buscarTodosOsDados() {
 }
 
 async function atualizarCardsEGraficos() {
-    const dados = await buscarTodosOsDados();
-    
-    let valorTotal = 0;
-    dados.matriculas.forEach(item => { valorTotal += (Number(item.preco) || 0); });
-    dados.prematriculas.forEach(item => { valorTotal += (Number(item.preco) || 0); });
+    try {
+        const dados = await buscarTodosOsDados();
+        
+        let valorTotal = 0;
+        dados.matriculas.forEach(item => { valorTotal += (Number(item.preco) || 0); });
+        dados.prematriculas.forEach(item => { valorTotal += (Number(item.preco) || 0); });
 
-    document.getElementById('total-registros').innerText = dados.matriculas.length + dados.prematriculas.length;
-    const cardArrecadado = document.getElementById('total-arrecadado');
-    if (cardArrecadado) cardArrecadado.innerText = `R$ ${valorTotal.toFixed(2).replace('.', ',')}`;
+        document.getElementById('total-registros').innerText = dados.matriculas.length + dados.prematriculas.length;
+        const cardArrecadado = document.getElementById('total-arrecadado');
+        if (cardArrecadado) cardArrecadado.innerText = `R$ ${valorTotal.toFixed(2).replace('.', ',')}`;
 
-    if (cargo === 'dono' && document.getElementById('grafico-unico')) {
-        atualizarGraficos();
+        if (cargo === 'dono' && document.getElementById('grafico-unico')) {
+            await atualizarGraficos();
+        }
+    } catch (erro) {
+        console.error("Erro ao atualizar cards e gráficos:", erro);
     }
 }
 
@@ -237,6 +243,38 @@ function iniciarAtualizacaoAutomatica() {
             carregarDados(false); 
         }
     }, 10000); 
+}
+
+/* ===================== CONTROLE DE LOADING DO GRÁFICO ===================== */
+function controlarLoadingGrafico(containerId, status, mensagemErro = '') {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+
+    // Remove o overlay existente, se houver
+    const overlayExistente = container.querySelector('.chart-status-overlay');
+    if (overlayExistente) overlayExistente.remove();
+
+    // Se for para esconder (status === 'hide'), para por aqui
+    if (status === 'hide') return;
+
+    // Cria o novo overlay
+    const overlay = document.createElement('div');
+    overlay.className = `chart-status-overlay ${status === 'error' ? 'erro' : ''}`;
+
+    if (status === 'loading') {
+        overlay.innerHTML = `
+            <div class="spinner"></div>
+            <p>Buscando dados do banco...</p>
+        `;
+    } else if (status === 'error') {
+        overlay.innerHTML = `
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            <p>${mensagemErro || 'Falha ao carregar os dados.'}</p>
+            <button onclick="atualizarGraficos()" class="btn-tentar-novamente">Tentar Novamente</button>
+        `;
+    }
+
+    container.appendChild(overlay);
 }
 
 /* ===================== GRÁFICOS ===================== */
@@ -270,72 +308,98 @@ async function atualizarGraficos() {
 }
 
 async function atualizarGraficoPizza() {
-    const dados = await buscarTodosOsDados();
-    const origemEl = document.getElementById('filtro-origem');
-    const agrupamentoEl = document.getElementById('filtro-agrupamento');
-    const origem = origemEl ? origemEl.value : 'todos';
-    const agrupamento = agrupamentoEl ? agrupamentoEl.value : 'plano';
+    controlarLoadingGrafico('div-grafico-composicao', 'loading');
 
-    let dadosBase = [];
-    if (origem === 'todos') dadosBase = [...dados.matriculas, ...dados.prematriculas];
-    else if (origem === 'matriculas') dadosBase = dados.matriculas;
-    else dadosBase = dados.prematriculas;
+    try {
+        const dados = await buscarTodosOsDados();
+        if (!dados || (!dados.matriculas && !dados.prematriculas)) throw new Error("Dados inválidos");
 
-    const contagem = {};
-    dadosBase.forEach(item => {
-        const valor = item[agrupamento] || 'Não informado';
-        contagem[valor] = (contagem[valor] || 0) + 1;
-    });
+        const origemEl = document.getElementById('filtro-origem');
+        const agrupamentoEl = document.getElementById('filtro-agrupamento');
+        const origem = origemEl ? origemEl.value : 'todos';
+        const agrupamento = agrupamentoEl ? agrupamentoEl.value : 'plano';
 
-    const canvas = document.getElementById('grafico-unico');
-    if (!canvas) return;
-    if (instanciaGrafico) instanciaGrafico.destroy();
+        let dadosBase = [];
+        if (origem === 'todos') dadosBase = [...dados.matriculas, ...dados.prematriculas];
+        else if (origem === 'matriculas') dadosBase = dados.matriculas;
+        else dadosBase = dados.prematriculas;
 
-    instanciaGrafico = new Chart(canvas, {
-        type: 'pie',
-        data: {
-            labels: Object.keys(contagem),
-            datasets: [{ data: Object.values(contagem), backgroundColor: ['#ffd60a', '#3b82f6', '#ef4444', '#22c55e', '#a855f7', '#f97316'], borderWidth: 2, borderColor: '#141414' }]
-        },
-        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { color: '#ffffff' } } } }
-    });
+        const contagem = {};
+        dadosBase.forEach(item => {
+            const valor = item[agrupamento] || 'Não informado';
+            contagem[valor] = (contagem[valor] || 0) + 1;
+        });
+
+        const canvas = document.getElementById('grafico-unico');
+        if (!canvas) return;
+        if (instanciaGrafico) instanciaGrafico.destroy();
+
+        instanciaGrafico = new Chart(canvas, {
+            type: 'pie',
+            data: {
+                labels: Object.keys(contagem),
+                datasets: [{ data: Object.values(contagem), backgroundColor: ['#ffd60a', '#3b82f6', '#ef4444', '#22c55e', '#a855f7', '#f97316'], borderWidth: 2, borderColor: '#141414' }]
+            },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { color: '#ffffff' } } } }
+        });
+
+        controlarLoadingGrafico('div-grafico-composicao', 'hide');
+
+    } catch (erro) {
+        console.error('Erro Gráfico Pizza:', erro);
+        dadosCarregados = false; // Limpa o cache para que o botão "Tentar Novamente" funcione
+        controlarLoadingGrafico('div-grafico-composicao', 'error', 'Não foi possível carregar o gráfico.');
+    }
 }
 
 async function atualizarGraficoHistorico() {
-    const dados = await buscarTodosOsDados();
-    const origemEl = document.getElementById('filtro-origem');
-    const agrupamentoEl = document.getElementById('filtro-agrupamento');
-    const origem = origemEl ? origemEl.value : 'todos';
-    const agrupamento = agrupamentoEl ? agrupamentoEl.value : 'plano';
+    controlarLoadingGrafico('div-grafico-historico', 'loading');
 
-    let dadosBase = [];
-    if (origem === 'todos') dadosBase = [...dados.matriculas, ...dados.prematriculas];
-    else if (origem === 'matriculas') dadosBase = dados.matriculas;
-    else dadosBase = dados.prematriculas;
+    try {
+        const dados = await buscarTodosOsDados();
+        if (!dados || (!dados.matriculas && !dados.prematriculas)) throw new Error("Dados inválidos");
 
-    const datasUnicas = [...new Set(dadosBase.map(item => new Date(item.created_at).toLocaleDateString('pt-BR')))].sort((a, b) => {
-        const [dA, mA, aA] = a.split('/'); const [dB, mB, aB] = b.split('/');
-        return new Date(aA, mA - 1, dA) - new Date(aB, mB - 1, dB);
-    });
+        const origemEl = document.getElementById('filtro-origem');
+        const agrupamentoEl = document.getElementById('filtro-agrupamento');
+        const origem = origemEl ? origemEl.value : 'todos';
+        const agrupamento = agrupamentoEl ? agrupamentoEl.value : 'plano';
 
-    const categoriasUnicas = [...new Set(dadosBase.map(item => item[agrupamento] || 'Não informado'))];
-    const cores = ['#ffd60a', '#3b82f6', '#ef4444', '#22c55e', '#a855f7', '#f97316'];
+        let dadosBase = [];
+        if (origem === 'todos') dadosBase = [...dados.matriculas, ...dados.prematriculas];
+        else if (origem === 'matriculas') dadosBase = dados.matriculas;
+        else dadosBase = dados.prematriculas;
 
-    const datasets = categoriasUnicas.map((cat, i) => {
-        const dataVals = datasUnicas.map(data => dadosBase.filter(item => (item[agrupamento] || 'Não informado') === cat && new Date(item.created_at).toLocaleDateString('pt-BR') === data).length);
-        const cor = cores[i % cores.length];
-        return { label: cat, data: dataVals, borderColor: cor, backgroundColor: cor + '33', borderWidth: 2, tension: 0.3, fill: false, pointBackgroundColor: cor };
-    });
+        const datasUnicas = [...new Set(dadosBase.map(item => new Date(item.created_at).toLocaleDateString('pt-BR')))].sort((a, b) => {
+            const [dA, mA, aA] = a.split('/'); const [dB, mB, aB] = b.split('/');
+            return new Date(aA, mA - 1, dA) - new Date(aB, mB - 1, dB);
+        });
 
-    const canvas = document.getElementById('grafico-historico');
-    if (!canvas) return;
-    if (instanciaGraficoHistorico) instanciaGraficoHistorico.destroy();
+        const categoriasUnicas = [...new Set(dadosBase.map(item => item[agrupamento] || 'Não informado'))];
+        const cores = ['#ffd60a', '#3b82f6', '#ef4444', '#22c55e', '#a855f7', '#f97316'];
 
-    instanciaGraficoHistorico = new Chart(canvas, {
-        type: 'line',
-        data: { labels: datasUnicas, datasets: datasets },
-        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: '#ffffff' } } }, scales: { x: { ticks: { color: '#aaaaaa' }, grid: { color: '#333' } }, y: { beginAtZero: true, ticks: { color: '#aaaaaa', stepSize: 1 }, grid: { color: '#333' } } } }
-    });
+        const datasets = categoriasUnicas.map((cat, i) => {
+            const dataVals = datasUnicas.map(data => dadosBase.filter(item => (item[agrupamento] || 'Não informado') === cat && new Date(item.created_at).toLocaleDateString('pt-BR') === data).length);
+            const cor = cores[i % cores.length];
+            return { label: cat, data: dataVals, borderColor: cor, backgroundColor: cor + '33', borderWidth: 2, tension: 0.3, fill: false, pointBackgroundColor: cor };
+        });
+
+        const canvas = document.getElementById('grafico-historico');
+        if (!canvas) return;
+        if (instanciaGraficoHistorico) instanciaGraficoHistorico.destroy();
+
+        instanciaGraficoHistorico = new Chart(canvas, {
+            type: 'line',
+            data: { labels: datasUnicas, datasets: datasets },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: '#ffffff' } } }, scales: { x: { ticks: { color: '#aaaaaa' }, grid: { color: '#333' } }, y: { beginAtZero: true, ticks: { color: '#aaaaaa', stepSize: 1 }, grid: { color: '#333' } } } }
+        });
+
+        controlarLoadingGrafico('div-grafico-historico', 'hide');
+
+    } catch (erro) {
+        console.error('Erro Gráfico Histórico:', erro);
+        dadosCarregados = false; // Limpa o cache
+        controlarLoadingGrafico('div-grafico-historico', 'error', 'Não foi possível carregar o histórico.');
+    }
 }
 
 /* ===================== REMOVER REGISTRO ===================== */
