@@ -454,13 +454,27 @@ document.addEventListener('DOMContentLoaded', () => {
     
     if (document.getElementById('tabela-usuarios-body')) {
         carregarUsuarios();
-        carregarOpcoesDeUnidades(); // <-- Busca as unidades no Edge Config ao abrir
+        carregarOpcoesDeUnidades(); // Busca as unidades no Edge Config ao abrir
     }
 
+    // Preencher o nome da unidade no cabeçalho (Painel do Funcionário)
     const headerUnidadeEl = document.getElementById('header-unidade');
     if (headerUnidadeEl) {
         let unidadeSalva = sessionStorage.getItem('adminUnidade');
-        if (!unidadeSalva || unidadeSalva.trim() === '') unidadeSalva = 'GERAL';
+        if (!unidadeSalva || unidadeSalva.trim() === '') {
+            unidadeSalva = 'GERAL';
+        }
         headerUnidadeEl.textContent = `| UNIDADE: ${unidadeSalva}`;
+    }
+
+    // Preencher o nome do usuário logado no cabeçalho (Dono e Funcionário)
+    const nomeUsuarioEl = document.getElementById('nome-usuario-logado');
+    if (nomeUsuarioEl) {
+        const nomeLogado = sessionStorage.getItem('adminUsuario');
+        if (nomeLogado) {
+            // Deixa a primeira letra maiúscula (ex: "joao" vira "Joao")
+            const nomeFormatado = nomeLogado.charAt(0).toUpperCase() + nomeLogado.slice(1);
+            nomeUsuarioEl.textContent = `(Olá, ${nomeFormatado})`;
+        }
     }
 });
