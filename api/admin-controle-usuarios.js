@@ -21,7 +21,7 @@ export default async function handler(req, res) {
 
         // ================= CRIAR (CREATE) =================
         if (req.method === 'POST') {
-            const { usuario, senha, cargo } = req.body;
+            const { usuario, senha, cargo, unidade } = req.body; 
 
             if (!usuario || !senha) {
                 return res.status(400).json({ erro: 'Usuário e senha são obrigatórios' });

@@ -235,6 +235,7 @@ async function carregarUsuarios() {
                     <td>#${user.id}</td>
                     <td><strong>${user.usuario}</strong></td>
                     <td><span style="background: ${user.cargo === 'dono' ? '#ffd60a' : '#333'}; color: ${user.cargo === 'dono' ? '#000' : '#fff'}; padding: 3px 8px; border-radius: 4px; font-size: 0.8rem;">${user.cargo}</span></td>
+                    <td>${user.unidade || '-'}</td>
                     <td>${acoes}</td>
                 </tr>
             `;
@@ -248,16 +249,17 @@ async function carregarUsuarios() {
 async function adicionarFuncionario() {
     const usuario = document.getElementById('novo-user').value.trim();
     const senha = document.getElementById('nova-senha').value.trim();
+    const unidade = document.getElementById('nova-unidade').value.trim();
 
-    if (!usuario || !senha) {
-        return alert('Preencha o nome de usuário e a senha para adicionar.');
+    if (!usuario || !senha || !unidade) {
+        return alert('Preencha o usuário, a senha e a unidade para adicionar.');
     }
 
     try {
         const resposta = await fetch('/api/admin-controle-usuarios', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ usuario, senha, cargo: 'funcionario' })
+            body: JSON.stringify({ usuario, senha, unidade, cargo: 'funcionario' }) //
         });
 
         const resultado = await resposta.json();
@@ -266,11 +268,10 @@ async function adicionarFuncionario() {
 
         alert('Funcionário adicionado com sucesso!');
         
-        // Limpa os campos após adicionar
         document.getElementById('novo-user').value = '';
         document.getElementById('nova-senha').value = '';
+        document.getElementById('nova-unidade').value = '';
         
-        // Atualiza a tabela na tela
         carregarUsuarios(); 
 
     } catch (erro) {
