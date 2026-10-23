@@ -20,6 +20,19 @@ async function carregarDados() {
 
         if (!resposta.ok) throw new Error('Erro ao buscar');
 
+        // FILTRO POR UNIDADE AQUI
+        if (cargo === 'funcionario') {
+            const minhaUnidade = sessionStorage.getItem('adminUnidade');
+            
+            // Se o funcionário TIVER uma unidade, filtramos os dados.
+            if (minhaUnidade && minhaUnidade.trim() !== '') {
+                dados.matriculas = dados.matriculas.filter(item => item.unidade === minhaUnidade);
+                dados.prematriculas = dados.prematriculas.filter(item => item.unidade === minhaUnidade);
+            }
+            // Se NÃO tiver unidade (vazio), o código não faz nada, 
+            // ou seja, ele mantém a lista completa e vê todos os alunos.
+        }
+
         let valorTotal = 0;
 
         // --- TABELA DE MATRÍCULAS ---
@@ -98,7 +111,7 @@ async function carregarDados() {
             cardArrecadado.innerText = `R$ ${valorTotal.toFixed(2).replace('.', ',')}`;
         }
 
-        // ✅ SALVA OS DADOS NA MEMÓRIA GLOBAL PARA O GRÁFICO
+        //SALVA OS DADOS NA MEMÓRIA GLOBAL PARA O GRÁFICO
         dadosGlobais.matriculas = dados.matriculas;
         dadosGlobais.prematriculas = dados.prematriculas;
 

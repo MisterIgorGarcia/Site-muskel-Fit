@@ -28,12 +28,12 @@ export default async function handler(req, res) {
             return res.status(401).json({ sucesso: false, erro: 'Usuário ou senha inválidos' });
         }
 
-        // Adicionado 'id' e 'usuario'
         return res.status(200).json({ 
             sucesso: true, 
             cargo: userEncontrado.cargo,
             id: userEncontrado.id,          
-            usuario: userEncontrado.usuario 
+            usuario: userEncontrado.usuario,
+            unidade: userEncontrado.unidade
         });
 
     } catch (erro) {

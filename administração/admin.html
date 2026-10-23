@@ -60,6 +60,7 @@
                     sessionStorage.setItem('adminCargo', dados.cargo);
                     sessionStorage.setItem('adminId', dados.id);
                     sessionStorage.setItem('adminUsuario', dados.usuario);
+                    sessionStorage.setItem('adminUnidade', dados.unidade || '');
                     
                     // Redireciona para a tela correta
                     if (dados.cargo === 'dono') {
