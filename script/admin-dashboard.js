@@ -311,24 +311,39 @@ function exportarExcel() {
         return alert('Não há dados cadastrados para exportar no momento.');
     }
 
-    // 1. Cria um novo arquivo de planilha (Workbook)
+    // 1. Junta os dois arrays (Matrículas + Pré-Matrículas)
+    const todosOsDados = [...dadosGlobais.matriculas, ...dadosGlobais.prematriculas];
+
+    // 2. Formata os dados: Adiciona o campo "Tipo" e ordena pela data de criação
+    const dadosFormatados = todosOsDados.map(item => {
+        return {
+            Data: new Date(item.created_at).toLocaleDateString('pt-BR'),
+            Tipo: item.tipo === 'pre-matricula' ? 'Pré-Matrícula' : 'Matrícula',
+            Nome: item.nome,
+            Celular: item.celular,
+            Unidade: item.unidade,
+            Modalidade: item.modalidade,
+            Plano: item.plano,
+            Valor: item.preco,
+            Pagamento: item.pagamento
+        };
+    }).sort((a, b) => {
+        // Ordena da data mais recente para a mais antiga
+        const [diaA, mesA, anoA] = a.Data.split('/');
+        const [diaB, mesB, anoB] = b.Data.split('/');
+        return new Date(anoB, mesB - 1, diaB) - new Date(anoA, mesA - 1, diaA);
+    });
+
+    // 3. Cria um novo arquivo de planilha (Workbook)
     const wb = XLSX.utils.book_new();
 
-    // 2. Cria a aba de Matrículas (se houver dados)
-    if (dadosGlobais.matriculas.length > 0) {
-        // Converte o JSON em planilha
-        const wsMat = XLSX.utils.json_to_sheet(dadosGlobais.matriculas);
-        // Adiciona a planilha ao arquivo com o nome "Matrículas"
-        XLSX.utils.book_append_sheet(wb, wsMat, "Matrículas");
-    }
+    // 4. Converte os dados formatados em uma única planilha
+    const ws = XLSX.utils.json_to_sheet(dadosFormatados);
 
-    // 3. Cria a aba de Pré-Matrículas (se houver dados)
-    if (dadosGlobais.prematriculas.length > 0) {
-        const wsPre = XLSX.utils.json_to_sheet(dadosGlobais.prematriculas);
-        XLSX.utils.book_append_sheet(wb, wsPre, "Pré-Matrículas");
-    }
+    // 5. Adiciona a planilha ao arquivo
+    XLSX.utils.book_append_sheet(wb, ws, "Todos os Registros");
 
-    // 4. Gera o nome do arquivo com Data e Hora atual
+    // 6. Gera o nome do arquivo com Data e Hora atual
     const agora = new Date();
     
     // Formata Data para DD-MM-YYYY
@@ -343,7 +358,7 @@ function exportarExcel() {
     // Junta tudo: DadosMuskelfit-25-10-2024-14-30.xlsx
     const nomeArquivo = `DadosMuskelfit-${dia}-${mes}-${ano}-${hora}-${minuto}.xlsx`;
 
-    // 5. Baixa o arquivo
+    // 7. Baixa o arquivo
     XLSX.writeFile(wb, nomeArquivo);
 }
 
