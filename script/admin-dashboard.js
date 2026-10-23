@@ -454,27 +454,37 @@ document.addEventListener('DOMContentLoaded', () => {
     
     if (document.getElementById('tabela-usuarios-body')) {
         carregarUsuarios();
-        carregarOpcoesDeUnidades(); // Busca as unidades no Edge Config ao abrir
+        carregarOpcoesDeUnidades(); 
     }
 
-    // Preencher o nome da unidade no cabeçalho (Painel do Funcionário)
-    const headerUnidadeEl = document.getElementById('header-unidade');
-    if (headerUnidadeEl) {
-        let unidadeSalva = sessionStorage.getItem('adminUnidade');
-        if (!unidadeSalva || unidadeSalva.trim() === '') {
-            unidadeSalva = 'GERAL';
-        }
-        headerUnidadeEl.textContent = `| UNIDADE: ${unidadeSalva}`;
-    }
-
-    // Preencher o nome do usuário logado no cabeçalho (Dono e Funcionário)
+    // Preencher o nome do usuário logado (Dono e Funcionário)
     const nomeUsuarioEl = document.getElementById('nome-usuario-logado');
     if (nomeUsuarioEl) {
         const nomeLogado = sessionStorage.getItem('adminUsuario');
         if (nomeLogado) {
             // Deixa a primeira letra maiúscula (ex: "joao" vira "Joao")
             const nomeFormatado = nomeLogado.charAt(0).toUpperCase() + nomeLogado.slice(1);
-            nomeUsuarioEl.textContent = `(Olá, ${nomeFormatado})`;
+            nomeUsuarioEl.textContent = nomeFormatado; // Agora só injeta o nome, o "Olá," está no HTML
+        } else {
+            nomeUsuarioEl.textContent = 'Usuário';
+        }
+    }
+
+    // Preencher a Badge da Unidade (Painel do Funcionário)
+    const headerUnidadeEl = document.getElementById('header-unidade');
+    if (headerUnidadeEl) {
+        let unidadeSalva = sessionStorage.getItem('adminUnidade');
+        
+        if (!unidadeSalva || unidadeSalva.trim() === '') {
+            unidadeSalva = 'Acesso Global';
+        }
+        
+        // Como a div tem um ícone dentro, nós substituímos apenas o texto do span interno
+        const spanUnidade = headerUnidadeEl.querySelector('span');
+        if (spanUnidade) {
+            spanUnidade.textContent = unidadeSalva;
+        } else {
+            headerUnidadeEl.textContent = unidadeSalva;
         }
     }
 });
