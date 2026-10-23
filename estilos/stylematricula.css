@@ -1,0 +1,104 @@
+/* ===================== PÁGINA DE PRÉ-MATRÍCULA ===================== */
+.prematricula-subtitulo { color: #b5b5b5; font-size: 1.05rem; line-height: 1.6; max-width: 600px; margin: 0 auto 35px; }
+.form-matricula { display: flex; flex-direction: column; gap: 18px; max-width: 520px; margin: 0 auto; text-align: left; }
+.form-matricula .campo { display: flex; flex-direction: column; gap: 6px; }
+.form-matricula label { font-size: 0.9rem; font-weight: bold; color: var(--cor-texto-claro); }
+.form-matricula input[type="text"], .form-matricula input[type="date"], .form-matricula input[type="tel"], .form-matricula select { background-color: #1a1a1a; border: 1px solid #333; color: var(--cor-texto-claro); padding: 12px 14px; border-radius: 8px; font-size: 1rem; font-family: inherit; width: 100%; transition: border-color 0.2s; }
+.form-matricula input:focus, .form-matricula select:focus { outline: none; border-color: var(--cor-secundaria); }
+
+/* Radio Buttons */
+.campo-radio { border: none; padding: 0; display: flex; gap: 10px; flex-wrap: wrap; }
+.campo-radio legend { font-size: 0.9rem; font-weight: bold; margin-bottom: 10px; width: 100%; color: var(--cor-texto-claro); }
+.campo-radio label { display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px; background-color: #1a1a1a; border: 2px solid #333; border-radius: 8px; cursor: pointer; font-weight: normal; transition: border-color 0.2s, background-color 0.2s; }
+.campo-radio label:hover { border-color: var(--cor-secundaria); }
+.campo-radio input[type="radio"] { display: none; }
+.campo-radio label:has(input:checked) { border-color: var(--cor-secundaria); background-color: rgba(255, 214, 10, 0.1); color: var(--cor-secundaria); }
+
+/* Painel de Pagamento */
+.painel-pagamento { margin: 30px auto 0; max-width: 520px; padding: 30px 25px; background-color: var(--cor-card); border: 2px solid var(--cor-secundaria); border-radius: 15px; text-align: center; }
+.painel-pagamento h3 { color: var(--cor-secundaria); margin-bottom: 15px; }
+.qrcode-pix { background: #fff; padding: 10px; border-radius: 10px; width: fit-content; margin: 20px auto; }
+.pix-copia-cola { display: flex; gap: 8px; margin: 15px 0; flex-wrap: wrap; }
+.pix-copia-cola input { flex: 1; min-width: 200px; background: #1a1a1a; border: 1px solid #333; color: #999; padding: 10px; border-radius: 8px; font-size: 0.78rem; font-family: monospace; }
+.aviso-pix { font-size: 0.85rem; color: #999; margin-top: 15px; }
+
+/* Avisos e Previews */
+.aviso-plano-prematricula { display: flex; align-items: flex-start; gap: 12px; background-color: rgba(255, 214, 10, 0.08); border: 1px solid rgba(255, 214, 10, 0.3); border-left: 4px solid var(--cor-secundaria); padding: 14px 16px; border-radius: 8px; margin-top: 12px; font-size: 0.85rem; color: #d0d0d0; line-height: 1.5; animation: fadeInAviso 0.4s ease-out; }
+.aviso-plano-prematricula[hidden] { display: none !important; }
+.aviso-plano-prematricula i { color: var(--cor-secundaria); font-size: 1.1rem; margin-top: 2px; }
+.aviso-plano-prematricula strong { color: var(--cor-secundaria); }
+
+.preview-futuro-matricula { background-color: #1a1a1a; border: 1px solid #333; border-radius: 8px; padding: 16px; margin-top: 12px; animation: fadeInAviso 0.4s ease-out; }
+.preview-futuro-matricula[hidden] { display: none !important; }
+.preview-futuro-matricula h4 { color: var(--cor-texto-claro); font-size: 0.9rem; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid #333; padding-bottom: 10px; }
+.preview-futuro-matricula h4 i { color: var(--cor-secundaria); }
+.lista-futura-planos { display: flex; flex-direction: column; gap: 8px; }
+.plano-futuro-item { display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; color: #b5b5b5; padding: 4px 0; }
+.plano-futuro-item span:last-child { color: var(--cor-secundaria); font-weight: bold; }
+
+@keyframes fadeInAviso { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ===================== PÁGINA DE MATRÍCULA ===================== */
+.matricula-hero { text-align: center; padding: 70px 20px 50px; max-width: 900px; margin: 0 auto; }
+.matricula-label { color: var(--cor-secundaria); font-size: 0.8rem; font-weight: bold; letter-spacing: 2px; text-transform: uppercase; }
+.matricula-titulo { font-size: 2.8rem; font-weight: 900; line-height: 1.1; margin: 15px 0 20px; color: var(--cor-texto-claro); }
+.matricula-titulo .destaque { color: var(--cor-secundaria); }
+.matricula-subtitulo { color: #b5b5b5; font-size: 1.05rem; line-height: 1.6; max-width: 600px; margin: 0 auto 35px; }
+.matricula-beneficios { display: flex; justify-content: center; flex-wrap: wrap; gap: 30px; }
+.beneficio-item { display: flex; align-items: center; gap: 10px; color: var(--cor-texto-claro); font-size: 0.9rem; font-weight: bold; }
+.beneficio-item i { color: var(--cor-secundaria); font-size: 1.1rem; }
+
+.matricula-container { max-width: 700px; margin: 0 auto; padding: 0 20px 60px; }
+.form-bloco { background-color: #141414; border: 1px solid #1f1f1f; border-radius: 14px; padding: 30px 28px; display: flex; flex-direction: column; gap: 18px; }
+.form-bloco-titulo { color: var(--cor-secundaria); font-size: 1rem; font-weight: bold; letter-spacing: 1px; text-transform: uppercase; display: flex; align-items: center; gap: 10px; padding-bottom: 14px; border-bottom: 1px solid #1f1f1f; }
+.form-bloco-titulo i { font-size: 1.1rem; }
+
+.preview-plano { background: linear-gradient(135deg, #1a1a1a 0%, #141414 100%); border: 2px solid var(--cor-secundaria); border-radius: 14px; padding: 22px 26px; display: flex; flex-direction: column; gap: 12px; }
+.preview-plano[hidden] { display: none !important; }
+.preview-linha { display: flex; justify-content: space-between; align-items: center; color: #b5b5b5; font-size: 0.95rem; }
+.preview-linha strong { color: var(--cor-texto-claro); font-weight: bold; }
+.preview-valor { padding-top: 12px; border-top: 1px solid #2a2a2a; font-size: 1.1rem; }
+.preview-valor strong { color: var(--cor-secundaria); font-size: 1.6rem; }
+
+.form-acoes { display: flex; gap: 14px; flex-wrap: wrap; }
+.form-acoes .btn-voltar { flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 14px 20px; background: transparent; color: var(--cor-texto-claro); border: 1px solid #2a2a2a; border-radius: 6px; font-weight: bold; font-size: 1rem; text-decoration: none; transition: border-color 0.3s, color 0.3s; }
+.form-acoes .btn-voltar:hover { border-color: var(--cor-secundaria); color: var(--cor-secundaria); }
+.form-acoes .btn-pagar { flex: 2; }
+
+.selo-seguranca { display: flex; align-items: center; justify-content: center; gap: 10px; color: #666; font-size: 0.8rem; text-align: center; padding-top: 10px; }
+.selo-seguranca i { color: #22c55e; font-size: 1rem; }
+.selo-seguranca strong { color: #999; }
+
+.matricula-ajuda { text-align: center; padding: 60px 20px 80px; border-top: 1px solid #1f1f1f; max-width: 700px; margin: 0 auto; }
+.matricula-ajuda p { color: #999; font-size: 0.95rem; margin-bottom: 20px; }
+
+/* ===================== TOOLTIP DE AVISO PIX ===================== */
+.btn-wrapper { position: relative; display: inline-block; flex: 2; }
+.tooltip-pix { position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%) translateY(10px); background-color: #ffd60a; color: #0d0d0d; padding: 15px; border-radius: 10px; width: 300px; text-align: center; font-size: 0.9rem; line-height: 1.4; box-shadow: 0 10px 30px rgba(0,0,0,0.5); z-index: 100; opacity: 0; visibility: hidden; transition: opacity 0.3s, transform 0.3s; }
+.tooltip-pix.active { opacity: 1; visibility: visible; transform: translateX(-50%) translateY(-15px); animation: pulsarAviso 1.5s infinite; }
+.tooltip-seta { position: absolute; bottom: -10px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 10px solid transparent; border-right: 10px solid transparent; border-top: 10px solid #ffd60a; }
+@keyframes pulsarAviso { 0% { box-shadow: 0 0 0 0 rgba(255, 214, 10, 0.7); } 70% { box-shadow: 0 0 0 15px rgba(255, 214, 10, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 214, 10, 0); } }
+
+.countdown-container { margin-top: 12px; padding-top: 10px; border-top: 1px dashed rgba(0, 0, 0, 0.2); font-size: 1.1rem; font-weight: bold; color: #cc0000; display: flex; align-items: center; justify-content: center; gap: 8px; }
+.countdown-container i { font-size: 1.2rem; }
+
+/* ===================== RESPONSIVIDADE MATRÍCULA ===================== */
+@media (max-width: 768px) {
+    .matricula-hero { padding: 45px 20px 35px; }
+    .matricula-titulo { font-size: 2rem; }
+    .matricula-subtitulo { font-size: 0.95rem; }
+    .matricula-beneficios { gap: 20px; }
+    .beneficio-item { font-size: 0.8rem; }
+    .form-bloco { padding: 24px 20px; }
+    .form-acoes { flex-direction: column-reverse; }
+    .form-acoes .btn-voltar, .form-acoes .btn-pagar { flex: 1; width: 100%; }
+    .preview-plano { padding: 18px 20px; }
+    .preview-valor strong { font-size: 1.35rem; }
+    .matricula-ajuda { padding: 45px 20px 60px; }
+}
+
+@media (max-width: 600px) {
+    .campo-radio label { width: 100%; justify-content: center; }
+    .pix-copia-cola { flex-direction: column; }
+    .tooltip-pix { width: 260px; font-size: 0.8rem; }
+}
