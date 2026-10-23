@@ -10,10 +10,11 @@
 ![License](https://img.shields.io/badge/license-All%20Rights%20Reserved-red?style=for-the-badge)
 ![GitHub repo size](https://img.shields.io/github/repo-size/MisterIgorGarcia/Site-muskel-Fit?style=for-the-badge)
 ![GitHub last commit](https://img.shields.io/github/last-commit/MisterIgorGarcia/Site-muskel-Fit?style=for-the-badge)
+[![Supabase](https://img.shields.io/badge/Supabase-Dashboard-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white)](https://supabase.com/dashboard/project/gggpytkkewrmxrkoarvn)
 
 **Site institucional + sistema de matrícula e pré-matrícula online para a academia Muskel Fit, em Cruzeiro - SP.**
 
-[🌐 Visite o site](https://muskelfit-academia.vercel.app/) · [📂 Repositório](https://github.com/MisterIgorGarcia/Site-muskel-Fit) · [🐛 Reportar um problema](https://github.com/MisterIgorGarcia/Site-muskel-Fit/issues)
+[🌐 Visite o site](https://muskelfit-academia.vercel.app/) · [📂 Repositório](https://github.com/MisterIgorGarcia/Site-muskel-Fit) · [🐛 Reportar um problema](https://github.com/MisterIgorGarcia/Site-muskel-Fit/issues) · [🗄️ Banco de Dados (Supabase)](https://supabase.com/dashboard/project/gggpytkkewrmxrkoarvn)
 
 </div>
 
@@ -81,7 +82,7 @@ O projeto é construído com **HTML, CSS e JavaScript puros** no front-end, e **
 | **Vercel Functions** | API serverless para catálogo, pagamentos, autenticação e gestão de dados. |
 | **Vercel Edge Config** | Key-value store para armazenar o catálogo de planos e validar as unidades permitidas. |
 | **Mercado Pago API** | Processamento de pagamentos (PIX, Débito e Crédito). |
-| **Supabase** | Banco de dados PostgreSQL para armazenar os dados dos alunos e credenciais de login da equipe. |
+| **[Supabase](https://supabase.com/dashboard/project/gggpytkkewrmxrkoarvn)** | Banco de dados PostgreSQL para armazenar os dados dos alunos e credenciais de login da equipe. |
 | **Chart.js** | Biblioteca de gráficos para a análise de dados do painel administrativo. |
 | **SheetJS (xlsx)** | Biblioteca para geração de relatórios e exportação de planilhas Excel. |
 | **Font Awesome** | Biblioteca de ícones. |
