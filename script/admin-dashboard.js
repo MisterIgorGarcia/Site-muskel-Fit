@@ -6,14 +6,24 @@ if (!cargo) {
     window.location.href = 'admin.html';
 }
 
+let intervaloAtualizacao = null;
+let carregando = false;
 let instanciaGrafico = null;
 let dadosGlobais = { matriculas: [], prematriculas: [] };
 let funcionarioEditandoUnidadeId = null; // Variável global para o Modal
 
 // ===================== CARREGAR DADOS =====================
-async function carregarDados() {
+// O parâmetro 'manual' indica se o usuário clicou no botão (true) ou se é atualização automática (false)
+async function carregarDados(manual = false) {
+    // Evita atualizações simultâneas (ex: clicar no botão enquanto o automático roda)
+    if (carregando) return;
+    carregando = true;
+
     const btnAtualizar = document.getElementById('btn-atualizar');
-    if (btnAtualizar) btnAtualizar.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Buscando...';
+    // Só mostra o loading no botão se a atualização foi manual
+    if (btnAtualizar && manual) {
+        btnAtualizar.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Buscando...';
+    }
 
     try {
         const minhaUnidade = sessionStorage.getItem('adminUnidade');
@@ -108,10 +118,28 @@ async function carregarDados() {
 
     } catch (erro) {
         console.error('Erro:', erro);
-        alert('Erro ao carregar os dados do banco.');
+        // Só mostra alerta se o usuário clicou no botão manualmente, para não encher a tela de alertas de background
+        if (manual) alert('Erro ao carregar os dados do banco.');
     } finally {
-        if (btnAtualizar) btnAtualizar.innerHTML = '<i class="fa-solid fa-rotate-right"></i> Atualizar Dados';
+        carregando = false;
+        if (btnAtualizar && manual) {
+            btnAtualizar.innerHTML = '<i class="fa-solid fa-rotate-right"></i> Atualizar Dados';
+        }
     }
+}
+
+// ===================== ATUALIZAÇÃO AUTOMÁTICA =====================
+function iniciarAtualizacaoAutomatica() {
+    // Limpa qualquer intervalo anterior para evitar duplicidade
+    if (intervaloAtualizacao) clearInterval(intervaloAtualizacao);
+
+    // Atualiza a cada 30 segundos (30.000 ms)
+    intervaloAtualizacao = setInterval(() => {
+        // Só atualiza se a aba do navegador estiver visível (evita gastar recursos à toa)
+        if (document.visibilityState === 'visible') {
+            carregarDados(false); // Passa false para não mexer no botão
+        }
+    }, 30000); 
 }
 
 /* ===================== GRÁFICO ÚNICO COM FILTROS ===================== */
@@ -176,7 +204,7 @@ async function removerRegistro(id, tipo) {
             body: JSON.stringify({ id, tipo })
         });
         if (!resposta.ok) throw new Error('Erro ao excluir registro');
-        carregarDados();
+        carregarDados(true); // Passa true para forçar a atualização da tela
     } catch (erro) {
         alert(erro.message);
     }
@@ -228,7 +256,7 @@ async function carregarUsuarios() {
 async function adicionarFuncionario() {
     const usuario = document.getElementById('novo-user').value.trim();
     const senha = document.getElementById('nova-senha').value.trim();
-    const unidade = document.getElementById('nova-unidade').value; // Pega o valor do select
+    const unidade = document.getElementById('nova-unidade').value;
 
     if (!usuario || !senha || !unidade) {
         return alert('Preencha o usuário, a senha e selecione a unidade para adicionar.');
@@ -304,7 +332,7 @@ async function editarFuncionario(id, usuarioAtual) {
 function abrirModalUnidade(id, unidadeAtual) {
     funcionarioEditandoUnidadeId = id;
     const select = document.getElementById('select-mudar-unidade');
-    select.value = unidadeAtual; // Tenta selecionar a unidade atual
+    select.value = unidadeAtual;
     document.getElementById('modal-mudar-unidade').style.display = 'flex';
 }
 
@@ -350,7 +378,6 @@ async function carregarOpcoesDeUnidades() {
 
         let unidades = [];
 
-        // Pega as chaves (nomes das unidades) de cada retorno
         if (dataMatricula.respostaAPI) {
             unidades = unidades.concat(Object.keys(dataMatricula.respostaAPI));
         }
@@ -358,10 +385,8 @@ async function carregarOpcoesDeUnidades() {
             unidades = unidades.concat(Object.keys(dataPreMatricula.respostaAPI));
         }
 
-        // Remove duplicatas e ordena alfabeticamente
         unidades = [...new Set(unidades)].sort();
 
-        // 1. Popula o Select de ADICIONAR Funcionário
         const selectAdd = document.getElementById('nova-unidade');
         if (selectAdd) {
             selectAdd.innerHTML = '<option value="">Selecione a unidade...</option>';
@@ -370,7 +395,6 @@ async function carregarOpcoesDeUnidades() {
             });
         }
 
-        // 2. Popula o Select do MODAL de Mudar Unidade
         const selectModal = document.getElementById('select-mudar-unidade');
         if (selectModal) {
             selectModal.innerHTML = '<option value="">Todas as Unidades (Acesso Global)</option>';
@@ -450,8 +474,12 @@ function exportarExcel() {
 
 /* ===================== INICIALIZAÇÃO ===================== */
 document.addEventListener('DOMContentLoaded', () => {
-    carregarDados();
+    // Carga inicial (manual = true para mostrar o loading no botão)
+    carregarDados(true);
     
+    // Inicia o timer de atualização automática (30s)
+    iniciarAtualizacaoAutomatica();
+
     if (document.getElementById('tabela-usuarios-body')) {
         carregarUsuarios();
         carregarOpcoesDeUnidades(); 
@@ -462,7 +490,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (nomeUsuarioEl) {
         const nomeLogado = sessionStorage.getItem('adminUsuario');
         if (nomeLogado) {
-            // Deixa a primeira letra maiúscula
             const nomeFormatado = nomeLogado.charAt(0).toUpperCase() + nomeLogado.slice(1);
             nomeUsuarioEl.textContent = nomeFormatado;
         } else {
@@ -470,7 +497,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Preencher a Badge da Unidade (Painel do Funcionário)
+    // Preencher a Badge da Unidade
     const textoUnidadeEl = document.getElementById('texto-unidade-badge');
     if (textoUnidadeEl) {
         let unidadeSalva = sessionStorage.getItem('adminUnidade');
