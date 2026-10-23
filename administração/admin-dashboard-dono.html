@@ -13,19 +13,24 @@
     <!-- TRAVA DE SEGURANÇA -->
     <script>
         if (sessionStorage.getItem('adminLogado') !== 'sim' || sessionStorage.getItem('adminCargo') !== 'dono') {
-            window.location.href = 'admin.html'; // Chuta de volta pro login se não for o dono
+            window.location.href = 'admin.html';
         }
     </script>
 </head>
 
 <body class="admin-body">
     <div id="painel-admin">
-        <header id="cabecalho" style="margin-bottom: 30px;">
-            <h1><span class="spanm">M</span>USKEL <span class="spanfit">FIT</span> - DONO</h1>
+        <!-- CABEÇALHO CORRIGIDO -->
+        <header id="cabecalho" style="margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center;">
+            <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 10px;">
+                <h1><span class="spanm">M</span>USKEL <span class="spanfit">FIT</span> - DONO</h1>
+                
                 <div class="badge-usuario-header">
                     <i class="fa-solid fa-circle-user"></i>
-                    <span>Olá, <strong id="nome-usuario-logado">Carregando...</strong></span>
+                    <span>Olá, <strong id="nome-usuario-logado">...</strong></span>
                 </div>
+            </div>
+            
             <button id="btn-sair" class="btn-voltar-header" onclick="sessionStorage.clear(); window.location.href='admin.html'">Sair <i class="fa-solid fa-right-from-bracket"></i></button>
         </header>
 
@@ -43,14 +48,13 @@
                 </div>
             </div>
 
-            <!-- ===================== GRÁFICO COM FILTROS ===================== -->
+            <!-- GRÁFICO COM FILTROS -->
             <div class="admin-card" style="flex-direction: column; align-items: stretch; margin-bottom: 40px; background-color: #141414;">
                 <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; margin-bottom: 20px;">
                     <h3 style="color: var(--cor-secundaria); font-size: 1.2rem; margin: 0;">
                         <i class="fa-solid fa-chart-pie"></i> Análise de Dados
                     </h3>
                     
-                    <!-- Filtros -->
                     <div style="display: flex; gap: 10px; flex-wrap: wrap;">
                         <select id="filtro-origem" class="admin-select" onchange="atualizarGraficoFiltrado()">
                             <option value="todos">Visão Geral (Tudo)</option>
@@ -67,13 +71,10 @@
                     </div>
                 </div>
 
-                <!-- Área do Gráfico -->
                 <div style="position: relative; height: 350px; width: 100%; display: flex; justify-content: center;">
                     <canvas id="grafico-unico"></canvas>
                 </div>
             </div>
-
-            <!-- ===================== FIM GRÁFICOS ===================== -->
 
             <div class="admin-cards">
                 <div class="admin-card">
@@ -131,11 +132,11 @@
                     </table>
                 </div>
             </div>
-            <!-- ===================== GERENCIAR FUNCIONÁRIOS ===================== -->
+            
+            <!-- GERENCIAR FUNCIONÁRIOS -->
             <div style="margin-top: 50px; padding-top: 30px; border-top: 1px solid #333;">
                 <h3><i class="fa-solid fa-users-gear"></i> Gerenciar Acessos da Equipe</h3>
                 
-                <!-- Formulário de Adição -->
                 <div class="admin-card" style="margin-top: 15px; align-items: flex-end; gap: 15px; flex-wrap: wrap; background-color: #141414; border-left-color: #3b82f6;">
                     <div style="flex: 1; min-width: 150px;">
                         <label style="color: #999; font-size: 0.85rem; margin-bottom: 5px; display: block;">Novo Usuário</label>
@@ -147,7 +148,6 @@
                     </div>
                     <div style="flex: 1; min-width: 150px;">
                         <label style="color: #999; font-size: 0.85rem; margin-bottom: 5px; display: block;">Unidade</label>
-                        <!-- ALTERAÇÃO 1: Input substituído por Select -->
                         <select id="nova-unidade" class="admin-select" style="width: 100%; padding: 12px; border-radius: 5px; border: 1px solid #333; background: #0d0d0d; color: #fff; outline: none;">
                             <option value="">Carregando unidades...</option>
                         </select>
@@ -157,7 +157,6 @@
                     </button>
                 </div>
 
-                <!-- Tabela de Funcionários -->
                 <div class="tabela-responsiva" style="margin-top: 20px;">
                     <table class="tabela-admin">
                         <thead>
@@ -169,17 +168,14 @@
                                 <th>Ações</th>
                             </tr>
                         </thead>
-                        <tbody id="tabela-usuarios-body">
-                            <!-- O JavaScript vai injetar os funcionários aqui -->
-                        </tbody>
+                        <tbody id="tabela-usuarios-body"></tbody>
                     </table>
                 </div>
             </div>
-            <!-- ===================== FIM GERENCIAR FUNCIONÁRIOS ===================== -->
         </main>
     </div>
 
-    <!-- ALTERAÇÃO 2: MODAL PARA MUDAR UNIDADE -->
+    <!-- MODAL PARA MUDAR UNIDADE -->
     <div id="modal-mudar-unidade" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 9999; justify-content: center; align-items: center;">
         <div style="background: #1a1a1a; padding: 30px; border-radius: 10px; border: 1px solid var(--cor-secundaria); width: 90%; max-width: 400px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
             <h3 style="color: var(--cor-secundaria); margin-bottom: 20px; font-size: 1.2rem;">
@@ -187,9 +183,7 @@
             </h3>
             
             <label style="color: #999; font-size: 0.9rem; margin-bottom: 8px; display: block;">Selecione a nova unidade:</label>
-            <select id="select-mudar-unidade" class="admin-select" style="width: 100%; margin-bottom: 25px; padding: 12px; font-size: 1rem;">
-                <!-- As opções serão preenchidas via JavaScript -->
-            </select>
+            <select id="select-mudar-unidade" class="admin-select" style="width: 100%; margin-bottom: 25px; padding: 12px; font-size: 1rem;"></select>
             
             <div style="display: flex; gap: 10px; justify-content: flex-end;">
                 <button onclick="fecharModalUnidade()" class="btn-voltar-header" style="padding: 10px 20px;">Cancelar</button>
@@ -200,5 +194,4 @@
 
     <script src="../script/admin-dashboard.js"></script>
 </body>
-
 </html>

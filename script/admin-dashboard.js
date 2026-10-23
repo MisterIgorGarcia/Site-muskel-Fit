@@ -457,34 +457,28 @@ document.addEventListener('DOMContentLoaded', () => {
         carregarOpcoesDeUnidades(); 
     }
 
-    // Preencher o nome do usuário logado (Dono e Funcionário)
+    // Preencher o nome do usuário logado
     const nomeUsuarioEl = document.getElementById('nome-usuario-logado');
     if (nomeUsuarioEl) {
         const nomeLogado = sessionStorage.getItem('adminUsuario');
         if (nomeLogado) {
-            // Deixa a primeira letra maiúscula (ex: "joao" vira "Joao")
+            // Deixa a primeira letra maiúscula
             const nomeFormatado = nomeLogado.charAt(0).toUpperCase() + nomeLogado.slice(1);
-            nomeUsuarioEl.textContent = nomeFormatado; // Agora só injeta o nome, o "Olá," está no HTML
+            nomeUsuarioEl.textContent = nomeFormatado;
         } else {
             nomeUsuarioEl.textContent = 'Usuário';
         }
     }
 
     // Preencher a Badge da Unidade (Painel do Funcionário)
-    const headerUnidadeEl = document.getElementById('header-unidade');
-    if (headerUnidadeEl) {
+    const textoUnidadeEl = document.getElementById('texto-unidade-badge');
+    if (textoUnidadeEl) {
         let unidadeSalva = sessionStorage.getItem('adminUnidade');
         
         if (!unidadeSalva || unidadeSalva.trim() === '') {
             unidadeSalva = 'Acesso Global';
         }
         
-        // Como a div tem um ícone dentro, nós substituímos apenas o texto do span interno
-        const spanUnidade = headerUnidadeEl.querySelector('span');
-        if (spanUnidade) {
-            spanUnidade.textContent = unidadeSalva;
-        } else {
-            headerUnidadeEl.textContent = unidadeSalva;
-        }
+        textoUnidadeEl.textContent = unidadeSalva;
     }
 });

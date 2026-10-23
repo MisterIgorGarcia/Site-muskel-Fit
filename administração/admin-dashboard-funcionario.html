@@ -11,26 +11,31 @@
     <!-- TRAVA DE SEGURANÇA -->
     <script>
         if (sessionStorage.getItem('adminLogado') !== 'sim' || sessionStorage.getItem('adminCargo') !== 'funcionario') {
-            window.location.href = 'admin.html'; // Chuta de volta pro login se não for funcionário
+            window.location.href = 'admin.html'; 
         }
     </script>
 </head>
 <body class="admin-body">
 
     <div id="painel-admin">
+        <!-- CABEÇALHO CORRIGIDO -->
         <header id="cabecalho" style="margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center;">
-            <h1><span class="spanm">M</span>USKEL <span class="spanfit">FIT</span> - FUNCIONÁRIO <span id="header-unidade" style="font-size: 0.6em; color: var(--cor-secundaria); margin-left: 10px;"></span></h1>
-                 <!-- Badge do Funcionário -->
+            <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 10px;">
+                <h1><span class="spanm">M</span>USKEL <span class="spanfit">FIT</span> - FUNCIONÁRIO</h1>
+                
+                <!-- Badge do Funcionário -->
                 <div class="badge-usuario-header">
                     <i class="fa-solid fa-circle-user"></i>
-                    <span>Olá, <strong id="nome-usuario-logado">Carregando...</strong></span>
+                    <span>Olá, <strong id="nome-usuario-logado">...</strong></span>
                 </div>
 
                 <!-- Badge da Unidade -->
                 <div class="badge-unidade-header" id="header-unidade">
                     <i class="fa-solid fa-location-dot"></i>
-                    <span>Carregando...</span>
+                    <span id="texto-unidade-badge">Carregando...</span>
                 </div>
+            </div>
+            
             <div style="display: flex; gap: 10px;">
                 <button onclick="mudarPropriaSenha()" class="btn-voltar-header" style="border-color: var(--cor-secundaria); color: var(--cor-secundaria);">
                     <i class="fa-solid fa-key"></i> Mudar Senha
@@ -52,7 +57,6 @@
                 </div>
             </div>
 
-            <!-- Apenas o card de total de alunos fica visível para funcionários -->
             <div class="admin-cards">
                 <div class="admin-card">
                     <i class="fa-solid fa-users"></i>
