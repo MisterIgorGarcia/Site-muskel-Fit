@@ -28,8 +28,15 @@
         <main class="admin-container">
             <div class="admin-header-titulo">
                 <h2>Visão Geral da Academia</h2>
-                <button onclick="exportarExcel()" class="btn-amarelo" style="background-color: #22c55e; color: #fff;"><i class="fa-solid fa-file-excel"></i> Exportar Excel</button>
-                <button id="btn-atualizar" class="btn-amarelo" onclick="carregarDados()"><i class="fa-solid fa-rotate-right"></i> Atualizar Dados</button>
+                 <div style="display: flex; gap: 10px;">
+                    <button onclick="exportarExcel()" class="btn-amarelo" style="background-color: #22c55e; color: #fff;">
+                        <i class="fa-solid fa-file-excel"></i> Exportar Excel
+                    </button>
+                    
+                    <button id="btn-atualizar" class="btn-amarelo" onclick="carregarDados()">
+                        <i class="fa-solid fa-rotate-right"></i> Atualizar Dados
+                    </button>
+                </div>
             </div>
 
             <!-- ===================== GRÁFICO COM FILTROS ===================== -->
