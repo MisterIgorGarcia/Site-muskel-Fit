@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="../estilos/styleadmin.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <!-- BIBLIOTECA DO CHARTS -->
-     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- BIBLIOTECA PARA GERAR EXCELL -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <!-- TRAVA DE SEGURANÇA -->
@@ -55,31 +55,45 @@
                 </div>
             </div>
 
-            <!-- GRÁFICO COM FILTROS -->
+            <!-- GRÁFICO COM FILTROS E ABAS -->
             <div class="admin-card" style="flex-direction: column; align-items: stretch; margin-bottom: 40px; background-color: #141414;">
+                
+                <!-- Cabeçalho e Abas -->
                 <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; margin-bottom: 20px;">
                     <h3 style="color: var(--cor-secundaria); font-size: 1.2rem; margin: 0;">
                         <i class="fa-solid fa-chart-pie"></i> Análise de Dados
                     </h3>
                     
-                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                        <select id="filtro-origem" class="admin-select" onchange="atualizarGraficoFiltrado()">
-                            <option value="todos">Visão Geral (Tudo)</option>
-                            <option value="matriculas">Somente Matrículas</option>
-                            <option value="prematriculas">Somente Pré-Matrículas</option>
-                        </select>
-
-                        <select id="filtro-agrupamento" class="admin-select" onchange="atualizarGraficoFiltrado()">
-                            <option value="plano">Agrupar por Plano</option>
-                            <option value="unidade">Agrupar por Unidade</option>
-                            <option value="modalidade">Agrupar por Modalidade</option>
-                            <option value="pagamento">Agrupar por Pagamento</option>
-                        </select>
+                    <div class="abas-container">
+                        <button id="btn-aba-composicao" class="aba-btn ativa" onclick="mudarAba('composicao')">Composição</button>
+                        <button id="btn-aba-historico" class="aba-btn" onclick="mudarAba('historico')">Histórico</button>
                     </div>
                 </div>
 
-                <div style="position: relative; height: 350px; width: 100%; display: flex; justify-content: center;">
+                <!-- Filtros -->
+                <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px;">
+                    <select id="filtro-origem" class="admin-select" onchange="atualizarGraficos()">
+                        <option value="todos">Visão Geral (Tudo)</option>
+                        <option value="matriculas">Somente Matrículas</option>
+                        <option value="prematriculas">Somente Pré-Matrículas</option>
+                    </select>
+
+                    <select id="filtro-agrupamento" class="admin-select" onchange="atualizarGraficos()">
+                        <option value="plano">Agrupar por Plano</option>
+                        <option value="unidade">Agrupar por Unidade</option>
+                        <option value="modalidade">Agrupar por Modalidade</option>
+                        <option value="pagamento">Agrupar por Pagamento</option>
+                    </select>
+                </div>
+
+                <!-- Área do Gráfico de Composição (Pizza) -->
+                <div id="div-grafico-composicao" style="position: relative; height: 350px; width: 100%; display: flex; justify-content: center;">
                     <canvas id="grafico-unico"></canvas>
+                </div>
+                
+                <!-- Área do Gráfico de Histórico (Linha) -->
+                <div id="div-grafico-historico" style="position: relative; height: 350px; width: 100%; display: none; justify-content: center;">
+                    <canvas id="grafico-historico"></canvas>
                 </div>
             </div>
 

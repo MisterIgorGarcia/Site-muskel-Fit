@@ -49,6 +49,37 @@
 .badge-unidade-header { display: inline-flex; align-items: center; gap: 6px; background-color: rgba(255, 214, 10, 0.1); border: 1px solid rgba(255, 214, 10, 0.3); padding: 6px 14px; border-radius: 999px; font-size: 0.85rem; color: var(--cor-secundaria); font-weight: bold; margin-left: 10px; }
 .badge-unidade-header i { font-size: 0.9rem; }
 
+/* ===================== ABAS DO GRÁFICO ===================== */
+.abas-container {
+    display: flex;
+    gap: 5px;
+    background: #0d0d0d;
+    padding: 5px;
+    border-radius: 8px;
+    border: 1px solid #333;
+}
+
+.aba-btn {
+    background: transparent;
+    color: #999;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    font-family: inherit;
+    transition: all 0.3s ease;
+}
+
+.aba-btn.ativa {
+    background: var(--cor-secundaria);
+    color: var(--cor-primaria);
+}
+
+.aba-btn:hover:not(.ativa) {
+    color: var(--cor-texto-claro);
+}
+
 /* ===================== RESPONSIVIDADE DO PAINEL ADMIN ===================== */
 @media (max-width: 768px) {
     .admin-body #cabecalho { flex-direction: column !important; align-items: flex-start !important; gap: 15px; padding: 15px 20px !important; }

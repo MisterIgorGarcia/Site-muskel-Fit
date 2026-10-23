@@ -6,6 +6,8 @@ if (!cargo) {
     window.location.href = 'admin.html';
 }
 
+let abaAtual = 'composicao';
+let instanciaGraficoHistorico = null;
 let intervaloAtualizacao = null;
 let carregando = false;
 let instanciaGrafico = null;
@@ -113,7 +115,7 @@ async function carregarDados(manual = false) {
         dadosGlobais.prematriculas = dados.prematriculas;
 
         if (cargo === 'dono' && document.getElementById('grafico-unico')) {
-            atualizarGraficoFiltrado();
+            atualizarGraficos();
         }
 
     } catch (erro) {
@@ -143,7 +145,42 @@ function iniciarAtualizacaoAutomatica() {
 }
 
 /* ===================== GRÁFICO ÚNICO COM FILTROS ===================== */
-function atualizarGraficoFiltrado() {
+// 1. Função para controlar qual aba está visível
+function mudarAba(aba) {
+    abaAtual = aba;
+    const btnComp = document.getElementById('btn-aba-composicao');
+    const btnHist = document.getElementById('btn-aba-historico');
+    const divComp = document.getElementById('div-grafico-composicao');
+    const divHist = document.getElementById('div-grafico-historico');
+    const filtroAgrupamento = document.getElementById('filtro-agrupamento');
+
+    if (aba === 'composicao') {
+        btnComp.classList.add('ativa');
+        btnHist.classList.remove('ativa');
+        divComp.style.display = 'flex';
+        divHist.style.display = 'none';
+        filtroAgrupamento.style.display = 'block'; // Mostra o filtro de agrupamento
+    } else {
+        btnHist.classList.add('ativa');
+        btnComp.classList.remove('ativa');
+        divComp.style.display = 'none';
+        divHist.style.display = 'flex';
+        filtroAgrupamento.style.display = 'none'; // Esconde o filtro de agrupamento (não faz sentido no histórico)
+    }
+    atualizarGraficos(); // Chama a atualização
+}
+
+// 2. Função central que decide qual gráfico desenhar
+function atualizarGraficos() {
+    if (abaAtual === 'composicao') {
+        atualizarGraficoPizza();
+    } else {
+        atualizarGraficoHistorico();
+    }
+}
+
+// 3. O Gráfico de Pizza (Antigo atualizarGraficoFiltrado)
+function atualizarGraficoPizza() {
     const origemEl = document.getElementById('filtro-origem');
     const agrupamentoEl = document.getElementById('filtro-agrupamento');
     const origem = origemEl ? origemEl.value : 'todos';
@@ -169,28 +206,104 @@ function atualizarGraficoFiltrado() {
     const canvas = document.getElementById('grafico-unico');
     if (!canvas) return;
 
+    // Destroi o gráfico antigo para evitar bugs visuais
+    if (instanciaGrafico) instanciaGrafico.destroy();
+
     const cores = ['#ffd60a', '#3b82f6', '#ef4444', '#22c55e', '#a855f7', '#f97316'];
 
-    if (instanciaGrafico) {
-        instanciaGrafico.data.labels = labels;
-        instanciaGrafico.data.datasets[0].data = data;
-        instanciaGrafico.update();
+    instanciaGrafico = new Chart(canvas, {
+        type: 'pie',
+        data: {
+            labels: labels,
+            datasets: [{ data: data, backgroundColor: cores, borderWidth: 2, borderColor: '#141414' }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'right', labels: { color: '#ffffff', font: { size: 13, family: 'Arial' } } }
+            }
+        }
+    });
+}
+
+// 4. O Novo Gráfico de Histórico (Eixo X = Datas, Y = Qtd)
+function atualizarGraficoHistorico() {
+    const origemEl = document.getElementById('filtro-origem');
+    const origem = origemEl ? origemEl.value : 'todos';
+
+    let dadosBase = [];
+    if (origem === 'todos') {
+        dadosBase = [...dadosGlobais.matriculas, ...dadosGlobais.prematriculas];
+    } else if (origem === 'matriculas') {
+        dadosBase = dadosGlobais.matriculas;
     } else {
-        instanciaGrafico = new Chart(canvas, {
-            type: 'pie',
-            data: {
-                labels: labels,
-                datasets: [{ data: data, backgroundColor: cores, borderWidth: 2, borderColor: '#141414' }]
+        dadosBase = dadosGlobais.prematriculas;
+    }
+
+    // Contagem de registros por data
+    const contagemPorData = {};
+    dadosBase.forEach(item => {
+        const data = new Date(item.created_at);
+        const dataFormatada = data.toLocaleDateString('pt-BR'); // Formato DD/MM/YYYY
+        
+        if (!contagemPorData[dataFormatada]) {
+            contagemPorData[dataFormatada] = 0;
+        }
+        contagemPorData[dataFormatada]++;
+    });
+
+    // Ordena as datas cronologicamente
+    const labels = Object.keys(contagemPorData).sort((a, b) => {
+        const [diaA, mesA, anoA] = a.split('/');
+        const [diaB, mesB, anoB] = b.split('/');
+        return new Date(anoA, mesA - 1, diaA) - new Date(anoB, mesB - 1, diaB);
+    });
+    
+    const dataValues = labels.map(label => contagemPorData[label]);
+
+    const canvas = document.getElementById('grafico-historico');
+    if (!canvas) return;
+
+    // Destroi o gráfico antigo
+    if (instanciaGraficoHistorico) instanciaGraficoHistorico.destroy();
+
+    instanciaGraficoHistorico = new Chart(canvas, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Registros por Dia',
+                data: dataValues,
+                borderColor: '#ffd60a',
+                backgroundColor: 'rgba(255, 214, 10, 0.2)',
+                borderWidth: 2,
+                tension: 0.3, // Deixa a linha curvada
+                fill: true,
+                pointBackgroundColor: '#ffd60a',
+                pointBorderColor: '#0d0d0d',
+                pointRadius: 5
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { labels: { color: '#ffffff', font: { size: 13, family: 'Arial' } } }
             },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: { position: 'right', labels: { color: '#ffffff', font: { size: 13, family: 'Arial' } } }
+            scales: {
+                x: {
+                    ticks: { color: '#aaaaaa' },
+                    grid: { color: '#333' }
+                },
+                y: {
+                    beginAtZero: true,
+                    ticks: { color: '#aaaaaa', stepSize: 1 }, // Contagem inteira (1, 2, 3...)
+                    grid: { color: '#333' }
                 }
             }
-        });
-    }
+        }
+    });
 }
 
 /* ===================== REMOVER REGISTRO ===================== */
