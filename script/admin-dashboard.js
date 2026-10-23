@@ -219,11 +219,14 @@ async function carregarUsuarios() {
         tbody.innerHTML = '';
 
         usuarios.forEach(user => {
-            // O dono principal (id 1) não pode ser excluído pela interface
+            // O dono principal (id 1) não pode ser excluído ou editado pela interface de funcionários
             let acoes = `<span style="color: #666; font-size: 0.8rem;"><i class="fa-solid fa-lock"></i> Protegido</span>`;
             
             if (user.id !== 1) {
                 acoes = `
+                    <button onclick="editarFuncionario(${user.id}, '${user.usuario}')" style="background: transparent; border: none; color: #3b82f6; cursor: pointer; padding: 5px; margin-right: 10px;" title="Editar Login/Senha">
+                        <i class="fa-solid fa-pen"></i> Editar
+                    </button>
                     <button onclick="deletarUsuario(${user.id})" style="background: transparent; border: none; color: #ef4444; cursor: pointer; padding: 5px;" title="Remover Acesso">
                         <i class="fa-solid fa-trash"></i> Remover
                     </button>
@@ -299,6 +302,68 @@ async function deletarUsuario(id) {
         // Atualiza a tabela na tela
         carregarUsuarios(); 
 
+    } catch (erro) {
+        alert(erro.message);
+    }
+}
+
+/* ===================== FUNÇÕES DE SENHA ===================== */
+
+// 1. Função para o Dono editar um Funcionário
+async function editarFuncionario(id, usuarioAtual) {
+    const novoUsuario = prompt("Edite o nome de login:", usuarioAtual);
+    if (novoUsuario === null) return; // Cancelou
+    if (novoUsuario.trim() === '') return alert('O login não pode ficar vazio.');
+
+    const novaSenha = prompt("Digite a NOVA senha (ou deixe em branco para não alterar):");
+    if (novaSenha === null) return; // Cancelou
+
+    const dadosAtualizar = { id: id, usuario: novoUsuario.trim() };
+    if (novaSenha.trim() !== '') {
+        dadosAtualizar.senha = novaSenha.trim();
+    }
+
+    try {
+        const resposta = await fetch('/api/admin-controle-usuarios', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(dadosAtualizar)
+        });
+
+        const resultado = await resposta.json();
+
+        if (!resposta.ok) throw new Error(resultado.erro || 'Erro ao editar funcionário');
+
+        alert('Dados do funcionário atualizados com sucesso!');
+        carregarUsuarios(); 
+
+    } catch (erro) {
+        alert(erro.message);
+    }
+}
+
+// 2. Função para o usuário logado mudar a própria senha
+async function mudarPropriaSenha() {
+    const id = sessionStorage.getItem('adminId');
+    const usuario = sessionStorage.getItem('adminUsuario');
+
+    if (!id) return alert('Erro ao identificar o usuário. Faça login novamente.');
+
+    const novaSenha = prompt(`Olá, ${usuario}! Digite a sua NOVA senha de acesso:`);
+    
+    if (novaSenha === null) return; // Cancelou
+    if (novaSenha.trim().length < 4) return alert('A senha precisa ter pelo menos 4 caracteres.');
+
+    try {
+        const resposta = await fetch('/api/admin-controle-usuarios', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: Number(id), senha: novaSenha.trim() })
+        });
+
+        if (!resposta.ok) throw new Error('Erro ao atualizar a senha.');
+
+        alert('Sua senha foi alterada com sucesso!');
     } catch (erro) {
         alert(erro.message);
     }

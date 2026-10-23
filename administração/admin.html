@@ -55,9 +55,11 @@
                 const dados = await resposta.json();
 
                 if (resposta.ok && dados.sucesso) {
-                    // Login correto! Salva o cargo retornado pela API
+                    // Login correto! Salva o cargo, id e usuario retornados pela API
                     sessionStorage.setItem('adminLogado', 'sim');
                     sessionStorage.setItem('adminCargo', dados.cargo);
+                    sessionStorage.setItem('adminId', dados.id);
+                    sessionStorage.setItem('adminUsuario', dados.usuario);
                     
                     // Redireciona para a tela correta
                     if (dados.cargo === 'dono') {

@@ -28,7 +28,13 @@ export default async function handler(req, res) {
             return res.status(401).json({ sucesso: false, erro: 'Usuário ou senha inválidos' });
         }
 
-        return res.status(200).json({ sucesso: true, cargo: userEncontrado.cargo });
+        // Adicionado 'id' e 'usuario'
+        return res.status(200).json({ 
+            sucesso: true, 
+            cargo: userEncontrado.cargo,
+            id: userEncontrado.id,          
+            usuario: userEncontrado.usuario 
+        });
 
     } catch (erro) {
         console.error('Erro no servidor:', erro);
