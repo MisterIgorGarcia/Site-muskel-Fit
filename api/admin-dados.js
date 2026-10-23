@@ -4,7 +4,7 @@ import { get } from '@vercel/edge-config';
 
 const supabase = createClient(
     process.env.SUPABASE_URL,
-    process.env.SUPABASE_ANON_KEY
+    process.env.SUPABASE_SECRET_KEY
 );
 
 export default async function handler(req, res) {
