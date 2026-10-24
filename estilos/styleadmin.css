@@ -206,6 +206,58 @@
     #modal-mudar-unidade > div { padding: 20px !important; width: 95% !important; }
 }
 
+/* ===================== CABEÇALHO COMPACTO NO CELULAR ===================== */
+@media (max-width: 768px) {
+    /* 1. Reduz o espaçamento geral do cabeçalho */
+    .admin-body #cabecalho {
+        padding: 10px 15px !important;
+        gap: 8px !important;
+        margin-bottom: 15px !important;
+        flex-direction: column !important;
+        align-items: flex-start !important;
+    }
+
+    /* 2. Diminui o Título principal */
+    .admin-body #cabecalho h1 {
+        font-size: 1.2rem !important;
+        line-height: 1.2 !important;
+        margin-bottom: 5px !important;
+    }
+
+    /* Ajusta o "M" gigante para não quebrar o layout */
+    .admin-body #cabecalho h1 .spanm {
+        font-size: 1.5em !important;
+    }
+
+    /* 3. Deixa as Badges (Olá, Usuário / Unidade) bem menores */
+    .badge-usuario-header,
+    .badge-unidade-header {
+        font-size: 0.7rem !important; /* Texto bem pequeno */
+        padding: 4px 10px !important; /* Menos preenchimento */
+        margin-left: 0 !important; /* Remove o recuo lateral */
+        margin-right: 5px; /* Dá um espacinho entre elas se ficarem lado a lado */
+    }
+
+    /* Diminui os ícones dentro das badges */
+    .badge-usuario-header i,
+    .badge-unidade-header i {
+        font-size: 0.7rem !important;
+    }
+
+    /* 4. Diminui os botões (Sair / Mudar Senha) */
+    .admin-body #cabecalho .btn-voltar-header {
+        font-size: 0.75rem !important;
+        padding: 6px 12px !important;
+    }
+
+    /* 5. Organiza a linha de botões para ficar alinhada à direita */
+    .admin-body #cabecalho > div:last-child {
+        width: 100%;
+        justify-content: flex-end !important;
+        margin-top: 5px;
+    }
+}
+
 @media (max-width: 400px) {
     .admin-body #cabecalho h1 { font-size: 1.3rem; }
     .badge-usuario-header, .badge-unidade-header { font-size: 0.75rem; padding: 4px 10px; margin-left: 0; margin-top: 5px; }
