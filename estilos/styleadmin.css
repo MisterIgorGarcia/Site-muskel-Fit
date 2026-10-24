@@ -208,53 +208,59 @@
 
 /* ===================== CABEÇALHO COMPACTO NO CELULAR ===================== */
 @media (max-width: 768px) {
-    /* 1. Reduz o espaçamento geral do cabeçalho */
+    /* 1. Configura o cabeçalho para centralizar tudo e permitir quebra de linha se faltar espaço */
     .admin-body #cabecalho {
-        padding: 10px 15px !important;
-        gap: 8px !important;
+        display: flex !important;
+        flex-wrap: wrap !important;
+        justify-content: center !important; 
+        align-items: center !important;
+        padding: 10px !important;
+        gap: 6px !important; /* Espaço entre os itens */
         margin-bottom: 15px !important;
-        flex-direction: column !important;
-        align-items: flex-start !important;
     }
 
-    /* 2. Diminui o Título principal */
+    /* 2. O título ocupa 100% da largura (linha de cima) */
     .admin-body #cabecalho h1 {
-        font-size: 1.2rem !important;
+        width: 100% !important;
+        text-align: center !important;
+        font-size: 1.1rem !important;
+        margin-bottom: 8px !important;
         line-height: 1.2 !important;
-        margin-bottom: 5px !important;
     }
 
-    /* Ajusta o "M" gigante para não quebrar o layout */
     .admin-body #cabecalho h1 .spanm {
         font-size: 1.5em !important;
     }
 
-    /* 3. Deixa as Badges (Olá, Usuário / Unidade) bem menores */
+    /* 3. Remove a caixa invisível das badges para que fiquem na mesma linha do botão Sair */
+    .admin-body #cabecalho > div:first-child {
+        display: contents !important;
+    }
+
+    /* 4. Diminui as Badges (Olá, Usuário / Unidade) */
     .badge-usuario-header,
     .badge-unidade-header {
-        font-size: 0.7rem !important; /* Texto bem pequeno */
-        padding: 4px 10px !important; /* Menos preenchimento */
-        margin-left: 0 !important; /* Remove o recuo lateral */
-        margin-right: 5px; /* Dá um espacinho entre elas se ficarem lado a lado */
+        font-size: 0.65rem !important;
+        padding: 4px 8px !important;
+        margin: 0 !important; 
+        width: auto !important;
     }
 
-    /* Diminui os ícones dentro das badges */
-    .badge-usuario-header i,
-    .badge-unidade-header i {
-        font-size: 0.7rem !important;
-    }
-
-    /* 4. Diminui os botões (Sair / Mudar Senha) */
+    /* 5. Diminui os botões (Sair / Mudar Senha) */
     .admin-body #cabecalho .btn-voltar-header {
-        font-size: 0.75rem !important;
-        padding: 6px 12px !important;
+        font-size: 0.65rem !important;
+        padding: 4px 10px !important;
+        margin: 0 !important;
     }
 
-    /* 5. Organiza a linha de botões para ficar alinhada à direita */
+    /* 6. Se houver mais de um botão (Funcionário), agrupa eles na mesma linha */
     .admin-body #cabecalho > div:last-child {
-        width: 100%;
-        justify-content: flex-end !important;
-        margin-top: 5px;
+        display: flex !important;
+        flex-wrap: wrap !important;
+        justify-content: center !important;
+        gap: 6px !important;
+        width: auto !important;
+        margin-top: 0 !important;
     }
 }
 
