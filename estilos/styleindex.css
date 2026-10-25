@@ -33,6 +33,101 @@
 .mapa-container { flex: 1 1 600px; max-width: 700px; aspect-ratio: 16 / 9; min-height: 250px; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4); }
 .mapa-container iframe { width: 100%; height: 100%; border: 0; display: block; }
 
+/* ============= BOTÃO "AVALIE JÁ A MUSKEL FIT" (Google) ================= */
+
+.secao-avaliacao {
+    text-align: center;
+    padding: 60px 20px;
+}
+
+.avaliacao-subtitulo {
+    max-width: 520px;
+    margin: 0 auto 28px;
+    opacity: .85;
+}
+
+.btn-avaliar {
+    display: inline-flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 32px;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #ffe066 0%, #ffc300 55%, #ffa800 100%);
+    color: #141414;
+    font-weight: 800;
+    font-size: 1.05rem;
+    letter-spacing: .4px;
+    text-decoration: none;
+    border: 2px solid rgba(0, 0, 0, .08);
+    box-shadow: 0 8px 22px rgba(255, 179, 0, .40);
+    transition: transform .25s ease, box-shadow .25s ease;
+    position: relative;
+    overflow: hidden;
+    max-width: 100%;
+    line-height: 1.25;
+}
+
+/* brilho que "passa" por cima do botão */
+.btn-avaliar::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -75%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(120deg, transparent, rgba(255,255,255,.75), transparent);
+    transform: skewX(-20deg);
+    animation: brilhoAvaliar 3.5s ease-in-out infinite;
+}
+
+@keyframes brilhoAvaliar {
+    0%   { left: -75%; }
+    55%  { left: 130%; }
+    100% { left: 130%; }
+}
+
+.btn-avaliar:hover {
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 14px 30px rgba(255, 179, 0, .55);
+}
+
+.btn-avaliar:active { transform: translateY(-1px) scale(.99); }
+
+.btn-avaliar .estrelas {
+    display: inline-flex;
+    gap: 3px;
+    font-size: .95rem;
+}
+
+.btn-avaliar .estrelas i {
+    color: #fff;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, .35);
+}
+
+.btn-avaliar-seta {
+    font-size: .85rem;
+    opacity: .65;
+}
+
+/* acessibilidade: quem desativa animações não sofre com o brilho */
+@media (prefers-reduced-motion: reduce) {
+    .btn-avaliar::before { animation: none; display: none; }
+    .btn-avaliar:hover { transform: none; }
+}
+
+/* celular: botão ocupa a largura toda */
+@media (max-width: 600px) {
+    .btn-avaliar {
+        width: 100%;
+        justify-content: center;
+        text-align: center;
+        font-size: .98rem;
+        padding: 15px 20px;
+        gap: 10px;
+    }
+    .btn-avaliar .estrelas { font-size: .8rem; }
+}
+
 /* ===================== CARDS SOBRE ===================== */
 .card-sobre { background-color: var(--cor-card); border: 2px solid transparent; border-radius: 10px; padding: 30px; width: 250px; transition: border-color 0.3s; display: flex; flex-direction: column; align-items: center; text-align: center; }
 .card-sobre h1 i { color: var(--cor-secundaria); }
