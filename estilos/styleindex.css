@@ -246,6 +246,10 @@
     .btn-avaliar-flutuante .btn-avaliar-flutuante-texto::before {
         content: none;
     }
+
+    .btn-avaliar-flutuante.oculto {
+    display: none !important;
+}
 }
 
 /* ===================== CARDS SOBRE ===================== */
