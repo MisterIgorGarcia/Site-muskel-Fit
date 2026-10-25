@@ -211,30 +211,37 @@
     .btn-avaliar-flutuante:hover { transform: none; }
 }
 
-/* ---------- CELULAR: vira um círculo compacto pra não atrapalhar ---------- */
+/* ---------- CELULAR: vira um "pill" compacto com 1 estrela + texto ---------- */
 @media (max-width: 600px) {
     .btn-avaliar-flutuante {
-        bottom: 16px;
-        left: 16px;
-        width: 56px;
-        height: 56px;
-        padding: 0;
-        justify-content: center;
-        border-radius: 50%;
+        bottom: 14px;
+        left: 14px;
+        width: auto;          /* volta a ser pill, não círculo */
+        height: auto;
+        padding: 8px 13px;
+        gap: 6px;
+        border-radius: 999px;
+        font-size: .72rem;    /* fonte pequena */
+        letter-spacing: .2px;
     }
 
-    .btn-avaliar-flutuante .estrelas { display: none; }
-
-    /* troca o texto por uma estrela só */
-    .btn-avaliar-flutuante span:not(.estrelas) {
-        font-size: 0;
+    /* deixa só UMA estrela visível */
+    .btn-avaliar-flutuante .estrelas {
+        display: inline-flex;
+        gap: 0;
+        font-size: .68rem;
     }
-    .btn-avaliar-flutuante span:not(.estrelas)::before {
-        content: "\f005";              /* código unicode da estrela no Font Awesome */
-        font-family: "Font Awesome 6 Free";
-        font-weight: 900;
-        font-size: 1.15rem;
-        color: #141414;
+    .btn-avaliar-flutuante .estrelas i:not(:first-child) {
+        display: none;
+    }
+
+    /* cancela o hack antigo que trocava o texto por estrela */
+    .btn-avaliar-flutuante .btn-avaliar-flutuante-texto {
+        font-size: inherit;
+        font-weight: 800;
+    }
+    .btn-avaliar-flutuante .btn-avaliar-flutuante-texto::before {
+        content: none;
     }
 }
 
