@@ -1,378 +1,222 @@
-/* ===================== BADGE DE STATUS ===================== */
-.status-atual { display: inline-flex; align-items: center; gap: 10px; background-color: #1a1a1a; color: var(--cor-texto-claro); font-weight: bold; font-size: 0.85rem; letter-spacing: 1px; padding: 8px 18px; border-radius: 999px; border: 1px solid #22c55e; margin-bottom: 15px; transition: border-color 0.3s; }
-.bolinha { position: relative; display: inline-block; width: 10px; height: 10px; min-width: 10px; min-height: 10px; flex-shrink: 0; background-color: #22c55e; border-radius: 50%; transition: background-color 0.3s, box-shadow 0.3s; }
-.bolinha::after { content: ""; position: absolute; top: 50%; left: 50%; width: 10px; height: 10px; transform: translate(-50%, -50%); background-color: inherit; border-radius: 50%; animation: pulsar-status 1.8s ease-out infinite; pointer-events: none; }
+/* ===================== BADGE DE STATUS ===================== */ 
+.status-atual { display: inline-flex; align-items: center; gap: 10px; background-color: #1a1a1a; color: var(--cor-texto-claro); font-weight: bold; font-size: 0.85rem; letter-spacing: 1px; padding: 8px 18px; border-radius: 999px; border: 1px solid #22c55e; margin-bottom: 15px; transition: border-color 0.3s; } 
+.bolinha { position: relative; display: inline-block; width: 10px; height: 10px; min-width: 10px; min-height: 10px; flex-shrink: 0; background-color: #22c55e; border-radius: 50%; transition: background-color 0.3s, box-shadow 0.3s; } 
+.bolinha::after { content: ""; position: absolute; top: 50%; left: 50%; width: 10px; height: 10px; transform: translate(-50%, -50%); background-color: inherit; border-radius: 50%; animation: pulsar-status 1.8s ease-out infinite; pointer-events: none; } 
 @keyframes pulsar-status { 0% { transform: translate(-50%, -50%) scale(1); opacity: 0.8; } 100% { transform: translate(-50%, -50%) scale(2.5); opacity: 0; } }
 
-/* ===================== SEÇÃO HERO ===================== */
-.hero { display: flex; align-items: center; justify-content: center; gap: 30px; padding: 80px 20px; background-color: var(--cor-primaria); text-align: left; max-width: 1100px; margin: 0 auto; flex-wrap: wrap; }
-.hero-texto { flex: 1; max-width: 550px; }
-.hero-imagem { flex: 1; display: flex; justify-content: center; position: relative; }
-.hero-imagem::before { content: ""; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: min(280px, 70vw); height: min(280px, 70vw); background: radial-gradient(circle, rgba(255, 214, 10, 0.55) 0%, rgba(255, 214, 10, 0.25) 35%, transparent 70%); border-radius: 50%; z-index: 0; pointer-events: none; filter: blur(20px); }
-.hero-imagem img { width: 100%; max-width: 420px; height: auto; display: block; animation: flutuar 3s ease-in-out infinite; position: relative; z-index: 1; }
-@keyframes flutuar { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
-.hero h2 { font-size: 2.5rem; margin-bottom: 20px; }
-.hero p { font-size: 1.2rem; margin-bottom: 15px; color: #cccccc; }
+/* ===================== SEÇÃO HERO ===================== */ 
+.hero { display: flex; align-items: center; justify-content: center; gap: 30px; padding: 80px 20px; background-color: var(--cor-primaria); text-align: left; max-width: 1100px; margin: 0 auto; flex-wrap: wrap; } 
+.hero-texto { flex: 1; max-width: 550px; } 
+.hero-imagem { flex: 1; display: flex; justify-content: center; position: relative; } 
+.hero-imagem::before { content: ""; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: min(280px, 70vw); height: min(280px, 70vw); background: radial-gradient(circle, rgba(255, 214, 10, 0.55) 0%, rgba(255, 214, 10, 0.25) 35%, transparent 70%); border-radius: 50%; z-index: 0; pointer-events: none; filter: blur(20px); } 
+.hero-imagem img { width: 100%; max-width: 420px; height: auto; display: block; animation: flutuar 3s ease-in-out infinite; position: relative; z-index: 1; } 
+@keyframes flutuar { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } } 
+.hero h2 { font-size: 2.5rem; margin-bottom: 20px; } 
+.hero p { font-size: 1.2rem; margin-bottom: 15px; color: #cccccc; } 
 .hero-botoes { display: flex; flex-wrap: wrap; gap: 15px; margin-top: 20px; }
 
-/* ===================== SEÇÃO MAPA ===================== */
-#localizacao { display: flex; align-items: flex-start; justify-content: center; gap: 40px; padding: 80px 20px; background-color: var(--cor-primaria); text-align: left; max-width: 1100px; margin: 0 auto; flex-wrap: wrap; }
-.mapa-texto { flex: 1; min-width: 280px; max-width: 480px; }
-.mapa-texto h2 { font-size: 2rem; text-align: left; margin-bottom: 25px; color: var(--cor-texto-claro); padding-bottom: 12px; position: relative; display: inline-block; }
-.mapa-texto h2::after { content: ""; position: absolute; left: 0; bottom: 0; width: 100%; height: 4px; background-color: var(--cor-secundaria); border-radius: 2px; }
-.info-localizacao { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 12px; }
-.bloco-info { display: flex; align-items: center; text-align: left; gap: 14px; background-color: #1a1a1a; border-radius: 10px; padding: 14px 18px; border: 1px solid #2a2a2a; text-decoration: none; color: var(--cor-texto-claro); transition: border-color 0.3s, transform 0.3s, background-color 0.3s; cursor: pointer; }
-.bloco-info:hover { border-color: var(--cor-secundaria); background-color: #222222; transform: translateX(5px); }
-.bloco-info i { font-size: 1.6rem; color: var(--cor-secundaria); min-width: 32px; text-align: center; flex-shrink: 0; }
-.bloco-info div { display: flex; flex-direction: column; align-items: flex-start; text-align: left; gap: 3px; min-width: 0; }
-.bloco-info strong { font-size: 0.95rem; color: var(--cor-texto-claro); font-weight: bold; }
-.bloco-info span { font-size: 0.85rem; color: #999999; line-height: 1.4; }
-.bloco-instagram:hover { border-color: #E1306C; }
-.bloco-whatsapp:hover  { border-color: #25D366; }
-.bloco-endereco:hover  { border-color: var(--cor-secundaria); }
-.mapa-container { flex: 1 1 600px; max-width: 700px; aspect-ratio: 16 / 9; min-height: 250px; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4); }
+/* ===================== SEÇÃO MAPA ===================== */ 
+#localizacao { display: flex; align-items: flex-start; justify-content: center; gap: 40px; padding: 80px 20px; background-color: var(--cor-primaria); text-align: left; max-width: 1100px; margin: 0 auto; flex-wrap: wrap; } 
+.mapa-texto { flex: 1; min-width: 280px; max-width: 480px; } 
+.mapa-texto h2 { font-size: 2rem; text-align: left; margin-bottom: 25px; color: var(--cor-texto-claro); padding-bottom: 12px; position: relative; display: inline-block; } 
+.mapa-texto h2::after { content: ""; position: absolute; left: 0; bottom: 0; width: 100%; height: 4px; background-color: var(--cor-secundaria); border-radius: 2px; } 
+.info-localizacao { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 12px; } 
+.bloco-info { display: flex; align-items: center; text-align: left; gap: 14px; background-color: #1a1a1a; border-radius: 10px; padding: 14px 18px; border: 1px solid #2a2a2a; text-decoration: none; color: var(--cor-texto-claro); transition: border-color 0.3s, transform 0.3s, background-color 0.3s; cursor: pointer; } 
+.bloco-info:hover { border-color: var(--cor-secundaria); background-color: #222222; transform: translateX(5px); } 
+.bloco-info i { font-size: 1.6rem; color: var(--cor-secundaria); min-width: 32px; text-align: center; flex-shrink: 0; } 
+.bloco-info div { display: flex; flex-direction: column; align-items: flex-start; text-align: left; gap: 3px; min-width: 0; } 
+.bloco-info strong { font-size: 0.95rem; color: var(--cor-texto-claro); font-weight: bold; } 
+.bloco-info span { font-size: 0.85rem; color: #999999; line-height: 1.4; } 
+.bloco-instagram:hover { border-color: #E1306C; } 
+.bloco-whatsapp:hover { border-color: #25D366; } 
+.bloco-endereco:hover { border-color: var(--cor-secundaria); } 
+.mapa-container { flex: 1 1 600px; max-width: 700px; aspect-ratio: 16 / 9; min-height: 250px; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4); } 
 .mapa-container iframe { width: 100%; height: 100%; border: 0; display: block; }
 
-/* ============= BOTÃO "AVALIE JÁ A MUSKEL FIT" (Google) ================= */
+/* ============= BOTÃO "AVALIE JÁ A MUSKEL FIT" (Google) ================= */ 
+.secao-avaliacao { text-align: center; padding: 60px 20px; } 
+.avaliacao-subtitulo { max-width: 520px; margin: 0 auto 28px; opacity: .85; } 
 
-.secao-avaliacao {
-    text-align: center;
-    padding: 60px 20px;
+.btn-avaliar { display: inline-flex; align-items: center; gap: 14px; padding: 16px 32px; border-radius: 999px; background: linear-gradient(135deg, #ffe066 0%, #ffc300 55%, #ffa800 100%); color: #141414; font-weight: 800; font-size: 1.05rem; letter-spacing: .4px; text-decoration: none; border: 2px solid rgba(0, 0, 0, .08); box-shadow: 0 8px 22px rgba(255, 179, 0, .40); transition: transform .25s ease, box-shadow .25s ease; position: relative; overflow: hidden; max-width: 100%; line-height: 1.25; } 
+
+/* brilho que "passa" por cima do botão */ 
+.btn-avaliar::before { content: ""; position: absolute; top: 0; left: -75%; width: 50%; height: 100%; background: linear-gradient(120deg, transparent, rgba(255,255,255,.75), transparent); transform: skewX(-20deg); animation: brilhoAvaliar 3.5s ease-in-out infinite; } 
+@keyframes brilhoAvaliar { 0% { left: -75%; } 55% { left: 130%; } 100% { left: 130%; } } 
+
+.btn-avaliar:hover { transform: translateY(-4px) scale(1.02); box-shadow: 0 14px 30px rgba(255, 179, 0, .55); } 
+.btn-avaliar:active { transform: translateY(-1px) scale(.99); } 
+.btn-avaliar .estrelas { display: inline-flex; gap: 3px; font-size: .95rem; } 
+.btn-avaliar .estrelas i { color: #fff; text-shadow: 0 1px 3px rgba(0, 0, 0, .35); } 
+.btn-avaliar-seta { font-size: .85rem; opacity: .65; } 
+
+/* acessibilidade: quem desativa animações não sofre com o brilho */ 
+@media (prefers-reduced-motion: reduce) { 
+    .btn-avaliar::before { animation: none; display: none; } 
+    .btn-avaliar:hover { transform: none; } 
+} 
+
+/* celular: botão ocupa a largura toda */ 
+@media (max-width: 600px) { 
+    .btn-avaliar { width: 100%; justify-content: center; text-align: center; font-size: .98rem; padding: 15px 20px; gap: 10px; } 
+    .btn-avaliar .estrelas { font-size: .8rem; } 
 }
 
-.avaliacao-subtitulo {
-    max-width: 520px;
-    margin: 0 auto 28px;
-    opacity: .85;
+/* ============ BOTÃO FLUTUANTE "AVALIE A MUSKEL FIT" Fica fixo no canto inferior ESQUERDO (btn-topo fica na direita) ========================= */ 
+.btn-avaliar-flutuante { position: fixed; bottom: 24px; left: 24px; z-index: 999; display: inline-flex; align-items: center; gap: 10px; padding: 13px 22px; border-radius: 999px; background: linear-gradient(135deg, #ffe066 0%, #ffc300 55%, #ffa800 100%); color: #141414; font-weight: 800; font-size: .92rem; letter-spacing: .3px; text-decoration: none; white-space: nowrap; border: 2px solid rgba(0, 0, 0, .08); box-shadow: 0 8px 22px rgba(255, 179, 0, .45); transition: transform .25s ease, box-shadow .25s ease, opacity .3s ease; overflow: hidden; } 
+
+/* brilho passando por cima do botão flutuante */ 
+.btn-avaliar-flutuante::before { content: ""; position: absolute; top: 0; left: -75%; width: 50%; height: 100%; background: linear-gradient(120deg, transparent, rgba(255,255,255,.75), transparent); transform: skewX(-20deg); animation: brilhoAvaliar 3.5s ease-in-out infinite; pointer-events: none; } 
+
+.btn-avaliar-flutuante:hover { transform: translateY(-4px) scale(1.03); box-shadow: 0 14px 30px rgba(255, 179, 0, .6); } 
+.btn-avaliar-flutuante:active { transform: translateY(-1px) scale(.99); } 
+.btn-avaliar-flutuante .estrelas { display: inline-flex; gap: 2px; font-size: .8rem; } 
+.btn-avaliar-flutuante .estrelas i { color: #fff; text-shadow: 0 1px 3px rgba(0, 0, 0, .35); } 
+
+/* acessibilidade: respeita quem desativa animações */ 
+@media (prefers-reduced-motion: reduce) { 
+    .btn-avaliar-flutuante::before { animation: none; display: none; } 
+    .btn-avaliar-flutuante:hover { transform: none; } 
+} 
+
+/* ---------- CELULAR: Botão vira pill ---------- */ 
+@media (max-width: 600px) { 
+    .btn-avaliar-flutuante { bottom: 14px; left: 0; right: 0; margin-left: auto; margin-right: auto; width: fit-content; height: auto; padding: 8px 13px; gap: 6px; border-radius: 999px; font-size: .72rem; letter-spacing: .2px; } 
+    
+    /* deixa só UMA estrela visível */ 
+    .btn-avaliar-flutuante .estrelas { display: inline-flex; gap: 0; font-size: .68rem; } 
+    .btn-avaliar-flutuante .estrelas i:not(:first-child) { display: none; } 
+    
+    /* garante que o texto "Nos avalie" apareça */ 
+    .btn-avaliar-flutuante .btn-avaliar-flutuante-texto { font-size: inherit; font-weight: 800; } 
+    .btn-avaliar-flutuante .btn-avaliar-flutuante-texto::before { content: none; } 
 }
 
-.btn-avaliar {
-    display: inline-flex;
-    align-items: center;
-    gap: 14px;
-    padding: 16px 32px;
-    border-radius: 999px;
-    background: linear-gradient(135deg, #ffe066 0%, #ffc300 55%, #ffa800 100%);
-    color: #141414;
-    font-weight: 800;
-    font-size: 1.05rem;
-    letter-spacing: .4px;
-    text-decoration: none;
-    border: 2px solid rgba(0, 0, 0, .08);
-    box-shadow: 0 8px 22px rgba(255, 179, 0, .40);
-    transition: transform .25s ease, box-shadow .25s ease;
-    position: relative;
-    overflow: hidden;
-    max-width: 100%;
-    line-height: 1.25;
-}
-
-/* brilho que "passa" por cima do botão */
-.btn-avaliar::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: -75%;
-    width: 50%;
-    height: 100%;
-    background: linear-gradient(120deg, transparent, rgba(255,255,255,.75), transparent);
-    transform: skewX(-20deg);
-    animation: brilhoAvaliar 3.5s ease-in-out infinite;
-}
-
-@keyframes brilhoAvaliar {
-    0%   { left: -75%; }
-    55%  { left: 130%; }
-    100% { left: 130%; }
-}
-
-.btn-avaliar:hover {
-    transform: translateY(-4px) scale(1.02);
-    box-shadow: 0 14px 30px rgba(255, 179, 0, .55);
-}
-
-.btn-avaliar:active { transform: translateY(-1px) scale(.99); }
-
-.btn-avaliar .estrelas {
-    display: inline-flex;
-    gap: 3px;
-    font-size: .95rem;
-}
-
-.btn-avaliar .estrelas i {
-    color: #fff;
-    text-shadow: 0 1px 3px rgba(0, 0, 0, .35);
-}
-
-.btn-avaliar-seta {
-    font-size: .85rem;
-    opacity: .65;
-}
-
-/* acessibilidade: quem desativa animações não sofre com o brilho */
-@media (prefers-reduced-motion: reduce) {
-    .btn-avaliar::before { animation: none; display: none; }
-    .btn-avaliar:hover { transform: none; }
-}
-
-/* celular: botão ocupa a largura toda */
-@media (max-width: 600px) {
-    .btn-avaliar {
-        width: 100%;
-        justify-content: center;
-        text-align: center;
-        font-size: .98rem;
-        padding: 15px 20px;
-        gap: 10px;
-    }
-    .btn-avaliar .estrelas { font-size: .8rem; }
-}
-
-.btn-avaliar-flutuante {
-    position: fixed;
-    bottom: 24px;
-    left: 24px;
-    z-index: 999;
-    padding: 12px 20px;
-    font-size: .9rem;
-    border-radius: 999px;
-}
-@media (max-width: 600px) {
-    .btn-avaliar-flutuante { padding: 10px 16px; font-size: .82rem; bottom: 16px; left: 16px; }
-}
-
-/* ============ BOTÃO FLUTUANTE "AVALIE A MUSKEL FIT" Fica fixo no canto inferior ESQUERDO (btn-topo fica na direita) ========================= */
-
-.btn-avaliar-flutuante {
-    position: fixed;
-    bottom: 24px;
-    left: 24px;
-    z-index: 999;
-
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    padding: 13px 22px;
-    border-radius: 999px;
-
-    background: linear-gradient(135deg, #ffe066 0%, #ffc300 55%, #ffa800 100%);
-    color: #141414;
-    font-weight: 800;
-    font-size: .92rem;
-    letter-spacing: .3px;
-    text-decoration: none;
-    white-space: nowrap;
-
-    border: 2px solid rgba(0, 0, 0, .08);
-    box-shadow: 0 8px 22px rgba(255, 179, 0, .45);
-    transition: transform .25s ease, box-shadow .25s ease, opacity .3s ease;
-    overflow: hidden;
-}
-
-/* brilho passando por cima do botão flutuante */
-.btn-avaliar-flutuante::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: -75%;
-    width: 50%;
-    height: 100%;
-    background: linear-gradient(120deg, transparent, rgba(255,255,255,.75), transparent);
-    transform: skewX(-20deg);
-    animation: brilhoAvaliar 3.5s ease-in-out infinite;
-    pointer-events: none;
-}
-
-.btn-avaliar-flutuante:hover {
-    transform: translateY(-4px) scale(1.03);
-    box-shadow: 0 14px 30px rgba(255, 179, 0, .6);
-}
-
-.btn-avaliar-flutuante:active {
-    transform: translateY(-1px) scale(.99);
-}
-
-.btn-avaliar-flutuante .estrelas {
-    display: inline-flex;
-    gap: 2px;
-    font-size: .8rem;
-}
-
-.btn-avaliar-flutuante .estrelas i {
-    color: #fff;
-    text-shadow: 0 1px 3px rgba(0, 0, 0, .35);
-}
-
-/* acessibilidade: respeita quem desativa animações */
-@media (prefers-reduced-motion: reduce) {
-    .btn-avaliar::before,
-    .btn-avaliar-flutuante::before { animation: none; display: none; }
-    .btn-avaliar:hover,
-    .btn-avaliar-flutuante:hover { transform: none; }
-}
-
-/* ---------- CELULAR: Botão vira pill ---------- */
-@media (max-width: 600px) {
-    .btn-avaliar-flutuante {
-        bottom: 14px;
-        left: 0;
-        right: 0;
-        margin-left: auto;
-        margin-right: auto;
-        width: fit-content;   /* não estica, fica do tamanho do conteúdo */
-        height: auto;
-        padding: 8px 13px;
-        gap: 6px;
-        border-radius: 999px;
-        font-size: .72rem;
-        letter-spacing: .2px;
-    }
-
-    /* deixa só UMA estrela visível */
-    .btn-avaliar-flutuante .estrelas {
-        display: inline-flex;
-        gap: 0;
-        font-size: .68rem;
-    }
-    .btn-avaliar-flutuante .estrelas i:not(:first-child) {
-        display: none;
-    }
-
-    /* garante que o texto "Nos avalie" apareça */
-    .btn-avaliar-flutuante .btn-avaliar-flutuante-texto {
-        font-size: inherit;
-        font-weight: 800;
-    }
-    .btn-avaliar-flutuante .btn-avaliar-flutuante-texto::before {
-        content: none;
-    }
-
-    .btn-avaliar-flutuante.oculto {
+/* --- CORREÇÃO: Esse bloco estava dentro do @media, agora está no escopo global --- */
+.btn-avaliar-flutuante.oculto {
     display: none !important;
 }
-}
 
-/* ===================== CARDS SOBRE ===================== */
-.card-sobre { background-color: var(--cor-card); border: 2px solid transparent; border-radius: 10px; padding: 30px; width: 250px; transition: border-color 0.3s; display: flex; flex-direction: column; align-items: center; text-align: center; }
-.card-sobre h1 i { color: var(--cor-secundaria); }
-.card-sobre-grupo { display: flex; flex-wrap: wrap; justify-content: center; gap: 30px; margin-top: 40px; }
+/* ===================== CARDS SOBRE ===================== */ 
+.card-sobre { background-color: var(--cor-card); border: 2px solid transparent; border-radius: 10px; padding: 30px; width: 250px; transition: border-color 0.3s; display: flex; flex-direction: column; align-items: center; text-align: center; } 
+.card-sobre h1 i { color: var(--cor-secundaria); } 
+.card-sobre-grupo { display: flex; flex-wrap: wrap; justify-content: center; gap: 30px; margin-top: 40px; } 
 .card-sobre:hover { border-color: var(--cor-secundaria); }
 
-/* ===================== SEÇÕES GERAIS ===================== */
-.secao { padding: 60px 40px; text-align: center; }
-.secao h2 { font-size: 2rem; margin-bottom: 20px; }
-.secao p { max-width: 700px; margin: 0 auto; color: #cccccc; line-height: 1.6; }
-.secao-sub-h1 { padding: 60px 40px; text-align: center; }
-.secao-sub { padding: 20px 40px; max-width: 600px; text-align: center; border-radius: 10px; margin: 0 auto; background: #141414; }
-.secao-sub-alt { padding: 20px 40px; border-radius: 10px; background: #141414; margin: 0 auto; text-align: center; }
-.destaque { color: var(--cor-secundaria); }
+/* ===================== SEÇÕES GERAIS ===================== */ 
+.secao { padding: 60px 40px; text-align: center; } 
+.secao h2 { font-size: 2rem; margin-bottom: 20px; } 
+.secao p { max-width: 700px; margin: 0 auto; color: #cccccc; line-height: 1.6; } 
+.secao-sub-h1 { padding: 60px 40px; text-align: center; } 
+.secao-sub { padding: 20px 40px; max-width: 600px; text-align: center; border-radius: 10px; margin: 0 auto; background: #141414; } 
+.secao-sub-alt { padding: 20px 40px; border-radius: 10px; background: #141414; margin: 0 auto; text-align: center; } 
+.destaque { color: var(--cor-secundaria); } 
 .secao-escura { background-color: #111111; }
 
-/* ===================== SEÇÃO DE PLANOS ===================== */
-#planos { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 250px)); justify-content: center; gap: 25px; max-width: 1200px; margin: 0 auto; padding: 60px 20px; align-items: stretch; }
-#planos > h2, #planos > .titulo-grupo-planos { grid-column: 1 / -1; text-align: center; color: var(--cor-texto-claro); }
-#planos > h2 { font-size: 2.2rem; margin-bottom: 10px; }
-#planos > .titulo-grupo-planos { font-size: 1.6rem; margin-top: 40px; margin-bottom: 10px; color: var(--cor-secundaria); }
-.card { background: linear-gradient(145deg, #2a2a2a 0%, #1e1e1e 100%); border: 1px solid #333; border-radius: 12px; padding: 25px 15px 20px; width: 100%; display: flex; flex-direction: column; align-items: center; position: relative; overflow: hidden; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); }
-.card::before { content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 4px; background-color: var(--cor-secundaria); opacity: 0.7; transition: opacity 0.3s; }
-.card:hover { transform: translateY(-5px); border-color: var(--cor-secundaria); box-shadow: 0 8px 25px rgba(255, 214, 10, 0.15); }
-.card:hover::before { opacity: 1; box-shadow: 0 0 10px var(--cor-secundaria); }
-.card h3 { color: var(--cor-secundaria); font-size: 1.1rem; margin-top: 5px; margin-bottom: 12px; text-align: center; }
-.card h3 i { color: var(--cor-texto-claro); opacity: 0.8; margin: 0 2px; }
-.card .preco { font-size: 1.3rem; font-weight: bold; color: var(--cor-texto-claro); background: rgba(0, 0, 0, 0.4); padding: 8px 12px; border-radius: 8px; width: 100%; margin-bottom: 15px; text-align: center; }
-.card .preco span { font-size: 0.75rem; font-weight: normal; color: #aaa; display: inline-block; margin-left: 4px; }
-.card ul { list-style: none; margin-bottom: 0; padding: 0; text-align: left; width: 100%; flex-grow: 1; }
-.card ul li { padding: 5px 0; color: #cccccc; font-size: 0.85rem; display: flex; align-items: flex-start; gap: 6px; line-height: 1.3; }
+/* ===================== SEÇÃO DE PLANOS ===================== */ 
+#planos { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 250px)); justify-content: center; gap: 25px; max-width: 1200px; margin: 0 auto; padding: 60px 20px; align-items: stretch; } 
+#planos > h2, #planos > .titulo-grupo-planos { grid-column: 1 / -1; text-align: center; color: var(--cor-texto-claro); } 
+#planos > h2 { font-size: 2.2rem; margin-bottom: 10px; } 
+#planos > .titulo-grupo-planos { font-size: 1.6rem; margin-top: 40px; margin-bottom: 10px; color: var(--cor-secundaria); } 
+.card { background: linear-gradient(145deg, #2a2a2a 0%, #1e1e1e 100%); border: 1px solid #333; border-radius: 12px; padding: 25px 15px 20px; width: 100%; display: flex; flex-direction: column; align-items: center; position: relative; overflow: hidden; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); } 
+.card::before { content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 4px; background-color: var(--cor-secundaria); opacity: 0.7; transition: opacity 0.3s; } 
+.card:hover { transform: translateY(-5px); border-color: var(--cor-secundaria); box-shadow: 0 8px 25px rgba(255, 214, 10, 0.15); } 
+.card:hover::before { opacity: 1; box-shadow: 0 0 10px var(--cor-secundaria); } 
+.card h3 { color: var(--cor-secundaria); font-size: 1.1rem; margin-top: 5px; margin-bottom: 12px; text-align: center; } 
+.card h3 i { color: var(--cor-texto-claro); opacity: 0.8; margin: 0 2px; } 
+.card .preco { font-size: 1.3rem; font-weight: bold; color: var(--cor-texto-claro); background: rgba(0, 0, 0, 0.4); padding: 8px 12px; border-radius: 8px; width: 100%; margin-bottom: 15px; text-align: center; } 
+.card .preco span { font-size: 0.75rem; font-weight: normal; color: #aaa; display: inline-block; margin-left: 4px; } 
+.card ul { list-style: none; margin-bottom: 0; padding: 0; text-align: left; width: 100%; flex-grow: 1; } 
+.card ul li { padding: 5px 0; color: #cccccc; font-size: 0.85rem; display: flex; align-items: flex-start; gap: 6px; line-height: 1.3; } 
 .card ul li .fa-triangle-exclamation { color: #f97316; margin-top: 2px; }
 
-/* ===================== SEÇÃO HORÁRIOS ===================== */
-.subtitulo-horario { color: #cccccc; margin-bottom: 40px; font-size: 1.05rem; }
-.cards-horario { display: flex; flex-wrap: wrap; justify-content: center; gap: 30px; margin-top: 20px; }
-.card-horario { background-color: var(--cor-card); border: 2px solid transparent; border-radius: 15px; padding: 30px 25px; width: 260px; display: flex; flex-direction: column; align-items: center; text-align: center; transition: border-color 0.3s, transform 0.3s; }
-.card-horario:hover { border-color: var(--cor-secundaria); transform: translateY(-5px); }
-.horario-icone { font-size: 2.2rem; color: var(--cor-secundaria); margin-bottom: 15px; }
-.card-horario h3 { color: var(--cor-secundaria); font-size: 1.25rem; margin-bottom: 18px; }
-.horario-linha { color: var(--cor-texto-claro); font-size: 1rem; margin-bottom: 6px; display: flex; align-items: center; gap: 8px; justify-content: center; }
-.horario-linha i { color: var(--cor-secundaria); font-size: 0.9rem; }
-.horario-tag { display: inline-block; margin-top: 18px; padding: 6px 14px; font-size: 0.75rem; font-weight: bold; letter-spacing: 0.5px; text-transform: uppercase; border-radius: 999px; border: 1px solid; }
-.horario-tag.aberto { color: #22c55e; border-color: #22c55e; background-color: rgba(34, 197, 94, 0.1); }
-.horario-tag.atencao { color: var(--cor-secundaria); border-color: var(--cor-secundaria); background-color: rgba(255, 214, 10, 0.1); }
+/* ===================== SEÇÃO HORÁRIOS ===================== */ 
+.subtitulo-horario { color: #cccccc; margin-bottom: 40px; font-size: 1.05rem; } 
+.cards-horario { display: flex; flex-wrap: wrap; justify-content: center; gap: 30px; margin-top: 20px; } 
+.card-horario { background-color: var(--cor-card); border: 2px solid transparent; border-radius: 15px; padding: 30px 25px; width: 260px; display: flex; flex-direction: column; align-items: center; text-align: center; transition: border-color 0.3s, transform 0.3s; } 
+.card-horario:hover { border-color: var(--cor-secundaria); transform: translateY(-5px); } 
+.horario-icone { font-size: 2.2rem; color: var(--cor-secundaria); margin-bottom: 15px; } 
+.card-horario h3 { color: var(--cor-secundaria); font-size: 1.25rem; margin-bottom: 18px; } 
+.horario-linha { color: var(--cor-texto-claro); font-size: 1rem; margin-bottom: 6px; display: flex; align-items: center; gap: 8px; justify-content: center; } 
+.horario-linha i { color: var(--cor-secundaria); font-size: 0.9rem; } 
+.horario-tag { display: inline-block; margin-top: 18px; padding: 6px 14px; font-size: 0.75rem; font-weight: bold; letter-spacing: 0.5px; text-transform: uppercase; border-radius: 999px; border: 1px solid; } 
+.horario-tag.aberto { color: #22c55e; border-color: #22c55e; background-color: rgba(34, 197, 94, 0.1); } 
+.horario-tag.atencao { color: var(--cor-secundaria); border-color: var(--cor-secundaria); background-color: rgba(255, 214, 10, 0.1); } 
 .horario-tag.folga { color: #f97316; border-color: #f97316; background-color: rgba(249, 115, 22, 0.1); }
 
-/* ===================== CARD DO CRONÔMETRO ===================== */
-.horario-status-card { background-color: #1a1a1a; border: 1px solid rgba(34, 197, 94, 0.4); border-radius: 14px; padding: 22px 26px; align-items: center; display: flex; flex-direction: column; gap: 8px; margin: 0 auto 45px; text-align: left; transition: border-color 0.4s; max-width: 520px; width: 100%; }
-.horario-status-card.fechado { border-color: rgba(255, 214, 10, 0.4); }
-.horario-cronometro { display: flex; align-items: center; gap: 12px; color: var(--cor-secundaria); font-size: 1.6rem; font-weight: bold; font-variant-numeric: tabular-nums; }
-.horario-cronometro i { font-size: 1.5rem; }
-#cronometro { letter-spacing: 1px; }
-#cronometro-texto { color: #d0d0d0; font-size: 0.9rem; line-height: 1.4; }
-#cronometro-texto strong { color: var(--cor-secundaria); font-weight: bold; }
-.card-horario.hoje { border-color: var(--cor-secundaria); transform: translateY(-5px); }
+/* ===================== CARD DO CRONÔMETRO ===================== */ 
+.horario-status-card { background-color: #1a1a1a; border: 1px solid rgba(34, 197, 94, 0.4); border-radius: 14px; padding: 22px 26px; align-items: center; display: flex; flex-direction: column; gap: 8px; margin: 0 auto 45px; text-align: left; transition: border-color 0.4s; max-width: 520px; width: 100%; } 
+.horario-status-card.fechado { border-color: rgba(255, 214, 10, 0.4); } 
+.horario-cronometro { display: flex; align-items: center; gap: 12px; color: var(--cor-secundaria); font-size: 1.6rem; font-weight: bold; font-variant-numeric: tabular-nums; } 
+.horario-cronometro i { font-size: 1.5rem; } 
+#cronometro { letter-spacing: 1px; } 
+#cronometro-texto { color: #d0d0d0; font-size: 0.9rem; line-height: 1.4; } 
+#cronometro-texto strong { color: var(--cor-secundaria); font-weight: bold; } 
+.card-horario.hoje { border-color: var(--cor-secundaria); transform: translateY(-5px); } 
 .card-horario.hoje h3 { color: var(--cor-secundaria); }
 
-/* ===================== PÁGINA LEGAL (PRIVACIDADE) ===================== */
-.pagina-legal { max-width: 900px; margin: 0 auto; padding: 80px 40px 100px; color: var(--cor-texto-claro); }
-.pagina-legal-header { text-align: center; margin-bottom: 60px; padding-bottom: 30px; border-bottom: 3px solid var(--cor-secundaria); }
-.pagina-legal-header h1 { font-size: 2.5rem; color: var(--cor-secundaria); margin-bottom: 15px; line-height: 1.2; }
-.pagina-legal-data { color: #999; font-size: 0.9rem; letter-spacing: 1px; }
-.pagina-legal-data strong { color: var(--cor-secundaria); }
-.pagina-legal-conteudo { text-align: left; line-height: 1.75; font-size: 1rem; }
-.pagina-legal-conteudo p { color: #c8c8c8; margin-bottom: 18px; }
-.pagina-legal-conteudo h2 { font-size: 1.4rem; color: var(--cor-secundaria); margin-top: 40px; margin-bottom: 18px; padding-left: 15px; border-left: 4px solid var(--cor-secundaria); }
-.pagina-legal-conteudo h3 { font-size: 1.1rem; color: var(--cor-texto-claro); margin-top: 25px; margin-bottom: 12px; }
-.pagina-legal-conteudo ul { list-style: none; padding-left: 0; margin-bottom: 20px; }
-.pagina-legal-conteudo ul li { color: #c8c8c8; padding: 6px 0 6px 28px; position: relative; }
-.pagina-legal-conteudo ul li::before { content: "✔"; color: var(--cor-secundaria); position: absolute; left: 0; font-weight: bold; }
-.pagina-legal-conteudo a { color: var(--cor-secundaria); text-decoration: none; font-weight: bold; transition: color 0.3s; }
-.pagina-legal-conteudo a:hover { color: #ffe066; text-decoration: underline; }
-.pagina-legal-conteudo strong { color: var(--cor-texto-claro); }
-.pagina-legal-rodape { margin-top: 30px; padding: 20px 25px; background-color: #1a1a1a; border-left: 4px solid var(--cor-secundaria); border-radius: 8px; color: #d0d0d0; font-style: italic; }
-.pagina-legal-voltar { text-align: center; margin-top: 60px; }
+/* ===================== PÁGINA LEGAL (PRIVACIDADE) ===================== */ 
+.pagina-legal { max-width: 900px; margin: 0 auto; padding: 80px 40px 100px; color: var(--cor-texto-claro); } 
+.pagina-legal-header { text-align: center; margin-bottom: 60px; padding-bottom: 30px; border-bottom: 3px solid var(--cor-secundaria); } 
+.pagina-legal-header h1 { font-size: 2.5rem; color: var(--cor-secundaria); margin-bottom: 15px; line-height: 1.2; } 
+.pagina-legal-data { color: #999; font-size: 0.9rem; letter-spacing: 1px; } 
+.pagina-legal-data strong { color: var(--cor-secundaria); } 
+.pagina-legal-conteudo { text-align: left; line-height: 1.75; font-size: 1rem; } 
+.pagina-legal-conteudo p { color: #c8c8c8; margin-bottom: 18px; } 
+.pagina-legal-conteudo h2 { font-size: 1.4rem; color: var(--cor-secundaria); margin-top: 40px; margin-bottom: 18px; padding-left: 15px; border-left: 4px solid var(--cor-secundaria); } 
+.pagina-legal-conteudo h3 { font-size: 1.1rem; color: var(--cor-texto-claro); margin-top: 25px; margin-bottom: 12px; } 
+.pagina-legal-conteudo ul { list-style: none; padding-left: 0; margin-bottom: 20px; } 
+.pagina-legal-conteudo ul li { color: #c8c8c8; padding: 6px 0 6px 28px; position: relative; } 
+.pagina-legal-conteudo ul li::before { content: "✔"; color: var(--cor-secundaria); position: absolute; left: 0; font-weight: bold; } 
+.pagina-legal-conteudo a { color: var(--cor-secundaria); text-decoration: none; font-weight: bold; transition: color 0.3s; } 
+.pagina-legal-conteudo a:hover { color: #ffe066; text-decoration: underline; } 
+.pagina-legal-conteudo strong { color: var(--cor-texto-claro); } 
+.pagina-legal-rodape { margin-top: 30px; padding: 20px 25px; background-color: #1a1a1a; border-left: 4px solid var(--cor-secundaria); border-radius: 8px; color: #d0d0d0; font-style: italic; } 
+.pagina-legal-voltar { text-align: center; margin-top: 60px; } 
 .pagina-legal-voltar .btn-amarelo { text-decoration: none; display: inline-flex; align-items: center; gap: 8px; }
 
-/* ===================== RESPONSIVIDADE GERAL ===================== */
-@media (max-width: 768px) {
-    .hero { flex-direction: column-reverse; padding: 40px 20px; text-align: center; }
-    .hero-texto { max-width: 100%; }
-    .hero h2 { font-size: 2rem; }
-    .hero p { font-size: 1rem; }
-    .hero-botoes { justify-content: center; }
-    .hero-botoes .btn-amarelo { flex: 1 1 100%; }
-    .secao { padding: 40px 20px; }
-    .secao h2 { font-size: 1.6rem; }
-    .card-sobre-grupo { gap: 20px; }
-    .card-sobre { width: 100%; max-width: 320px; }
-    #planos { gap: 20px; padding: 40px 20px; }
-    .card { padding: 25px 20px; }
+/* ===================== RESPONSIVIDADE GERAL ===================== */ 
+@media (max-width: 768px) { 
+    .hero { flex-direction: column-reverse; padding: 40px 20px; text-align: center; } 
+    .hero-texto { max-width: 100%; } 
+    .hero h2 { font-size: 2rem; } 
+    .hero p { font-size: 1rem; } 
+    .hero-botoes { justify-content: center; } 
+    .hero-botoes .btn-amarelo { flex: 1 1 100%; } 
+    .secao { padding: 40px 20px; } 
+    .secao h2 { font-size: 1.6rem; } 
+    .card-sobre-grupo { gap: 20px; } 
+    .card-sobre { width: 100%; max-width: 320px; } 
+    #planos { gap: 20px; padding: 40px 20px; } 
+    .card { padding: 25px 20px; } 
     
-    #localizacao { flex-direction: column; text-align: center; padding: 50px 20px; gap: 30px; }
-    .mapa-texto { max-width: 100%; }
-    .mapa-texto h2 { margin: 0 auto 20px; }
-    .mapa-container { max-width: 100%; flex: 1 1 100%; width: 100%; }
-
-    .cards-horario { gap: 20px; }
-    .card-horario { width: 100%; max-width: 320px; padding: 25px 20px; }
-    .subtitulo-horario { font-size: 0.95rem; margin-bottom: 30px; }
-
-    .horario-status-card { padding: 18px 20px; margin-bottom: 30px; }
-    .horario-cronometro { font-size: 1.35rem; }
-    .horario-cronometro i { font-size: 1.2rem; }
-    #cronometro-texto { font-size: 0.82rem; }
-
-    .pagina-legal { padding: 50px 22px 70px; }
-    .pagina-legal-header h1 { font-size: 1.8rem; }
-    .pagina-legal-header { margin-bottom: 40px; }
-    .pagina-legal-conteudo h2 { font-size: 1.2rem; margin-top: 32px; }
-    .pagina-legal-conteudo h3 { font-size: 1rem; }
-    .pagina-legal-conteudo { font-size: 0.95rem; line-height: 1.7; }
-    .pagina-legal-conteudo ul li { padding-left: 24px; }
+    #localizacao { flex-direction: column; text-align: center; padding: 50px 20px; gap: 30px; } 
+    .mapa-texto { max-width: 100%; } 
+    .mapa-texto h2 { margin: 0 auto 20px; } 
+    .mapa-container { max-width: 100%; flex: 1 1 100%; width: 100%; } 
+    
+    .cards-horario { gap: 20px; } 
+    .card-horario { width: 100%; max-width: 320px; padding: 25px 20px; } 
+    .subtitulo-horario { font-size: 0.95rem; margin-bottom: 30px; } 
+    
+    .horario-status-card { padding: 18px 20px; margin-bottom: 30px; } 
+    .horario-cronometro { font-size: 1.35rem; } 
+    .horario-cronometro i { font-size: 1.2rem; } 
+    #cronometro-texto { font-size: 0.82rem; } 
+    
+    .pagina-legal { padding: 50px 22px 70px; } 
+    .pagina-legal-header h1 { font-size: 1.8rem; } 
+    .pagina-legal-header { margin-bottom: 40px; } 
+    .pagina-legal-conteudo h2 { font-size: 1.2rem; margin-top: 32px; } 
+    .pagina-legal-conteudo h3 { font-size: 1rem; } 
+    .pagina-legal-conteudo { font-size: 0.95rem; line-height: 1.7; } 
+    .pagina-legal-conteudo ul li { padding-left: 24px; } 
 }
 
-@media (max-width: 600px) {
-   .status-atual { font-size: 0.75rem; padding: 6px 14px; }
-   .hero h2 { font-size: 1.7rem; }
-   .hero-imagem img { max-width: 280px; }
-   .card-sobre, .card { padding: 22px; }
-   #planos > .titulo-grupo-planos { font-size: 1.25rem; margin-top: 20px; }
-   .card .preco { font-size: 1.3rem; }
+@media (max-width: 600px) { 
+   .status-atual { font-size: 0.75rem; padding: 6px 14px; } 
+   .hero h2 { font-size: 1.7rem; } 
+   .hero-imagem img { max-width: 280px; } 
+   .card-sobre, .card { padding: 22px; } 
+   #planos > .titulo-grupo-planos { font-size: 1.25rem; margin-top: 20px; } 
+   .card .preco { font-size: 1.3rem; } 
 }
