@@ -141,6 +141,103 @@
     .btn-avaliar-flutuante { padding: 10px 16px; font-size: .82rem; bottom: 16px; left: 16px; }
 }
 
+/* ============ BOTÃO FLUTUANTE "AVALIE A MUSKEL FIT" Fica fixo no canto inferior ESQUERDO (btn-topo fica na direita) ========================= */
+
+.btn-avaliar-flutuante {
+    position: fixed;
+    bottom: 24px;
+    left: 24px;
+    z-index: 999;
+
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 13px 22px;
+    border-radius: 999px;
+
+    background: linear-gradient(135deg, #ffe066 0%, #ffc300 55%, #ffa800 100%);
+    color: #141414;
+    font-weight: 800;
+    font-size: .92rem;
+    letter-spacing: .3px;
+    text-decoration: none;
+    white-space: nowrap;
+
+    border: 2px solid rgba(0, 0, 0, .08);
+    box-shadow: 0 8px 22px rgba(255, 179, 0, .45);
+    transition: transform .25s ease, box-shadow .25s ease;
+    overflow: hidden;
+}
+
+/* brilho passando por cima do botão flutuante */
+.btn-avaliar-flutuante::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -75%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(120deg, transparent, rgba(255,255,255,.75), transparent);
+    transform: skewX(-20deg);
+    animation: brilhoAvaliar 3.5s ease-in-out infinite;
+    pointer-events: none;
+}
+
+.btn-avaliar-flutuante:hover {
+    transform: translateY(-4px) scale(1.03);
+    box-shadow: 0 14px 30px rgba(255, 179, 0, .6);
+}
+
+.btn-avaliar-flutuante:active {
+    transform: translateY(-1px) scale(.99);
+}
+
+.btn-avaliar-flutuante .estrelas {
+    display: inline-flex;
+    gap: 2px;
+    font-size: .8rem;
+}
+
+.btn-avaliar-flutuante .estrelas i {
+    color: #fff;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, .35);
+}
+
+/* acessibilidade: respeita quem desativa animações */
+@media (prefers-reduced-motion: reduce) {
+    .btn-avaliar::before,
+    .btn-avaliar-flutuante::before { animation: none; display: none; }
+    .btn-avaliar:hover,
+    .btn-avaliar-flutuante:hover { transform: none; }
+}
+
+/* ---------- CELULAR: vira um círculo compacto pra não atrapalhar ---------- */
+@media (max-width: 600px) {
+    .btn-avaliar-flutuante {
+        bottom: 16px;
+        left: 16px;
+        width: 56px;
+        height: 56px;
+        padding: 0;
+        justify-content: center;
+        border-radius: 50%;
+    }
+
+    .btn-avaliar-flutuante .estrelas { display: none; }
+
+    /* troca o texto por uma estrela só */
+    .btn-avaliar-flutuante span:not(.estrelas) {
+        font-size: 0;
+    }
+    .btn-avaliar-flutuante span:not(.estrelas)::before {
+        content: "\f005";              /* código unicode da estrela no Font Awesome */
+        font-family: "Font Awesome 6 Free";
+        font-weight: 900;
+        font-size: 1.15rem;
+        color: #141414;
+    }
+}
+
 /* ===================== CARDS SOBRE ===================== */
 .card-sobre { background-color: var(--cor-card); border: 2px solid transparent; border-radius: 10px; padding: 30px; width: 250px; transition: border-color 0.3s; display: flex; flex-direction: column; align-items: center; text-align: center; }
 .card-sobre h1 i { color: var(--cor-secundaria); }
