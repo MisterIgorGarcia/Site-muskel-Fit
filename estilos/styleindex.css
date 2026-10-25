@@ -128,6 +128,19 @@
     .btn-avaliar .estrelas { font-size: .8rem; }
 }
 
+.btn-avaliar-flutuante {
+    position: fixed;
+    bottom: 24px;
+    left: 24px;
+    z-index: 999;
+    padding: 12px 20px;
+    font-size: .9rem;
+    border-radius: 999px;
+}
+@media (max-width: 600px) {
+    .btn-avaliar-flutuante { padding: 10px 16px; font-size: .82rem; bottom: 16px; left: 16px; }
+}
+
 /* ===================== CARDS SOBRE ===================== */
 .card-sobre { background-color: var(--cor-card); border: 2px solid transparent; border-radius: 10px; padding: 30px; width: 250px; transition: border-color 0.3s; display: flex; flex-direction: column; align-items: center; text-align: center; }
 .card-sobre h1 i { color: var(--cor-secundaria); }
