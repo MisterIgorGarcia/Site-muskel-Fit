@@ -3,12 +3,14 @@
 import { iniciarBadge } from './script/badge.js';
 import { iniciarMenu } from './script/menu.js';
 import { iniciarCronometro } from './script/cronometro.js';
+import { iniciarAvaliacao } from './script/avaliacao.js';
 import './script/externos.js';
 
 function init() {
     iniciarBadge();
     iniciarMenu();
     iniciarCronometro();
+    iniciarAvaliacao();
 }
 
 if (document.readyState === 'loading') { //if para impedir que o JS rode antes do HTML carregar
