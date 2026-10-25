@@ -211,17 +211,20 @@
     .btn-avaliar-flutuante:hover { transform: none; }
 }
 
-/* ---------- CELULAR: vira um "pill" compacto com 1 estrela + texto ---------- */
+/* ---------- CELULAR: Botão vira pill ---------- */
 @media (max-width: 600px) {
     .btn-avaliar-flutuante {
         bottom: 14px;
-        left: 14px;
-        width: auto;          /* volta a ser pill, não círculo */
+        left: 0;
+        right: 0;
+        margin-left: auto;
+        margin-right: auto;
+        width: fit-content;   /* não estica, fica do tamanho do conteúdo */
         height: auto;
         padding: 8px 13px;
         gap: 6px;
         border-radius: 999px;
-        font-size: .72rem;    /* fonte pequena */
+        font-size: .72rem;
         letter-spacing: .2px;
     }
 
@@ -235,7 +238,7 @@
         display: none;
     }
 
-    /* cancela o hack antigo que trocava o texto por estrela */
+    /* garante que o texto "Nos avalie" apareça */
     .btn-avaliar-flutuante .btn-avaliar-flutuante-texto {
         font-size: inherit;
         font-weight: 800;
