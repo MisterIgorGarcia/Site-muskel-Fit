@@ -225,6 +225,15 @@
     transform: none;
 }
 
+/* Aumenta o tamanho apenas dos ícones dentro dos botões de exportação */
+.btn-export i.ti {
+    font-size: 1.2rem; 
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+}
+
 /* ===================== RESPONSIVIDADE DO PAINEL ADMIN ===================== */
 @media (max-width: 768px) {
     .admin-body #cabecalho { flex-direction: column !important; align-items: flex-start !important; gap: 15px; padding: 15px 20px !important; }
