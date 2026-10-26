@@ -17,21 +17,6 @@ function formatarTelefone(valor) {
     return nums.replace(/(\d{2})(\d{5})(\d{0,4})/, '($1) $2-$3').trim();
 }
 
-function validarNascimento(dataStr) {
-    if (!dataStr) return 'Informe sua data de nascimento.';
-    const data = new Date(dataStr);
-    if (isNaN(data)) return 'Data inválida.';
-
-    const hoje = new Date();
-    let idade = hoje.getFullYear() - data.getFullYear();
-    const m = hoje.getMonth() - data.getMonth();
-    if (m < 0 || (m === 0 && hoje.getDate() < data.getDate())) idade--;
-
-    if (idade < 12)  return 'É necessário ter pelo menos 12 anos.';
-    if (idade > 120) return 'Data de nascimento inválida.';
-    return null;
-}
-
 function definirCarregando(carregando) {
     const botao = document.querySelector('#form-matricula button[type="submit"]');
     if (!botao) return;
@@ -39,6 +24,7 @@ function definirCarregando(carregando) {
     botao.disabled = carregando;
     botao.innerHTML = carregando ? 'Aguarde...' : botao.dataset.textoOriginal;
 }
+
 window.addEventListener('pageshow', (event) => {
     if (event.persisted) {
         if (contadorInterval) clearInterval(contadorInterval);
@@ -180,14 +166,13 @@ async function redirecionarParaPagamento(dados) {
     }
 
     try {
-        // 1️⃣ SALVAR NO BANCO DE DADOS PRIMEIRO
+        // 1️⃣ SALVAR NO BANCO DE DADOS PRIMEIRO (Data de nascimento removida)
         try {
             const respostaBanco = await fetch('/api/registro-banco', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     nome: dados.nome,
-                    data_nascimento: dados.nascimento, // Adaptado para a coluna do banco
                     celular: dados.celular,
                     unidade: dados.unidade,
                     modalidade: dados.modalidade,
@@ -236,7 +221,7 @@ async function redirecionarParaPagamento(dados) {
             
             botao.innerHTML = `
                 <span style="font-size: 0.8rem; font-weight: normal; text-align: center; margin-bottom: 6px;">
-                    ⚠️ Após pagar o PIX, clique em <strong>"Voltar para Muskel Fit Academia"</strong> na tela do Mercado Pago para finalizar a matricula!
+                    ⚠️ Após pagar o PIX, clique em <strong>"Voltar para Muskel Fit Academia"</strong> na tela do Mercado Pago para finalizar o pagamento da mensalidade!
                 </span>
                 <span style="font-weight: bold; font-size: 1.1rem; display: flex; align-items: center; gap: 8px;">
                     <i class="fa-solid fa-hourglass-half fa-spin"></i> Redirecionando em <span id="timer-btn">${segundos}</span>s...
@@ -328,15 +313,11 @@ async function iniciarFormulario() {
 
         const fd = new FormData(e.target);
         const nome       = (fd.get('nome') || '').trim();
-        const nascimento = fd.get('nascimento');
         const celular    = (fd.get('celular') || '').trim();
         const unidade    = fd.get('unidade');
         const modalidade = fd.get('modalidade');
         const planoId    = fd.get('plano');
         const pagamento  = fd.get('pagamento');
-
-        const erroNasc = validarNascimento(nascimento);
-        if (erroNasc) { alert(erroNasc); return; }
 
         if (!nome || !celular || !planoId || !pagamento) {
             alert('Preencha todos os campos obrigatórios (*).');
@@ -367,7 +348,7 @@ async function iniciarFormulario() {
         }
 
         const dados = {
-            nome, nascimento, celular,
+            nome, celular,
             unidade,
             modalidade,
             planoId:     planoObj.id,
@@ -463,7 +444,7 @@ function tratarRetornoMercadoPago(status) {
 
         if (avisoEl) {
             avisoEl.innerHTML = `
-            <strong>Pronto, Matricula concluida !</strong><br>
+            <strong>Pronto, Mensalidade paga!</strong><br>
                 </br>Agora é só ir até a recepção da academia. Seja bem vindo !<br>
             <i class="fa-solid fa-dumbbell"></i> Bora treinar <i class="fa-solid fa-dumbbell"></i>
             `;
@@ -472,20 +453,16 @@ function tratarRetornoMercadoPago(status) {
 
     tituloEl.innerHTML = `<i class="${icone}"></i> ${titulo}`;
 
-    const [a, m, d] = dados.nascimento.split('-');
-    const dataFmt = `${d}/${m}/${a}`;
-
     const msg =
-        `*MATRÍCULA — Muskel Fit*\n\n` +
+        `*PAGAMENTO DE MENSALIDADE — Muskel Fit*\n\n` +
         `*Nome:* ${dados.nome}\n` +
-        `*Nascimento:* ${dataFmt}\n` +
         `*Celular:* ${dados.celular}\n` +
         `*Unidade:* ${dados.unidade}\n` +
         `*Modalidade:* ${dados.modalidade}\n` +
         `*Plano:* ${dados.planoTitulo}\n` +
         `*Pagamento:* ${dados.pagamento}\n` +
         `*Status:* ${textoStatus}\n\n` +
-        `Aguardo contato para confirmar a matrícula!`;
+        `Aguardo contato para confirmar o pagamento da mensalidade!`;
 
     painelConfirmacao.hidden = false;
     painelConfirmacao.scrollIntoView({ behavior: 'smooth', block: 'start' });
