@@ -166,7 +166,7 @@ async function redirecionarParaPagamento(dados) {
     }
 
     try {
-        // 1️⃣ SALVAR NO BANCO DE DADOS PRIMEIRO (Data de nascimento removida)
+        // 1️⃣ SALVAR NO BANCO DE DADOS PRIMEIRO
         try {
             const respostaBanco = await fetch('/api/registro-banco', {
                 method: 'POST',
