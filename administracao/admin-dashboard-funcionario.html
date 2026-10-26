@@ -60,7 +60,7 @@
                     <button onclick="exportarCSV()" class="btn-export" style="background-color: #3b82f6; color: #fff;">
                         <i class="ti ti-file-type-csv"></i> Exportar CSV
                     </button>
-                    
+
                     <button id="btn-atualizar" class="btn-amarelo" onclick="carregarDados(true)">
                         <i class="fa-solid fa-rotate-right"></i> Atualizar Dados
                     </button>
@@ -86,7 +86,7 @@
                 <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px;">
                     <select id="filtro-origem" class="admin-select" onchange="atualizarGraficos()">
                         <option value="todos">Visão Geral (Tudo)</option>
-                        <option value="matriculas">Somente Matrículas</option>
+                        <option value="matriculas">Somente Mensalidades</option>
                         <option value="prematriculas">Somente Pré-Matrículas</option>
                     </select>
 
@@ -120,7 +120,7 @@
             </div>
 
             <div class="admin-tabelas">
-                <h3>Últimas Matrículas</h3>
+                <h3>Últimas Mensalidades</h3>
                 <div class="tabela-responsiva">
                     <table class="tabela-admin">
                         <thead>
