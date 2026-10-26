@@ -24,7 +24,6 @@ export default async function handler(req, res) {
             .insert([
                 {
                     nome,
-                    data_nascimento,
                     celular,
                     unidade,
                     modalidade,
