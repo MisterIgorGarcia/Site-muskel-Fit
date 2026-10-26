@@ -1,21 +1,38 @@
-// MÓDULO: esconde o botão flutuante de avaliação quando o footer está visível
-// Adiciona a classe .oculto (que já tem display: none !important no CSS)
+// MÓDULO: esconde o botão flutuante de avaliação quando
+// o footer OU o botão principal da seção #avaliacao estão visíveis.
+// Usa a classe .oculto (que já tem display: none !important no CSS).
 
 export function iniciarOcultarAvaliacao() {
-    const botao = document.querySelector('.btn-avaliar-flutuante');
-    const footer = document.querySelector('footer#contato');
-    if (!botao || !footer) return;
+    const botaoFlutuante = document.querySelector('.btn-avaliar-flutuante');
 
-    // IntersectionObserver: dispara quando o footer entra/sai da viewport
+    // Elementos que, ao aparecerem na tela, escondem o botão flutuante
+    const alvos = [
+        document.querySelector('footer#contato'),          // rodapé
+        document.querySelector('#avaliacao .btn-avaliar'), // botão "Avalie já a MUSKEL FIT"
+    ].filter(Boolean); // remove nulls se algum não existir
+
+    if (!botaoFlutuante || alvos.length === 0) return;
+
+    // Conjunto com os alvos que estão visíveis no momento
+    const visiveis = new Set();
+
     const observer = new IntersectionObserver(
-        ([entry]) => {
-            botao.classList.toggle('oculto', entry.isIntersecting);
+        (entries) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                    visiveis.add(entry.target);
+                } else {
+                    visiveis.delete(entry.target);
+                }
+            });
+
+            // Se QUALQUER alvo estiver visível, esconde o flutuante
+            botaoFlutuante.classList.toggle('oculto', visiveis.size > 0);
         },
         {
-            // Considera "visível" quando pelo menos 10% do footer aparece
-            threshold: 0.1,
+            threshold: 0.1, // considera "visível" quando 10% do elemento aparece
         }
     );
 
-    observer.observe(footer);
+    alvos.forEach((alvo) => observer.observe(alvo));
 }
