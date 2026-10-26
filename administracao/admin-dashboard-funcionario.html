@@ -51,9 +51,16 @@
             <div class="admin-header-titulo">
                 <h2>Lista de Alunos</h2>
                 <div style="display: flex; gap: 10px;">
-                    <button onclick="exportarExcel()" class="btn-amarelo" style="background-color: #22c55e; color: #fff;">
-                        <i class="fa-solid fa-file-excel"></i> Exportar Excel
+                    <!-- Botão Excel com Tabler Icons -->
+                    <button onclick="exportarExcel()" class="btn-export" style="background-color: #22c55e; color: #fff;">
+                        <i class="ti ti-file-type-xls"></i> Exportar Excel
                     </button>
+
+                    <!-- Botão CSV com Tabler Icons -->
+                    <button onclick="exportarCSV()" class="btn-export" style="background-color: #3b82f6; color: #fff;">
+                        <i class="ti ti-file-type-csv"></i> Exportar CSV
+                    </button>
+                    
                     <button id="btn-atualizar" class="btn-amarelo" onclick="carregarDados(true)">
                         <i class="fa-solid fa-rotate-right"></i> Atualizar Dados
                     </button>
@@ -154,5 +161,6 @@
 
     <script src="../script/admin-dashboard.js"></script>
     <script src="../script/export-excel.js"></script>
+    <script src="../script/export-csv.js"></script>
 </body>
 </html>
