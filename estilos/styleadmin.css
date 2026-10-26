@@ -181,6 +181,50 @@
     transform: scale(1.05);
 }
 
+/* ==========================================================
+   BOTÕES DE EXPORTAÇÃO (Excel / CSV)
+   Só formato/tamanho — cores definidas inline no HTML
+   ========================================================== */
+
+.btn-export {
+    padding: 8px 16px;
+    font-size: 0.82rem;
+    font-weight: bold;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s, filter 0.2s;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    text-align: center;
+    text-decoration: none;
+    font-family: inherit;
+    line-height: 1.1;
+    box-sizing: border-box;
+}
+
+.btn-export:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+    filter: brightness(1.1);   /* clareia qualquer cor inline */
+}
+
+.btn-export:active {
+    transform: scale(0.98);
+}
+
+.btn-export i {
+    font-size: 0.85rem;
+}
+
+.btn-export:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
 /* ===================== RESPONSIVIDADE DO PAINEL ADMIN ===================== */
 @media (max-width: 768px) {
     .admin-body #cabecalho { flex-direction: column !important; align-items: flex-start !important; gap: 15px; padding: 15px 20px !important; }
@@ -189,7 +233,7 @@
 
     .admin-header-titulo { flex-direction: column !important; align-items: stretch !important; gap: 15px; }
     .admin-header-titulo > div { flex-direction: column !important; gap: 10px !important; width: 100%; }
-    .admin-header-titulo .btn-amarelo { width: 100%; justify-content: center; padding: 12px !important; }
+    .admin-header-titulo .btn-amarelo, .admin-header-titulo .btn-export { width: 100%; justify-content: center; padding: 10px !important; }
 
     .admin-card div[style*="justify-content: space-between;"] { flex-direction: column !important; align-items: stretch !important; }
     .admin-card div[style*="flex-wrap: wrap;"] { flex-direction: column !important; width: 100%; gap: 10px !important; }
