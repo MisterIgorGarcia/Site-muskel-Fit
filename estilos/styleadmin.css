@@ -227,7 +227,7 @@
 
 /* Aumenta o tamanho apenas dos ícones dentro dos botões de exportação */
 .btn-export i.ti {
-    font-size: 1.2rem; 
+    font-size: 1.5rem; 
     display: inline-flex;
     align-items: center;
     justify-content: center;
