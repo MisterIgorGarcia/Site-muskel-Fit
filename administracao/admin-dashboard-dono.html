@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="../estilos/style.css">
     <link rel="stylesheet" href="../estilos/styleadmin.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
     <!-- BIBLIOTECA DO CHARTS -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- BIBLIOTECA PARA GERAR EXCELL -->
@@ -45,11 +46,14 @@
             <div class="admin-header-titulo">
                 <h2>Visão Geral da Academia</h2>
                  <div style="display: flex; gap: 10px;">
+                    <!-- Botão Excel com Tabler Icons -->
                     <button onclick="exportarExcel()" class="btn-export" style="background-color: #22c55e; color: #fff;">
-                        <i class="fa-solid fa-file-excel"></i> Exportar Excel
+                        <i class="ti ti-file-type-xls"></i> Exportar Excel
                     </button>
+
+                    <!-- Botão CSV com Tabler Icons -->
                     <button onclick="exportarCSV()" class="btn-export" style="background-color: #3b82f6; color: #fff;">
-                        <i class="fa-solid fa-file-excel"></i> Exportar CSV
+                        <i class="ti ti-file-type-csv"></i> Exportar CSV
                     </button>
                     
                     <button id="btn-atualizar" class="btn-amarelo" onclick="carregarDados(true)">
