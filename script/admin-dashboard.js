@@ -97,7 +97,7 @@ function renderizarTabelaMatriculas(dados) {
                     <td>${item.unidade}</td>
                     <td>${item.modalidade}</td>
                     <td>${item.plano}</td>
-                    <td style="text-transform: capitalize;">${item.pagamento || '-'}
+                    <td style="text-transform: capitalize;">${item.pagamento || '-'}</td>
                     ${colunaValor}
                     ${colunaAcao}
                 </tr>
