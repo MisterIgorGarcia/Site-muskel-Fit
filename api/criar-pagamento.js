@@ -81,6 +81,18 @@ module.exports = async function handler(req, res) {
                     failure: `${paginaRetorno}?status=failure`
                 },
                 auto_return: 'approved',
+                
+                //Envia os dados do plano para o Webhook montar o e-mail
+                metadata: {
+                    unidade: unidade,
+                    modalidade: modalidade,
+                    plano: plano.nome,
+                    tipo: tipoNormalizado
+                },
+
+                // Avisa o Mercado Pago para enviar a notificação para a sua API
+                notification_url: 'https://muskelfit-academia.vercel.app/api/webhook-mercadopago',
+                
                 payment_methods: {
                     excluded_payment_types: TIPOS_ESCONDIVEIS
                         .filter(t => t !== tipoEscolhido)
