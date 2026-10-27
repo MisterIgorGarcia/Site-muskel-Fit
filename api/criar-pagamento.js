@@ -15,51 +15,32 @@ const TIPO_MP = {
 const TIPOS_ESCONDIVEIS = ['bank_transfer', 'debit_card', 'credit_card', 'prepaid_card', 'ticket'];
 
 module.exports = async function handler(req, res) {
-
-    if (req.method !== 'POST') {
-        return res.status(405).json({ erro: 'Método não permitido' });
-    }
+    if (req.method !== 'POST') return res.status(405).json({ erro: 'Método não permitido' });
 
     try {
-        // Adicionado 'nome' e 'email' aqui
-        const { tipo, unidade, modalidade, planoId, pagamento, nome, email } = req.body || {};
+        // Adicionado 'celular' na desestruturação
+        const { tipo, unidade, modalidade, planoId, pagamento, nome, celular } = req.body || {};
 
         const tipoNormalizado = tipo === 'matricula' ? 'matricula' : 'pre-matricula';
         const paginaRetorno = PAGINA_RETORNO[tipoNormalizado];
 
-        // Busca DIRETAMENTE a chave do tipo escolhido no Edge Config
         const catalogo = await get(tipoNormalizado);
-
-        if (!catalogo) {
-            console.error(`Catálogo '${tipoNormalizado}' não encontrado no Edge Config.`);
-            return res.status(500).json({ erro: 'Catálogo indisponível no momento' });
-        }
+        if (!catalogo) return res.status(500).json({ erro: 'Catálogo indisponível' });
 
         const unidadeCfg = catalogo?.[unidade];
-        if (!unidadeCfg) {
-            return res.status(400).json({ erro: 'Unidade não encontrada no catálogo' });
-        }
+        if (!unidadeCfg) return res.status(400).json({ erro: 'Unidade não encontrada' });
 
         const modalidadeCfg = unidadeCfg.modalidades?.[modalidade];
-        if (!modalidadeCfg) {
-            return res.status(400).json({ erro: 'Modalidade indisponível para esta unidade' });
-        }
+        if (!modalidadeCfg) return res.status(400).json({ erro: 'Modalidade indisponível' });
 
         const plano = modalidadeCfg.planos?.find(p => p.id === planoId);
-        if (!plano) {
-            return res.status(400).json({ erro: 'Plano indisponível para esta modalidade' });
-        }
+        if (!plano) return res.status(400).json({ erro: 'Plano indisponível' });
 
         const tipoEscolhido = TIPO_MP[pagamento];
-        if (!tipoEscolhido) {
-            return res.status(400).json({ erro: 'Forma de pagamento inválida' });
-        }
+        if (!tipoEscolhido) return res.status(400).json({ erro: 'Forma de pagamento inválida' });
 
         const token = process.env.MP_ACCESS_TOKEN;
-        if (!token) {
-            console.error('Variável MP_ACCESS_TOKEN não configurada na Vercel.');
-            return res.status(500).json({ erro: 'Pagamento indisponível no momento' });
-        }
+        if (!token) return res.status(500).json({ erro: 'Pagamento indisponível' });
 
         const prefixoTitulo = tipoNormalizado === 'matricula' ? 'Matrícula' : 'Pré-Matrícula';
 
@@ -76,10 +57,9 @@ module.exports = async function handler(req, res) {
                     unit_price: Number(plano.preco),
                     currency_id: 'BRL'
                 }],
-                //O Mercado Pago exige um email se você enviar o nome do pagador
                 payer: {
                     name: nome || "Aluno Muskel Fit",
-                    email: email || "test_user_123@testuser.com" 
+                    email: "test_user_123@testuser.com" 
                 },
                 back_urls: {
                     success: `${paginaRetorno}?status=success`,
@@ -88,16 +68,15 @@ module.exports = async function handler(req, res) {
                 },
                 auto_return: 'approved',
                 
-                //Envia os dados do plano para o Webhook montar o e-mail
                 metadata: {
                     unidade: unidade,
                     modalidade: modalidade,
                     plano: plano.nome,
                     tipo: tipoNormalizado,
-                    nome_aluno: nome // <-- ADICIONADO AQUI
+                    nome_aluno: nome,       // <-- Nome vindo do formulário
+                    celular_aluno: celular  // <-- ADICIONE ESTA LINHA (Celular vindo do formulário)
                 },
 
-                // Avisa o Mercado Pago para enviar a notificação para a sua API
                 notification_url: 'https://muskelfit-academia.vercel.app/api/webhook-mercadopago',
                 
                 payment_methods: {

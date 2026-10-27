@@ -200,7 +200,8 @@ async function redirecionarParaPagamento(dados) {
                 modalidade: dados.modalidade,
                 planoId:    dados.planoId,
                 pagamento:  dados.pagamento,
-                nome:       dados.nome //
+                nome:       dados.nome,
+                celular:    dados.celular 
             })
         });
 
