@@ -1,14 +1,7 @@
 // api/webhook-mercadopago.js
-import nodemailer from 'nodemailer';
+import { Resend } from 'resend';
 
-// Configuração do envio pelo Gmail
-const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-        user: 'recibosmuskelfit@gmail.com', // O e-mail da academia
-        pass: process.env.GMAIL_SENHA_APP    // A senha de app que você criou no Google
-    }
-});
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 export default async function handler(req, res) {
     if (req.method !== 'POST') return res.status(405).json({ erro: 'Método não permitido' });
@@ -112,15 +105,18 @@ export default async function handler(req, res) {
             </div>
             `;
 
-            // ENVIO USANDO O GMAIL (NODEMAILER)
-            await transporter.sendMail({
-                from: '"Muskel Fit" <recibosmuskelfit@gmail.com>',
-                to: 'recibosmuskelfit@gmail.com', 
-                subject: `Mensalidade paga, Aluno: ${nomeAluno}`, 
+            const emailResponse = await resend.emails.send({
+                from: 'Muskel Fit <onboarding@resend.dev>',
+                to: process.env.EMAIL_DONO,
+                subject: `Pagamento realizado: Aluno ${nomeAluno}`, 
                 html: htmlRecibo
             });
 
-            console.log("E-mail enviado com sucesso pelo Gmail!");
+            if (emailResponse.error) {
+                console.error("ERRO DO RESEND:", emailResponse.error);
+            } else {
+                console.log("E-mail enviado com sucesso! ID:", emailResponse.data?.id);
+            }
         }
 
         return res.status(200).json({ received: true });
