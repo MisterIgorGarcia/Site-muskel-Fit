@@ -1,7 +1,14 @@
 // api/webhook-mercadopago.js
-import { Resend } from 'resend';
+import nodemailer from 'nodemailer';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Configuração do envio pelo Gmail
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: 'recibosmuskelfit@gmail.com', // O e-mail da academia
+        pass: process.env.GMAIL_SENHA_APP    // A senha de app que você criou no Google
+    }
+});
 
 export default async function handler(req, res) {
     if (req.method !== 'POST') return res.status(405).json({ erro: 'Método não permitido' });
@@ -35,14 +42,12 @@ export default async function handler(req, res) {
             const dataFormatada = dataObj.toLocaleDateString('pt-BR');
             const horaFormatada = dataObj.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
 
-            // Pega os metadados
             const meta = payment.metadata || {};
             const unidade = meta.unidade || 'Não informada';
             const modalidade = meta.modalidade || 'Não informada';
             const plano = meta.plano || 'Não informado';
             const tipo = meta.tipo === 'matricula' ? 'Matrícula' : 'Pré-Matrícula';
             
-            // Pega Nome e Celular EXATOS do formulário
             const nomeAluno = meta.nome_aluno || 'Aluno(a)';
             const celularAluno = meta.celular_aluno || 'Não informado';
 
@@ -107,20 +112,15 @@ export default async function handler(req, res) {
             </div>
             `;
 
-            // Captura a resposta do Resend para verificar se deu erro
-            const emailResponse = await resend.emails.send({
-                from: 'Muskel Fit <onboarding@resend.dev>',
-                to: process.env.EMAIL_DONO,
-                subject: `Pagamento de Mensalidade, Aluno: ${nomeAluno}`, 
+            // ENVIO USANDO O GMAIL (NODEMAILER)
+            await transporter.sendMail({
+                from: '"Muskel Fit" <recibosmuskelfit@gmail.com>',
+                to: 'recibosmuskelfit@gmail.com', 
+                subject: `Mensalidade paga, Aluno: ${nomeAluno}`, 
                 html: htmlRecibo
             });
 
-            // RAIO-X DO RESEND
-            if (emailResponse.error) {
-                console.error("ERRO DO RESEND:", emailResponse.error);
-            } else {
-                console.log("E-mail enviado com sucesso! ID:", emailResponse.data?.id);
-            }
+            console.log("E-mail enviado com sucesso pelo Gmail!");
         }
 
         return res.status(200).json({ received: true });
