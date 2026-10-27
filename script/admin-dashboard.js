@@ -103,8 +103,8 @@ function renderizarTabelaMatriculas(dados) {
                     <td>${item.unidade}</td>
                     <td>${item.modalidade}</td>
                     <td>${item.plano}</td>
-                    <td>${pagamentoFormatado}</td>
                     ${colunaValor}
+                    <td>${pagamentoFormatado}</td>
                     ${colunaAcao}
                 </tr>
             `;
@@ -139,8 +139,8 @@ function renderizarTabelaPrematriculas(dados) {
                     <td>${item.unidade}</td>
                     <td>${item.modalidade}</td>
                     <td>${item.plano}</td>
-                    <td>${pagamentoFormatado}</td>
                     ${colunaValor}
+                    <td>${pagamentoFormatado}</td>
                     ${colunaAcao}
                 </tr>
             `;
