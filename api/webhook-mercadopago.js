@@ -111,7 +111,7 @@ export default async function handler(req, res) {
             const emailResponse = await resend.emails.send({
                 from: 'Muskel Fit <onboarding@resend.dev>',
                 to: process.env.EMAIL_DONO,
-                subject: `Pagamento realizado: Aluno ${nomeAluno}`, 
+                subject: `Pagamento de Mensalidade, Aluno: ${nomeAluno}`, 
                 html: htmlRecibo
             });
 
