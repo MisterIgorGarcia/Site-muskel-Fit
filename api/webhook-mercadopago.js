@@ -24,7 +24,10 @@ export default async function handler(req, res) {
                 'pix': 'PIX',
                 'credit_card': 'Cartão de Crédito',
                 'debit_card': 'Cartão de Débito',
-                'bolbradesco': 'Boleto'
+                'bolbradesco': 'Boleto',
+                'account_money': 'Saldo em Conta (Mercado Pago)',
+                'ticket': 'Boleto',
+                'atm': 'Caixa Eletrônico'
             };
             const metodoPagamento = metodos[payment.payment_method_id] || payment.payment_method_id.toUpperCase();
 
