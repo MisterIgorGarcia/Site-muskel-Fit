@@ -80,12 +80,18 @@ function renderizarTabelaMatriculas(dados) {
     tbody.innerHTML = '';
 
     if (dados.length === 0) {
-        const colunas = cargo === 'dono' ? 8 : 7; 
+        // Dono tem 9 colunas (Data, Nome, Celular, Unidade, Modalidade, Plano, Pagamento, Valor, Ações)
+        // Funcionário tem 8 colunas (Data, Nome, Celular, Unidade, Modalidade, Plano, Pagamento, Ações)
+        const colunas = cargo === 'dono' ? 9 : 8; 
         tbody.innerHTML = `<tr><td colspan="${colunas}" style="text-align:center;">Nenhuma matrícula registrada.</td></tr>`;
     } else {
         dados.forEach(item => {
             const data = new Date(item.created_at).toLocaleDateString('pt-BR');
             const valor = Number(item.preco) || 0;
+            
+            // Formata o pagamento (ex: "pix" -> "Pix")
+            const pagamentoFormatado = item.pagamento ? item.pagamento.charAt(0).toUpperCase() + item.pagamento.slice(1).toLowerCase() : '-';
+            
             const colunaValor = cargo === 'dono' ? `<td class="destaque-valor">R$ ${valor.toFixed(2).replace('.', ',')}</td>` : '';
             const colunaAcao = cargo === 'dono' ? `<td><button onclick="removerRegistro(${item.id}, 'matricula')" style="background: transparent; border: none; color: #ef4444; cursor: pointer;" title="Excluir"><i class="fa-solid fa-trash"></i></button></td>` : '';
 
@@ -97,7 +103,7 @@ function renderizarTabelaMatriculas(dados) {
                     <td>${item.unidade}</td>
                     <td>${item.modalidade}</td>
                     <td>${item.plano}</td>
-                    <td style="text-transform: capitalize;">${item.pagamento || '-'}</td>
+                    <td>${pagamentoFormatado}</td>
                     ${colunaValor}
                     ${colunaAcao}
                 </tr>
@@ -113,12 +119,15 @@ function renderizarTabelaPrematriculas(dados) {
     tbody.innerHTML = '';
 
     if (dados.length === 0) {
-        const colunas = cargo === 'dono' ? 8 : 7; 
+        const colunas = cargo === 'dono' ? 9 : 8; 
         tbody.innerHTML = `<tr><td colspan="${colunas}" style="text-align:center;">Nenhuma pré-matrícula registrada.</td></tr>`;
     } else {
         dados.forEach(item => {
             const data = new Date(item.created_at).toLocaleDateString('pt-BR');
             const valor = Number(item.preco) || 0;
+            
+            const pagamentoFormatado = item.pagamento ? item.pagamento.charAt(0).toUpperCase() + item.pagamento.slice(1).toLowerCase() : '-';
+
             const colunaValor = cargo === 'dono' ? `<td class="destaque-valor">R$ ${valor.toFixed(2).replace('.', ',')}</td>` : '';
             const colunaAcao = cargo === 'dono' ? `<td><button onclick="removerRegistro(${item.id}, 'prematricula')" style="background: transparent; border: none; color: #ef4444; cursor: pointer;" title="Excluir"><i class="fa-solid fa-trash"></i></button></td>` : '';
 
@@ -130,6 +139,7 @@ function renderizarTabelaPrematriculas(dados) {
                     <td>${item.unidade}</td>
                     <td>${item.modalidade}</td>
                     <td>${item.plano}</td>
+                    <td>${pagamentoFormatado}</td>
                     ${colunaValor}
                     ${colunaAcao}
                 </tr>
@@ -251,14 +261,11 @@ function controlarLoadingGrafico(containerId, status, mensagemErro = '') {
     const container = document.getElementById(containerId);
     if (!container) return;
 
-    // Remove o overlay existente, se houver
     const overlayExistente = container.querySelector('.chart-status-overlay');
     if (overlayExistente) overlayExistente.remove();
 
-    // Se for para esconder (status === 'hide'), para por aqui
     if (status === 'hide') return;
 
-    // Cria o novo overlay
     const overlay = document.createElement('div');
     overlay.className = `chart-status-overlay ${status === 'error' ? 'erro' : ''}`;
 
@@ -348,7 +355,7 @@ async function atualizarGraficoPizza() {
 
     } catch (erro) {
         console.error('Erro Gráfico Pizza:', erro);
-        dadosCarregados = false; // Limpa o cache para que o botão "Tentar Novamente" funcione
+        dadosCarregados = false;
         controlarLoadingGrafico('div-grafico-composicao', 'error', 'Não foi possível carregar o gráfico.');
     }
 }
@@ -398,7 +405,7 @@ async function atualizarGraficoHistorico() {
 
     } catch (erro) {
         console.error('Erro Gráfico Histórico:', erro);
-        dadosCarregados = false; // Limpa o cache
+        dadosCarregados = false;
         controlarLoadingGrafico('div-grafico-historico', 'error', 'Não foi possível carregar o histórico.');
     }
 }
@@ -415,7 +422,7 @@ async function removerRegistro(id, tipo) {
         });
         if (!resposta.ok) throw new Error('Erro ao excluir registro');
         
-        dadosCarregados = false; // Limpa o cache para atualizar os gráficos depois
+        dadosCarregados = false; 
         carregarDados(true); 
     } catch (erro) {
         alert(erro.message);
