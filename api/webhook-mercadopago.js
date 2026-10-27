@@ -41,7 +41,7 @@ export default async function handler(req, res) {
             
             // Pega Nome e Celular EXATOS do formulário
             const nomeAluno = meta.nome_aluno || 'Aluno(a)';
-            const celularAluno = meta.celular_aluno || 'Não informado'; // <-- NOVO
+            const celularAluno = meta.celular_aluno || 'Não informado';
 
             const htmlRecibo = `
             <div style="background-color: #f4f4f4; padding: 20px; font-family: Arial, Helvetica, sans-serif;">
@@ -104,12 +104,20 @@ export default async function handler(req, res) {
             </div>
             `;
 
-            await resend.emails.send({
+            // Captura a resposta do Resend para verificar se deu erro
+            const emailResponse = await resend.emails.send({
                 from: 'Muskel Fit <onboarding@resend.dev>',
                 to: process.env.EMAIL_DONO,
-                subject: `Pagamento de mensalidade, Aluno: ${nomeAluno}`, 
+                subject: `Pagamento realizado: Aluno ${nomeAluno}`, 
                 html: htmlRecibo
             });
+
+            // RAIO-X DO RESEND
+            if (emailResponse.error) {
+                console.error("ERRO DO RESEND:", emailResponse.error);
+            } else {
+                console.log("E-mail enviado com sucesso! ID:", emailResponse.data?.id);
+            }
         }
 
         return res.status(200).json({ received: true });

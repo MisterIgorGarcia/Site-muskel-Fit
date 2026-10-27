@@ -3,7 +3,7 @@ import { createClient } from '@supabase/supabase-js';
 
 const supabase = createClient(
     process.env.SUPABASE_URL,
-    process.env.SUPABASE_ANON_KEY
+    process.env.SUPABASE_SECRET_KEY // Use a chave secreta para ignorar o RLS
 );
 
 export default async function handler(req, res) {
@@ -12,27 +12,26 @@ export default async function handler(req, res) {
     }
 
     try {
-        // Recebe os dados do frontend (os nomes batem com as colunas do Supabase)
         const { nome, data_nascimento, celular, unidade, modalidade, plano, preco, pagamento, tipo } = req.body;
 
-        // ✅ Define a tabela correta baseada no tipo
         const tabelaDestino = tipo === 'pre-matricula' ? 'prematriculas' : 'matriculas';
 
-        // Insere no banco de dados na tabela correta
+        // Usa 'upsert' para atualizar se já existir, evitando o erro 23505 (duplicata)
         const { data, error } = await supabase
-            .from(tabelaDestino) // ⬅️ Agora usa a variável em vez do nome fixo
-            .insert([
-                {
-                    nome,
-                    celular,
-                    unidade,
-                    modalidade,
-                    plano,
-                    preco,
-                    pagamento,
-                    tipo
-                }
-            ]);
+            .from(tabelaDestino)
+            .upsert({
+                nome,
+                data_nascimento,
+                celular,
+                unidade,
+                modalidade,
+                plano,
+                preco,
+                pagamento,
+                tipo
+            }, {
+                onConflict: 'nome,celular' // Avisa o Supabase para usar o índice único que criamos
+            });
 
         if (error) {
             console.error('Erro no Supabase:', error);
