@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Política de Privacidade — Muskel Fit</title>
+    <link rel="stylesheet" href="estilos/style.css">
+    <link rel="stylesheet" href="estilos/styleindex.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+    <header id="cabecalho">
+        <h1><span class="spanm">M</span>USKEL <span class="spanfit">FIT</span></h1>
+        <a href="index.html" class="btn-voltar-header"><i class="fa-solid fa-arrow-left"></i> Voltar</a>
+    </header>
+
+    <main class="pagina-legal">
+        <div class="pagina-legal-header">
+            <h1>Política de Privacidade</h1>
+            <p class="pagina-legal-data">Última atualização: <strong>Outubro de 2026</strong></p>
+        </div>
+
+        <div class="pagina-legal-conteudo">
+            <p>A <strong>Muskel Fit Academia</strong> valoriza a sua privacidade. Esta Política de Privacidade descreve como coletamos, usamos e protegemos as informações que você nos fornece ao utilizar nosso site e realizar matrículas ou pagamentos online.</p>
+
+            <h2>1. Coleta de Informações</h2>
+            <p>Coletamos as seguintes informações quando você preenche nosso formulário de matrícula ou pré-matrícula:</p>
+            <ul>
+                <li>Nome completo;</li>
+                <li>Número de celular (WhatsApp);</li>
+                <li>Unidade, modalidade e plano escolhidos.</li>
+            </ul>
+            <p>Os dados de pagamento (como cartão de crédito ou chave PIX) são processados diretamente pelo <strong>Mercado Pago</strong>. Nós não armazenamos os dados do seu cartão em nossos servidores.</p>
+
+            <h2>2. Uso das Informações</h2>
+            <p>Utilizamos suas informações exclusivamente para:</p>
+            <ul>
+                <li>Processar sua matrícula e gerar o pagamento;</li>
+                <li>Entrar em contato via WhatsApp para confirmar dados ou resolver pendências;</li>
+                <li>Enviar recibos e comunicações relacionadas à sua mensalidade.</li>
+            </ul>
+
+            <h2>3. Compartilhamento de Dados</h2>
+            <p>Nós não vendemos, alugamos ou compartilhamos suas informações pessoais com terceiros para fins de marketing. Seus dados são compartilhados apenas com o <strong>Mercado Pago</strong> (para processar o pagamento) e com as ferramentas de banco de dados que utilizamos para gerenciar a academia.</p>
+
+            <h2>4. Segurança</h2>
+            <p>Adotamos medidas de segurança para proteger seus dados contra acessos não autorizados. Nossos sistemas utilizam criptografia e regras de segurança rigorosas.</p>
+
+            <h2>5. Seus Direitos</h2>
+            <p>Você tem o direito de solicitar a exclusão dos seus dados a qualquer momento. Para isso, basta entrar em contato com a recepção da academia ou pelo nosso WhatsApp oficial.</p>
+
+            <div class="pagina-legal-rodape">
+                Ao utilizar nossos serviços, você concorda com esta política.
+            </div>
+        </div>
+    </main>
+</body>
+</html>
