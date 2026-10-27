@@ -185,39 +185,21 @@ async function redirecionarParaPagamento(dados) {
     }
 
     try {
-        // 1️⃣ SALVAR NO BANCO DE DADOS PRIMEIRO
-        try {
-            const respostaBanco = await fetch('/api/registro-banco', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    nome: dados.nome,
-                    data_nascimento: dados.nascimento, 
-                    celular: dados.celular,
-                    unidade: dados.unidade,
-                    modalidade: dados.modalidade,
-                    plano: dados.planoTitulo,
-                    preco: dados.preco,
-                    pagamento: dados.pagamento,
-                    tipo: 'pre-matricula'
-                })
-            });
-            if (!respostaBanco.ok) console.warn('Aviso: Falha ao salvar no banco de dados.');
-        } catch (e) {
-            console.warn('Erro de conexão com o banco:', e);
-        }
-
-        // 2️⃣ CRIAR PAGAMENTO NO MERCADO PAGO
+        // 1️⃣ CRIAR PAGAMENTO NO MERCADO PAGO (A gravação no banco agora é feita pelo Webhook)
         if (botao) botao.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Gerando PIX...`;
 
         const resposta = await fetch('/api/criar-pagamento', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
+                tipo:       'pre-matricula',
                 unidade:    dados.unidade,
                 modalidade: dados.modalidade,
                 planoId:    dados.planoId,
-                pagamento:  dados.pagamento
+                pagamento:  dados.pagamento,
+                nome:       dados.nome,
+                celular:    dados.celular,
+                data_nascimento: dados.nascimento // Enviando a data para o MP
             })
         });
 
@@ -231,7 +213,7 @@ async function redirecionarParaPagamento(dados) {
 
         let segundos = 5;
         
-        // 3️⃣ TRANSFORMA O BOTÃO NO AVISO COM CONTADOR
+        // 2️⃣ TRANSFORMA O BOTÃO NO AVISO COM CONTADOR
         if (botao) {
             botao.style.flexDirection = 'column';
             botao.style.padding = '12px 15px';

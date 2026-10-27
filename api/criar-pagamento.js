@@ -18,8 +18,8 @@ module.exports = async function handler(req, res) {
     if (req.method !== 'POST') return res.status(405).json({ erro: 'Método não permitido' });
 
     try {
-        // Adicionado 'celular' na desestruturação
-        const { tipo, unidade, modalidade, planoId, pagamento, nome, celular } = req.body || {};
+        // Adicionado data_nascimento na desestruturação
+        const { tipo, unidade, modalidade, planoId, pagamento, nome, celular, data_nascimento } = req.body || {};
 
         const tipoNormalizado = tipo === 'matricula' ? 'matricula' : 'pre-matricula';
         const paginaRetorno = PAGINA_RETORNO[tipoNormalizado];
@@ -73,8 +73,9 @@ module.exports = async function handler(req, res) {
                     modalidade: modalidade,
                     plano: plano.nome,
                     tipo: tipoNormalizado,
-                    nome_aluno: nome,       // <-- Nome vindo do formulário
-                    celular_aluno: celular  // <-- ADICIONE ESTA LINHA (Celular vindo do formulário)
+                    nome_aluno: nome,
+                    celular_aluno: celular,
+                    data_nascimento_aluno: data_nascimento
                 },
 
                 notification_url: 'https://muskelfit-academia.vercel.app/api/webhook-mercadopago',

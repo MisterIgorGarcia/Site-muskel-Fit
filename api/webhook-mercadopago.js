@@ -1,7 +1,14 @@
 // api/webhook-mercadopago.js
 import { Resend } from 'resend';
+import { createClient } from '@supabase/supabase-js';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
+
+// Chave secreta para poder gravar no banco ignorando o RLS
+const supabase = createClient(
+    process.env.SUPABASE_URL,
+    process.env.SUPABASE_SECRET_KEY
+);
 
 export default async function handler(req, res) {
     if (req.method !== 'POST') return res.status(405).json({ erro: 'Método não permitido' });
@@ -43,7 +50,36 @@ export default async function handler(req, res) {
             
             const nomeAluno = meta.nome_aluno || 'Aluno(a)';
             const celularAluno = meta.celular_aluno || 'Não informado';
+            const dataNascAluno = meta.data_nascimento_aluno || null;
 
+            // =========================================================
+            // 1. SALVAR NO BANCO DE DADOS (Apenas se o pagamento for aprovado)
+            // =========================================================
+            const tabelaDestino = meta.tipo === 'matricula' ? 'matriculas' : 'prematriculas';
+            
+            const { error: dbError } = await supabase
+                .from(tabelaDestino)
+                .upsert({
+                    nome: nomeAluno,
+                    celular: celularAluno,
+                    data_nascimento: dataNascAluno,
+                    unidade: unidade,
+                    modalidade: modalidade,
+                    plano: plano,
+                    preco: payment.transaction_amount,
+                    pagamento: metodoPagamento,
+                    tipo: meta.tipo
+                }, { onConflict: 'nome,celular' });
+
+            if (dbError) {
+                console.error("Erro ao salvar no banco pelo webhook:", dbError);
+            } else {
+                console.log("Registro salvo no banco com sucesso!");
+            }
+
+            // ==========================================
+            // 2. ENVIAR O E-MAIL (Template HTML Premium)
+            // ==========================================
             const htmlRecibo = `
             <div style="background-color: #f4f4f4; padding: 20px; font-family: Arial, Helvetica, sans-serif;">
                 <div style="max-width: 600px; margin: 0 auto; background-color: #0d0d0d; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
