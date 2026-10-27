@@ -57,24 +57,32 @@ export default async function handler(req, res) {
             // =========================================================
             const tabelaDestino = meta.tipo === 'matricula' ? 'matriculas' : 'prematriculas';
             
+            // Garantindo que os dados estão no formato que o Supabase espera
+            const precoNumerico = Number(payment.transaction_amount) || 0;
+            const dataNascFormatada = (meta.data_nascimento_aluno && meta.data_nascimento_aluno.trim() !== '') 
+                ? meta.data_nascimento_aluno 
+                : null;
+
+            console.log("Tentando salvar no banco:", { nomeAluno, celularAluno, dataNascFormatada, tabelaDestino });
+
             const { error: dbError } = await supabase
                 .from(tabelaDestino)
                 .upsert({
                     nome: nomeAluno,
                     celular: celularAluno,
-                    data_nascimento: dataNascAluno,
+                    data_nascimento: dataNascFormatada,
                     unidade: unidade,
                     modalidade: modalidade,
                     plano: plano,
-                    preco: payment.transaction_amount,
+                    preco: precoNumerico,
                     pagamento: metodoPagamento,
                     tipo: meta.tipo
                 }, { onConflict: 'nome,celular' });
 
             if (dbError) {
-                console.error("Erro ao salvar no banco pelo webhook:", dbError);
+                console.error("🚨 ERRO AO SALVAR NO BANCO:", dbError);
             } else {
-                console.log("Registro salvo no banco com sucesso!");
+                console.log("✅ Registro salvo no banco com sucesso!");
             }
 
             // ==========================================
