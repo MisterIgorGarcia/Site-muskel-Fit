@@ -56,28 +56,30 @@ export default async function handler(req, res) {
             // 1. SALVAR NO BANCO DE DADOS (Apenas se o pagamento for aprovado)
             // =========================================================
             const tabelaDestino = meta.tipo === 'matricula' ? 'matriculas' : 'prematriculas';
-            
-            // Garantindo que os dados estão no formato que o Supabase espera
             const precoNumerico = Number(payment.transaction_amount) || 0;
-            const dataNascFormatada = (meta.data_nascimento_aluno && meta.data_nascimento_aluno.trim() !== '') 
-                ? meta.data_nascimento_aluno 
-                : null;
 
-            console.log("Tentando salvar no banco:", { nomeAluno, celularAluno, dataNascFormatada, tabelaDestino });
+            // Monta o objeto básico de dados
+            const dadosParaSalvar = {
+                nome: nomeAluno,
+                celular: celularAluno,
+                unidade: unidade,
+                modalidade: modalidade,
+                plano: plano,
+                preco: precoNumerico,
+                pagamento: metodoPagamento,
+                tipo: meta.tipo
+            };
+
+            // ADICIONA A DATA DE NASCIMENTO APENAS SE FOR PRÉ-MATRÍCULA
+            if (tabelaDestino === 'prematriculas') {
+                dadosParaSalvar.data_nascimento = dataNascAluno; 
+            }
+
+            console.log("Tentando salvar no banco:", dadosParaSalvar);
 
             const { error: dbError } = await supabase
                 .from(tabelaDestino)
-                .upsert({
-                    nome: nomeAluno,
-                    celular: celularAluno,
-                    data_nascimento: dataNascFormatada,
-                    unidade: unidade,
-                    modalidade: modalidade,
-                    plano: plano,
-                    preco: precoNumerico,
-                    pagamento: metodoPagamento,
-                    tipo: meta.tipo
-                }, { onConflict: 'nome,celular' });
+                .upsert(dadosParaSalvar, { onConflict: 'nome,celular' });
 
             if (dbError) {
                 console.error("🚨 ERRO AO SALVAR NO BANCO:", dbError);
