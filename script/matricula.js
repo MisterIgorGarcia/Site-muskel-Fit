@@ -199,7 +199,8 @@ async function redirecionarParaPagamento(dados) {
                 unidade:    dados.unidade,
                 modalidade: dados.modalidade,
                 planoId:    dados.planoId,
-                pagamento:  dados.pagamento
+                pagamento:  dados.pagamento,
+                nome:       dados.nome //
             })
         });
 

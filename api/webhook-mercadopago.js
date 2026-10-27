@@ -21,11 +21,8 @@ export default async function handler(req, res) {
         // 2. Se o pagamento foi APROVADO, monta e envia o e-mail
         if (payment.status === 'approved') {
             
-            // Formatando dados
             const valor = payment.transaction_amount.toFixed(2).replace('.', ',');
-            const nomeAluno = payment.payer.first_name || 'Aluno(a)';
             
-            // Traduzindo o método de pagamento
             const metodos = {
                 'pix': 'PIX',
                 'credit_card': 'Cartão de Crédito',
@@ -34,17 +31,27 @@ export default async function handler(req, res) {
             };
             const metodoPagamento = metodos[payment.payment_method_id] || payment.payment_method_id.toUpperCase();
 
-            // Formatando a data
             const dataObj = new Date(payment.date_approved);
             const dataFormatada = dataObj.toLocaleDateString('pt-BR');
             const horaFormatada = dataObj.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
 
-            // Pegando os metadados (Unidade, Modalidade, Plano, Tipo) enviados na criação do pagamento
+            // Pegando os metadados
             const meta = payment.metadata || {};
             const unidade = meta.unidade || 'Não informada';
             const modalidade = meta.modalidade || 'Não informada';
             const plano = meta.plano || 'Não informado';
             const tipo = meta.tipo === 'matricula' ? 'Matrícula' : 'Pré-Matrícula';
+            
+            // 🔍 RAIO-X DO NOME: Vai aparecer nos logs da Vercel
+            console.log("Dados do Nome recebidos:", { doMetadata: meta.nome_aluno, doMP: payment.payer.first_name });
+
+            // Lógica para pegar o nome (tenta do metadata, depois do MP, depois fallback)
+            let nomeAluno = meta.nome_aluno || payment.payer.first_name || 'Aluno(a)';
+            
+            // Se o nome vier vazio ou só espaços, usa o fallback
+            if (!nomeAluno || nomeAluno.trim() === '') {
+                nomeAluno = 'Aluno(a)';
+            }
 
             // ==========================================
             // CORPO DO E-MAIL (TEMPLATE HTML PREMIUM)
@@ -114,9 +121,9 @@ export default async function handler(req, res) {
 
             // Envia o e-mail
             await resend.emails.send({
-                from: 'Muskel Fit <onboarding@resend.dev>', // Troque para seu dominio na Vercel futuramente
+                from: 'Muskel Fit <onboarding@resend.dev>',
                 to: process.env.EMAIL_DONO,
-                subject: `Mensalidade paga ${nomeAluno}`, // <-- Assunto 
+                subject: `Pagamento de mensalidade, Aluno: ${nomeAluno}`, // <-- Assunto limpo e corrigido
                 html: htmlRecibo
             });
         }

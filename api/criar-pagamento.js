@@ -21,7 +21,8 @@ module.exports = async function handler(req, res) {
     }
 
     try {
-        const { tipo, unidade, modalidade, planoId, pagamento } = req.body || {};
+        // Adicionado 'nome' e 'email' aqui
+        const { tipo, unidade, modalidade, planoId, pagamento, nome, email } = req.body || {};
 
         const tipoNormalizado = tipo === 'matricula' ? 'matricula' : 'pre-matricula';
         const paginaRetorno = PAGINA_RETORNO[tipoNormalizado];
@@ -75,6 +76,11 @@ module.exports = async function handler(req, res) {
                     unit_price: Number(plano.preco),
                     currency_id: 'BRL'
                 }],
+                //O Mercado Pago exige um email se você enviar o nome do pagador
+                payer: {
+                    name: nome || "Aluno Muskel Fit",
+                    email: email || "test_user_123@testuser.com" 
+                },
                 back_urls: {
                     success: `${paginaRetorno}?status=success`,
                     pending: `${paginaRetorno}?status=pending`,
@@ -87,7 +93,8 @@ module.exports = async function handler(req, res) {
                     unidade: unidade,
                     modalidade: modalidade,
                     plano: plano.nome,
-                    tipo: tipoNormalizado
+                    tipo: tipoNormalizado,
+                    nome_aluno: nome // <-- ADICIONADO AQUI
                 },
 
                 // Avisa o Mercado Pago para enviar a notificação para a sua API
