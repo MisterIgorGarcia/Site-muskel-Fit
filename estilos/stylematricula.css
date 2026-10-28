@@ -40,7 +40,7 @@
 
 /* ===================== PÁGINA DE MATRÍCULA ===================== */
 .matricula-hero { text-align: center; padding: 70px 20px 50px; max-width: 900px; margin: 0 auto; }
-.matricula-label { color: var(--cor-secundaria); font-size: 0.8rem; font-weight: bold; letter-spacing: 2px; text-transform: uppercase; }
+.matricula-label { display: block; color: var(--cor-secundaria); font-size: 1.5rem; font-weight: bold; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px; }
 .matricula-titulo { font-size: 2.8rem; font-weight: 900; line-height: 1.1; margin: 15px 0 20px; color: var(--cor-texto-claro); }
 .matricula-titulo .destaque { color: var(--cor-secundaria); }
 .matricula-subtitulo { color: #b5b5b5; font-size: 1.05rem; line-height: 1.6; max-width: 600px; margin: 0 auto 35px; }

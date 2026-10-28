@@ -112,6 +112,59 @@ img, iframe {
     #menu-nav ul li a:hover { background-color: #1a1a1a; }
 }
 
+/* ===================== MENU RESPONSIVO PARA TELAS MÉDIAS ===================== */
+@media (max-width: 1300px) {
+    /* Mostra o botão hambúrguer */
+    .btn-menu {
+        display: flex;
+    }
+
+    /* Transforma os links em um menu suspenso */
+    #menu-nav {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        background-color: var(--cor-primaria);
+        border-bottom: 3px solid var(--cor-secundaria);
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease;
+        z-index: 1000;
+    }
+
+    #menu-nav.aberto {
+        max-height: 600px; /* Abre o menu */
+    }
+
+    #menu-nav ul {
+        flex-direction: column;
+        gap: 0;
+        padding: 10px 0;
+    }
+
+    #menu-nav ul li {
+        width: 100%;
+        text-align: center;
+        border-bottom: 1px solid #222;
+    }
+
+    #menu-nav ul li:last-child {
+        border-bottom: none;
+    }
+
+    #menu-nav ul li a {
+        display: block;
+        padding: 12px 20px;
+        font-size: 1rem;
+        white-space: normal; /* Permite que o texto quebre linha se necessário */
+    }
+
+    #menu-nav ul li a:hover {
+        background-color: #1a1a1a;
+    }
+}
+
 /* ===================== LINHA SEPARADORA ===================== */
 .separador {
     border: none;
