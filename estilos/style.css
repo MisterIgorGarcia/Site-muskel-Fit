@@ -113,7 +113,7 @@ img, iframe {
 }
 
 /* ===================== MENU RESPONSIVO PARA TELAS MÉDIAS ===================== */
-@media (max-width: 1300px) {
+@media (max-width: 1310px) {
     /* Mostra o botão hambúrguer */
     .btn-menu {
         display: flex;
