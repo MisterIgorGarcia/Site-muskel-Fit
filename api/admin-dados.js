@@ -11,13 +11,15 @@ export default async function handler(req, res) {
     try {
         // ================= LISTAR (READ) =================
         if (req.method === 'GET') {
-            const { tipo, unidade, page = 1, limit = 10, all } = req.query;
+            const { tipo, unidade, page = 1, limit = 10, all, incompletos } = req.query;
 
             if (!tipo) {
                 return res.status(400).json({ erro: 'Parâmetro "tipo" é obrigatório.' });
             }
 
-            const tabela = tipo === 'matricula' ? 'matriculas' : 'prematriculas';
+            let tabela = 'prematriculas';
+            if (tipo === 'matricula') tabela = 'matriculas';
+            else if (tipo === 'aluno') tabela = 'alunos_matriculados';
             
             // Inicia a query pedindo a contagem exata de registros
             let query = supabase
@@ -44,6 +46,12 @@ export default async function handler(req, res) {
                 query = query.eq('unidade', unidade);
             }
 
+            // Filtro de Dados Incompletos (para a tabela de alunos)
+            if (tipo === 'aluno' && incompletos === 'true') {
+                // Filtra quem estiver sem CEP OU sem Data de Nascimento (registros antigos)
+                query = query.or('cep.is.null,data_nascimento.is.null');
+            }
+
             // Se 'all' for true, não aplica paginação (usado para Excel e Gráficos)
             if (all !== 'true') {
                 const from = (page - 1) * limit;
@@ -63,7 +71,9 @@ export default async function handler(req, res) {
         // ================= CRIAR (CREATE) =================
         if (req.method === 'POST') {
             const { tipo, ...dadosAluno } = req.body;
-            const tabela = tipo === 'matricula' ? 'matriculas' : 'prematriculas';
+            let tabela = 'prematriculas';
+            if (tipo === 'matricula') tabela = 'matriculas';
+            else if (tipo === 'aluno') tabela = 'alunos_matriculados';
 
             if (!dadosAluno.nome || !dadosAluno.celular) {
                 return res.status(400).json({ erro: 'Nome e celular são obrigatórios.' });
@@ -79,7 +89,10 @@ export default async function handler(req, res) {
             const { tipo, id, ...dadosAtualizados } = req.body;
             if (!id) return res.status(400).json({ erro: 'O ID é obrigatório para atualizar.' });
             
-            const tabela = tipo === 'matricula' ? 'matriculas' : 'prematriculas';
+            let tabela = 'prematriculas';
+            if (tipo === 'matricula') tabela = 'matriculas';
+            else if (tipo === 'aluno') tabela = 'alunos_matriculados';
+
             const { data, error } = await supabase.from(tabela).update(dadosAtualizados).eq('id', id).select();
             if (error) throw error;
             return res.status(200).json({ sucesso: true, dados: data[0] });
@@ -88,7 +101,9 @@ export default async function handler(req, res) {
         // ================= DELETAR (DELETE) =================
         if (req.method === 'DELETE') {
             const { id, tipo } = req.body;
-            const tabela = tipo === 'matricula' ? 'matriculas' : 'prematriculas';
+            let tabela = 'prematriculas';
+            if (tipo === 'matricula') tabela = 'matriculas';
+            else if (tipo === 'aluno') tabela = 'alunos_matriculados';
 
             if (!id) return res.status(400).json({ erro: 'ID não fornecido.' });
 

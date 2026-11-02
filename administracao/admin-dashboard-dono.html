@@ -43,19 +43,27 @@
         </header>
 
         <main class="admin-container">
+            <!-- ALERTA DE DADOS INCOMPLETOS -->
+            <div id="alerta-incompletos" style="display: none; background: rgba(239, 68, 68, 0.1); border: 1px solid #ef4444; border-radius: 8px; padding: 15px; margin-bottom: 20px; align-items: center; justify-content: space-between;">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <i class="fa-solid fa-triangle-exclamation" style="color: #ef4444; font-size: 1.5rem;"></i>
+                    <div>
+                        <h4 style="margin: 0; color: #ef4444;">Atenção: Dados Incompletos</h4>
+                        <p style="margin: 0; color: #ccc; font-size: 0.9rem;">Existem <strong id="qtd-incompletos">0</strong> alunos cadastrados sem CEP ou Data de Nascimento.</p>
+                    </div>
+                </div>
+                <button onclick="filtrarIncompletos()" style="background: #ef4444; color: #fff; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer;">Ver Alunos</button>
+            </div>
+
             <div class="admin-header-titulo">
                 <h2>Visão Geral da Academia</h2>
                  <div style="display: flex; gap: 10px;">
-                    <!-- Botão Excel com Tabler Icons -->
                     <button onclick="exportarExcel()" class="btn-export" style="background-color: #22c55e; color: #fff;">
                         <i class="ti ti-file-type-xls"></i> Exportar Excel
                     </button>
-
-                    <!-- Botão CSV com Tabler Icons -->
                     <button onclick="exportarCSV()" class="btn-export" style="background-color: #3b82f6; color: #fff;">
                         <i class="ti ti-file-type-csv"></i> Exportar CSV
                     </button>
-                    
                     <button id="btn-atualizar" class="btn-amarelo" onclick="carregarDados(true)">
                         <i class="fa-solid fa-rotate-right"></i> Atualizar Dados
                     </button>
@@ -64,27 +72,22 @@
 
             <!-- GRÁFICO COM FILTROS E ABAS -->
             <div class="admin-card" style="flex-direction: column; align-items: stretch; margin-bottom: 40px; background-color: #141414;">
-                
-                <!-- Cabeçalho e Abas -->
                 <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; margin-bottom: 20px;">
                     <h3 style="color: var(--cor-secundaria); font-size: 1.2rem; margin: 0;">
                         <i class="fa-solid fa-chart-pie"></i> Análise de Dados
                     </h3>
-                    
                     <div class="abas-container">
                         <button id="btn-aba-composicao" class="aba-btn ativa" onclick="mudarAba('composicao')">Composição</button>
                         <button id="btn-aba-historico" class="aba-btn" onclick="mudarAba('historico')">Histórico</button>
                     </div>
                 </div>
 
-                <!-- Filtros -->
                 <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px;">
                     <select id="filtro-origem" class="admin-select" onchange="atualizarGraficos()">
                         <option value="todos">Visão Geral (Tudo)</option>
                         <option value="matriculas">Somente Mensalidades</option>
                         <option value="prematriculas">Somente Pré-Matrículas</option>
                     </select>
-
                     <select id="filtro-agrupamento" class="admin-select" onchange="atualizarGraficos()">
                         <option value="plano">Agrupar por Plano</option>
                         <option value="unidade">Agrupar por Unidade</option>
@@ -93,12 +96,9 @@
                     </select>
                 </div>
 
-                <!-- Área do Gráfico de Composição (Pizza) -->
                 <div id="div-grafico-composicao" style="position: relative; height: 350px; width: 100%; display: flex; justify-content: center;">
                     <canvas id="grafico-unico"></canvas>
                 </div>
-                
-                <!-- Área do Gráfico de Histórico (Linha) -->
                 <div id="div-grafico-historico" style="position: relative; height: 350px; width: 100%; display: none; justify-content: center;">
                     <canvas id="grafico-historico"></canvas>
                 </div>
@@ -163,6 +163,27 @@
                     </table>
                 </div>
                 <div id="paginacao-prematriculas" class="paginacao-container"></div>
+
+                <!-- NOVA TABELA DE ALUNOS MATRICULADOS -->
+                <h3 style="margin-top: 40px;"><i class="fa-solid fa-address-card"></i> Todos os Alunos Matriculados</h3>
+                <p style="color: #999; font-size: 0.9rem; margin-bottom: 15px;">Estes são os alunos com cadastro completo no sistema (podem pagar a mensalidade).</p>
+                <div class="tabela-responsiva">
+                    <table class="tabela-admin">
+                        <thead>
+                            <tr>
+                                <th>Data</th>
+                                <th>Nome</th>
+                                <th>Celular</th>
+                                <th>CEP / Endereço</th>
+                                <th>Nascimento</th>
+                                <th>Plano</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabela-alunos-body"></tbody>
+                    </table>
+                </div>
+                <div id="paginacao-alunos" class="paginacao-container"></div>
             </div>
             
             <!-- GERENCIAR FUNCIONÁRIOS -->

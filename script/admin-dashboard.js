@@ -17,10 +17,14 @@ let funcionarioEditandoUnidadeId = null;
 let dadosGlobaisCompletos = { matriculas: [], prematriculas: [] };
 let dadosCarregados = false;
 
+// Filtro de alunos incompletos
+let filtroAlunosIncompletos = false;
+
 // Controle de Paginação Server-Side
 let paginacao = {
     matriculas: { pagina: 1, limite: 10, total: 0 },
-    prematriculas: { pagina: 1, limite: 10, total: 0 }
+    prematriculas: { pagina: 1, limite: 10, total: 0 },
+    alunos: { pagina: 1, limite: 10, total: 0 } // NOVO
 };
 
 // ===================== CARREGAR DADOS DAS TABELAS (PAGINADO) =====================
@@ -36,12 +40,14 @@ async function carregarDados(manual = false) {
     try {
         await Promise.all([
             buscarPaginaTabela('matriculas'),
-            buscarPaginaTabela('prematriculas')
+            buscarPaginaTabela('prematriculas'),
+            buscarPaginaTabela('alunos') // NOVO
         ]);
 
         // Se for manual ou a primeira carga, atualiza os cards e gráficos também
         if (manual || !dadosCarregados) {
             await atualizarCardsEGraficos();
+            await verificarDadosIncompletos(); // NOVO
         }
 
     } catch (erro) {
@@ -57,10 +63,14 @@ async function carregarDados(manual = false) {
 
 async function buscarPaginaTabela(tipo) {
     const minhaUnidade = sessionStorage.getItem('adminUnidade');
-    let url = `/api/admin-dados?tipo=${tipo === 'matriculas' ? 'matricula' : 'prematricula'}&page=${paginacao[tipo].pagina}&limit=${paginacao[tipo].limite}`;
+    let url = `/api/admin-dados?tipo=${tipo === 'matriculas' ? 'matricula' : tipo === 'prematriculas' ? 'prematricula' : 'aluno'}&page=${paginacao[tipo].pagina}&limit=${paginacao[tipo].limite}`;
     
     if (cargo === 'funcionario' && minhaUnidade && minhaUnidade.trim() !== '') {
         url += `&unidade=${encodeURIComponent(minhaUnidade)}`;
+    }
+
+    if (tipo === 'alunos' && filtroAlunosIncompletos) {
+        url += `&incompletos=true`;
     }
 
     const resposta = await fetch(url);
@@ -70,7 +80,51 @@ async function buscarPaginaTabela(tipo) {
     paginacao[tipo].total = json.total;
     
     if (tipo === 'matriculas') renderizarTabelaMatriculas(json.dados);
-    else renderizarTabelaPrematriculas(json.dados);
+    else if (tipo === 'prematriculas') renderizarTabelaPrematriculas(json.dados);
+    else renderizarTabelaAlunos(json.dados); // NOVO
+}
+
+// ===================== NOVA CHECAGEM DE DADOS INCOMPLETOS =====================
+async function verificarDadosIncompletos() {
+    try {
+        const res = await fetch('/api/admin-dados?tipo=aluno&incompletos=true&limit=1');
+        if (!res.ok) return;
+        const data = await res.json();
+        
+        const qtd = data.total || 0;
+        const alerta = document.getElementById('alerta-incompletos');
+        const qtdEl = document.getElementById('qtd-incompletos');
+        
+        if (qtd > 0 && alerta) {
+            qtdEl.textContent = qtd;
+            alerta.style.display = 'flex';
+        } else if (alerta) {
+            alerta.style.display = 'none';
+        }
+    } catch (e) {
+        console.error('Erro ao verificar dados incompletos:', e);
+    }
+}
+
+function filtrarIncompletos() {
+    filtroAlunosIncompletos = true;
+    paginacao.alunos.pagina = 1;
+    buscarPaginaTabela('alunos');
+    
+    // Rola a tela até a tabela de alunos
+    document.getElementById('tabela-alunos-body').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    
+    // Muda o botão do alerta temporariamente para limpar o filtro
+    const btn = document.querySelector('#alerta-incompletos button');
+    if (btn) {
+        btn.textContent = 'Limpar Filtro';
+        btn.onclick = () => {
+            filtroAlunosIncompletos = false;
+            btn.textContent = 'Ver Alunos';
+            btn.onclick = filtrarIncompletos;
+            buscarPaginaTabela('alunos');
+        };
+    }
 }
 
 // ===================== RENDERIZAÇÃO DAS TABELAS =====================
@@ -80,16 +134,12 @@ function renderizarTabelaMatriculas(dados) {
     tbody.innerHTML = '';
 
     if (dados.length === 0) {
-        // Dono tem 9 colunas (Data, Nome, Celular, Unidade, Modalidade, Plano, Pagamento, Valor, Ações)
-        // Funcionário tem 8 colunas (Data, Nome, Celular, Unidade, Modalidade, Plano, Pagamento, Ações)
         const colunas = cargo === 'dono' ? 9 : 8; 
         tbody.innerHTML = `<tr><td colspan="${colunas}" style="text-align:center;">Nenhuma matrícula registrada.</td></tr>`;
     } else {
         dados.forEach(item => {
             const data = new Date(item.created_at).toLocaleDateString('pt-BR');
             const valor = Number(item.preco) || 0;
-            
-            // Formata o pagamento (ex: "pix" -> "Pix")
             const pagamentoFormatado = item.pagamento ? item.pagamento.charAt(0).toUpperCase() + item.pagamento.slice(1).toLowerCase() : '-';
             
             const colunaValor = cargo === 'dono' ? `<td class="destaque-valor">R$ ${valor.toFixed(2).replace('.', ',')}</td>` : '';
@@ -125,7 +175,6 @@ function renderizarTabelaPrematriculas(dados) {
         dados.forEach(item => {
             const data = new Date(item.created_at).toLocaleDateString('pt-BR');
             const valor = Number(item.preco) || 0;
-            
             const pagamentoFormatado = item.pagamento ? item.pagamento.charAt(0).toUpperCase() + item.pagamento.slice(1).toLowerCase() : '-';
 
             const colunaValor = cargo === 'dono' ? `<td class="destaque-valor">R$ ${valor.toFixed(2).replace('.', ',')}</td>` : '';
@@ -147,6 +196,36 @@ function renderizarTabelaPrematriculas(dados) {
         });
     }
     renderizarBotoesPaginacao('prematriculas');
+}
+
+function renderizarTabelaAlunos(dados) {
+    const tbody = document.getElementById('tabela-alunos-body');
+    if (!tbody) return;
+    tbody.innerHTML = '';
+
+    if (dados.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;">Nenhum aluno encontrado.</td></tr>`;
+    } else {
+        dados.forEach(item => {
+            const data = new Date(item.created_at).toLocaleDateString('pt-BR');
+            const cep = item.cep || '<span style="color:#ef4444;">Falta</span>';
+            const endereco = item.rua ? `${item.rua}, ${item.numero_casa || 'S/N'}` : '<span style="color:#ef4444;">Falta</span>';
+            const nasc = item.data_nascimento ? item.data_nascimento.split('-').reverse().join('/') : '<span style="color:#ef4444;">Falta</span>';
+            
+            tbody.innerHTML += `
+                <tr>
+                    <td>${data}</td>
+                    <td><strong>${item.nome}</strong></td>
+                    <td>${item.celular}</td>
+                    <td>${cep} <br><small style="color:#888;">${endereco}</small></td>
+                    <td>${nasc}</td>
+                    <td>${item.plano}</td>
+                    <td><button onclick="removerRegistro(${item.id}, 'aluno')" style="background: transparent; border: none; color: #ef4444; cursor: pointer;" title="Excluir"><i class="fa-solid fa-trash"></i></button></td>
+                </tr>
+            `;
+        });
+    }
+    renderizarBotoesPaginacao('alunos');
 }
 
 // ===================== BOTÕES DE PAGINAÇÃO =====================
@@ -250,7 +329,7 @@ function iniciarAtualizacaoAutomatica() {
     if (intervaloAtualizacao) clearInterval(intervaloAtualizacao);
     intervaloAtualizacao = setInterval(() => {
         if (document.visibilityState === 'visible') {
-            dadosCarregados = false; // Limpa o cache para forçar buscar novos dados depois
+            dadosCarregados = false; 
             carregarDados(false); 
         }
     }, 10000); 
@@ -270,10 +349,7 @@ function controlarLoadingGrafico(containerId, status, mensagemErro = '') {
     overlay.className = `chart-status-overlay ${status === 'error' ? 'erro' : ''}`;
 
     if (status === 'loading') {
-        overlay.innerHTML = `
-            <div class="spinner"></div>
-            <p>Buscando dados do banco...</p>
-        `;
+        overlay.innerHTML = `<div class="spinner"></div><p>Buscando dados do banco...</p>`;
     } else if (status === 'error') {
         overlay.innerHTML = `
             <i class="fa-solid fa-triangle-exclamation"></i>
@@ -418,7 +494,7 @@ async function removerRegistro(id, tipo) {
         const resposta = await fetch('/api/admin-dados', {
             method: 'DELETE',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ id, tipo: tipo === 'matricula' ? 'matricula' : 'prematricula' })
+            body: JSON.stringify({ id, tipo: tipo })
         });
         if (!resposta.ok) throw new Error('Erro ao excluir registro');
         
