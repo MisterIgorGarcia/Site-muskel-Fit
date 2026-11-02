@@ -2,7 +2,8 @@ import { HORARIOS, NOMES_DIAS, HORARIO_FERIADO_PADRAO, HORARIOS_FERIADOS_CUSTOMI
 
 const CACHE_FERIADOS = new Map();
 
-async function obterFeriadosDoAno(ano) {
+// ADICIONADO EXPORT AQUI
+export async function obterFeriadosDoAno(ano) {
     if (CACHE_FERIADOS.has(ano)) return CACHE_FERIADOS.get(ano);
     try {
         const resp = await fetch(`https://brasilapi.com.br/api/feriados/v1/${ano}`);
@@ -83,7 +84,6 @@ export async function calcularStatusAcademia() {
         };
     }
 
-    // Lógica original (dias normais)
     const horasDecimais = agora.getHours() + agora.getMinutes() / 60 + agora.getSeconds() / 3600;
     const intervalos = intervalosAbertos(dia);
     const aberto = intervalos.some(([ini, fim]) => horasDecimais >= ini && horasDecimais < fim);

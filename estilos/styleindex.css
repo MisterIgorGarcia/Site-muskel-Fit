@@ -185,6 +185,163 @@
 .pagina-legal-voltar { text-align: center; margin-top: 60px; } 
 .pagina-legal-voltar .btn-amarelo { text-decoration: none; display: inline-flex; align-items: center; gap: 8px; }
 
+/* ===================== MODAL DE HORÁRIOS (DIAS DA SEMANA) ===================== */
+.mf-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(4px);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    opacity: 0;
+    animation: fadeInModal 0.3s forwards;
+}
+
+@keyframes fadeInModal {
+    to { opacity: 1; }
+}
+
+.mf-modal-card {
+    background: #141414;
+    border: 1px solid #2a2a2a;
+    border-radius: 16px;
+    width: 100%;
+    max-width: 450px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    overflow: hidden;
+    transform: translateY(20px);
+    animation: popInModal 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes popInModal {
+    to { transform: translateY(0); }
+}
+
+.mf-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 24px;
+    background: #1a1a1a;
+    border-bottom: 1px solid #2a2a2a;
+}
+
+.mf-modal-header h3 {
+    color: var(--cor-secundaria);
+    font-size: 1.2rem;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.mf-modal-fechar {
+    background: transparent;
+    border: none;
+    color: #999;
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: color 0.2s;
+    padding: 0;
+    line-height: 1;
+}
+
+.mf-modal-fechar:hover {
+    color: #fff;
+}
+
+.mf-modal-body {
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-height: 70vh;
+    overflow-y: auto;
+}
+
+.mf-dia-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 16px;
+    background: #1a1a1a;
+    border-radius: 10px;
+    border: 1px solid #2a2a2a;
+    transition: all 0.2s;
+}
+
+.mf-dia-item:hover {
+    border-color: #444;
+}
+
+/* Estilo do item do modal quando for feriado */
+.mf-dia-item.mf-dia-feriado {
+    border-color: #f97316;
+    background: rgba(249, 115, 22, 0.05);
+}
+
+.mf-dia-info {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    gap: 4px;
+}
+
+.mf-dia-info strong {
+    color: var(--cor-texto-claro);
+    font-size: 0.95rem;
+}
+
+.mf-dia-info span {
+    color: #888;
+    font-size: 0.8rem;
+}
+
+.mf-dia-horario {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
+}
+
+.mf-dia-horario span {
+    color: var(--cor-secundaria);
+    font-size: 0.9rem;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.mf-tag {
+    font-size: 0.7rem;
+    padding: 3px 8px;
+    border-radius: 999px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.mf-tag.normal {
+    background: rgba(255, 255, 255, 0.1);
+    color: #ccc;
+}
+
+.mf-tag.feriado {
+    background: rgba(249, 115, 22, 0.2);
+    color: #f97316;
+    border: 1px solid rgba(249, 115, 22, 0.4);
+}
+
+.mf-tag.fechado {
+    background: rgba(239, 68, 68, 0.2);
+    color: #ef4444;
+    border: 1px solid rgba(239, 68, 68, 0.4);
+}
+
 /* ===================== RESPONSIVIDADE GERAL ===================== */ 
 @media (max-width: 768px) { 
     .hero { flex-direction: column-reverse; padding: 40px 20px; text-align: center; } 
