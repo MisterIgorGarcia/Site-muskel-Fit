@@ -87,7 +87,10 @@ function configurarChecagemNome() {
     };
 
     nomeEl.addEventListener('input', fazerChecagem);
-    if (celularEl) celularEl.addEventListener('blur', fazerChecagem);
+    if (celularEl) {
+        celularEl.addEventListener('blur', fazerChecagem);
+        celularEl.addEventListener('input', fazerChecagem); // NOVO: Busca enquanto digita
+    }
 }
 
 /* ===================== DEPENDENTES (PLANOS FAMÍLIA) ===================== */
