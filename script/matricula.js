@@ -39,13 +39,13 @@ function renderizarDependentes(qtd) {
 
     if (qtd <= 0) {
         bloco.hidden = true;
-        bloco.style.display = 'none'; // Força o CSS a esconder a div
+        bloco.style.display = 'none';
         lista.innerHTML = '';
         return;
     }
 
     bloco.hidden = false;
-    bloco.style.display = ''; // Remove o display:none e deixa o CSS agir normalmente (block/flex)
+    bloco.style.display = '';
     
     let html = '';
     for (let i = 1; i <= qtd; i++) {
@@ -222,10 +222,28 @@ async function redirecionarParaPagamento(dados) {
     if (botao) {
         botao.disabled = true;
         botao.style.pointerEvents = 'none';
-        botao.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Processando...`;
+        botao.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Verificando cadastro...`;
     }
 
     try {
+        // 1º PASSO: Checar se o aluno existe na base de dados (alunos_matriculados)
+        const checkRes = await fetch('/api/checar-matricula', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ nome: dados.nome })
+        });
+
+        const checkData = await checkRes.json();
+
+        if (!checkRes.ok) {
+            throw new Error(checkData.erro || 'Erro ao verificar a matrícula.');
+        }
+
+        if (!checkData.existe) {
+            throw new Error('Aluno não encontrado no sistema. Você precisa realizar a matrícula de aluno novo antes de pagar a mensalidade.');
+        }
+
+        // 2º PASSO: Se passou na checagem, gera o pagamento no Mercado Pago
         if (botao) botao.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Gerando PIX...`;
 
         const resposta = await fetch('/api/criar-pagamento', {
@@ -246,11 +264,12 @@ async function redirecionarParaPagamento(dados) {
         const resultado = await resposta.json();
 
         if (!resposta.ok || !resultado.url) {
-            throw new Error(resultado.erro || 'Resposta inválida da API');
+            throw new Error(resultado.erro || 'Resposta inválida da API de pagamento');
         }
 
         localStorage.setItem('dadosMatricula', JSON.stringify(dados));
 
+        // 3º PASSO: Redirecionamento com contador
         let segundos = 5;
         if (botao) {
             botao.style.flexDirection = 'column';
@@ -277,7 +296,8 @@ async function redirecionarParaPagamento(dados) {
         }, 1000);
 
     } catch (erro) {
-        console.error('Erro ao criar pagamento:', erro);
+        console.error('Erro no processo:', erro);
+        
         if (botao) {
             botao.disabled = false;
             botao.style.pointerEvents = 'auto';
@@ -285,7 +305,9 @@ async function redirecionarParaPagamento(dados) {
             botao.style.padding = '14px 30px';
             botao.innerHTML = `<i class="fa-solid fa-lock"></i> Ir para o pagamento`;
         }
-        alert('Não foi possível iniciar o pagamento agora. Tente novamente em instantes ou fale com a academia pelo WhatsApp.');
+        
+        // Mostra a mensagem exata de erro (seja "Aluno não encontrado" ou erro na geração do PIX)
+        alert(erro.message);
     }
 }
 

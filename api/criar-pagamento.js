@@ -54,9 +54,15 @@ module.exports = async function handler(req, res) {
                 nome: String(dep.nome || '').slice(0, 120),
                 celular: String(dep.celular || '').slice(0, 20)
             };
-            if (dep.data_nascimento) {
-                depSafe.data_nascimento = String(dep.data_nascimento).slice(0, 10);
-            }
+            
+            // Campos do Aluno Novo (e opcionais na Mensalidade)
+            if (dep.data_nascimento) depSafe.data_nascimento = String(dep.data_nascimento).slice(0, 10);
+            if (dep.cep) depSafe.cep = String(dep.cep).slice(0, 9);
+            if (dep.rua) depSafe.rua = String(dep.rua).slice(0, 150);
+            if (dep.numero_casa) depSafe.numero_casa = String(dep.numero_casa).slice(0, 20);
+            if (dep.bairro) depSafe.bairro = String(dep.bairro).slice(0, 100);
+            if (dep.cidade) depSafe.cidade = String(dep.cidade).slice(0, 100);
+
             dependentesMetadata[`dependente_${i + 1}`] = JSON.stringify(depSafe);
         }
 
