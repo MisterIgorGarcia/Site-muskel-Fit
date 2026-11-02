@@ -48,14 +48,17 @@ export default async function handler(req, res) {
 
             // Filtro de Dados Incompletos (para a tabela de alunos)
             if (tipo === 'aluno' && incompletos === 'true') {
-                // Filtra quem estiver sem CEP OU sem Data de Nascimento (registros antigos)
                 query = query.or('cep.is.null,data_nascimento.is.null');
             }
 
-            // Se 'all' for true, não aplica paginação (usado para Excel e Gráficos)
+            // Se 'all' for true, não aplica paginação
             if (all !== 'true') {
-                const from = (page - 1) * limit;
-                const to = from + limit - 1;
+                // CORREÇÃO AQUI: Força page e limit a serem números inteiros
+                const pageNum = parseInt(page, 10) || 1;
+                const limitNum = parseInt(limit, 10) || 10;
+                
+                const from = (pageNum - 1) * limitNum;
+                const to = from + limitNum - 1;
                 query = query.range(from, to);
             }
 
