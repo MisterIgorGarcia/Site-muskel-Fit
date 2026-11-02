@@ -14,9 +14,11 @@ let funcionarioEditandoUnidadeId = null;
 
 let dadosGlobaisCompletos = { matriculas: [], prematriculas: [] };
 let dadosCarregados = false;
-let filtroAlunosIncompletos = false;
 
-// Cache local da tabela de alunos (para edição fácil)
+// NOVOS FILTROS
+let filtroAlunosIncompletos = false;
+let filtroAlunoNome = '';
+
 let dadosAlunosTabela = [];
 
 let paginacao = {
@@ -66,8 +68,9 @@ async function buscarPaginaTabela(tipo) {
         url += `&unidade=${encodeURIComponent(minhaUnidade)}`;
     }
 
-    if (tipo === 'alunos' && filtroAlunosIncompletos) {
-        url += `&incompletos=true`;
+    if (tipo === 'alunos') {
+        if (filtroAlunosIncompletos) url += `&incompletos=true`;
+        if (filtroAlunoNome.trim() !== '') url += `&nome=${encodeURIComponent(filtroAlunoNome.trim())}`;
     }
 
     const resposta = await fetch(url);
@@ -81,7 +84,23 @@ async function buscarPaginaTabela(tipo) {
     else renderizarTabelaAlunos(json.dados);
 }
 
-// ===================== NOVA CHECAGEM DE DADOS INCOMPLETOS =====================
+// ===================== PESQUISA DE ALUNOS =====================
+function pesquisarAluno() {
+    const input = document.getElementById('busca-aluno-input');
+    filtroAlunoNome = input ? input.value : '';
+    paginacao.alunos.pagina = 1; // Sempre volta pra página 1 na busca
+    buscarPaginaTabela('alunos');
+}
+
+function limparPesquisaAluno() {
+    const input = document.getElementById('busca-aluno-input');
+    if (input) input.value = '';
+    filtroAlunoNome = '';
+    paginacao.alunos.pagina = 1;
+    buscarPaginaTabela('alunos');
+}
+
+// ===================== CHECAGEM DE DADOS INCOMPLETOS =====================
 async function verificarDadosIncompletos() {
     try {
         const res = await fetch('/api/admin-dados?tipo=aluno&incompletos=true&limit=1');
@@ -106,6 +125,9 @@ async function verificarDadosIncompletos() {
 function filtrarIncompletos() {
     filtroAlunosIncompletos = true;
     paginacao.alunos.pagina = 1;
+    document.getElementById('busca-aluno-input').value = ''; // Limpa busca por nome
+    filtroAlunoNome = '';
+    
     buscarPaginaTabela('alunos');
     
     document.getElementById('tabela-alunos-body').scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -197,7 +219,7 @@ function renderizarTabelaAlunos(dados) {
     const tbody = document.getElementById('tabela-alunos-body');
     if (!tbody) return;
     tbody.innerHTML = '';
-    dadosAlunosTabela = dados; // Salva no cache para o modal
+    dadosAlunosTabela = dados;
 
     if (dados.length === 0) {
         tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;">Nenhum aluno encontrado.</td></tr>`;
@@ -307,7 +329,7 @@ async function salvarEdicaoAluno(e) {
         alert('Dados atualizados com sucesso!');
         fecharModalEditarAluno();
         dadosCarregados = false;
-        carregarDados(true); // Recarrega as tabelas
+        carregarDados(true);
 
     } catch (err) {
         alert('Erro ao salvar os dados. Tente novamente.');
@@ -316,7 +338,6 @@ async function salvarEdicaoAluno(e) {
         btn.disabled = false;
     }
 }
-
 
 // ===================== BOTÕES DE PAGINAÇÃO =====================
 function renderizarBotoesPaginacao(tipo) {
