@@ -4,7 +4,6 @@ import { createClient } from '@supabase/supabase-js';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-// Chave secreta para poder gravar no banco ignorando o RLS
 const supabase = createClient(
     process.env.SUPABASE_URL,
     process.env.SUPABASE_SECRET_KEY
@@ -46,19 +45,28 @@ export default async function handler(req, res) {
             const unidade = meta.unidade || 'Não informada';
             const modalidade = meta.modalidade || 'Não informada';
             const plano = meta.plano || 'Não informado';
-            const tipo = meta.tipo === 'matricula' ? 'Matrícula' : 'Pré-Matrícula';
+            
+            // DEFINE O TIPO E A TABELA DE DESTINO
+            let tipoLabel = 'Pré-Matrícula';
+            let tabelaDestino = 'prematriculas';
+            
+            if (meta.tipo === 'matricula') {
+                tipoLabel = 'Matrícula (Mensalidade)';
+                tabelaDestino = 'matriculas';
+            } else if (meta.tipo === 'matricula-aluno') {
+                tipoLabel = 'Nova Matrícula (Aluno)';
+                tabelaDestino = 'alunos_matriculados';
+            }
             
             const nomeAluno = meta.nome_aluno || 'Aluno(a)';
             const celularAluno = meta.celular_aluno || 'Não informado';
             const dataNascAluno = meta.data_nascimento_aluno || null;
 
             // =========================================================
-            // 1. SALVAR NO BANCO DE DADOS (Apenas se o pagamento for aprovado)
+            // 1. SALVAR NO BANCO DE DADOS
             // =========================================================
-            const tabelaDestino = meta.tipo === 'matricula' ? 'matriculas' : 'prematriculas';
             const precoNumerico = Number(payment.transaction_amount) || 0;
 
-            // Monta o objeto básico de dados
             const dadosParaSalvar = {
                 nome: nomeAluno,
                 celular: celularAluno,
@@ -70,12 +78,18 @@ export default async function handler(req, res) {
                 tipo: meta.tipo
             };
 
-            // ADICIONA A DATA DE NASCIMENTO APENAS SE FOR PRÉ-MATRÍCULA
-            if (tabelaDestino === 'prematriculas') {
-                dadosParaSalvar.data_nascimento = dataNascAluno; 
+            // Adiciona campos específicos dependendo da tabela
+            if (tabelaDestino === 'prematriculas' || tabelaDestino === 'alunos_matriculados') {
+                dadosParaSalvar.data_nascimento = dataNascAluno;
+            }
+            
+            // NOVO: Se for a tabela de alunos_matriculados, adiciona CEP e Número
+            if (tabelaDestino === 'alunos_matriculados') {
+                dadosParaSalvar.cep = meta.cep_aluno;
+                dadosParaSalvar.numero_casa = meta.numero_casa_aluno;
             }
 
-            console.log("Tentando salvar no banco:", dadosParaSalvar);
+            console.log("Tentando salvar no banco (" + tabelaDestino + "):", dadosParaSalvar);
 
             const { error: dbError } = await supabase
                 .from(tabelaDestino)
@@ -90,6 +104,18 @@ export default async function handler(req, res) {
             // ==========================================
             // 2. ENVIAR O E-MAIL (Template HTML Premium)
             // ==========================================
+            
+            // Monta as linhas extras do e-mail se for aluno novo
+            let linhaEnderecoHTML = '';
+            if (tabelaDestino === 'alunos_matriculados') {
+                linhaEnderecoHTML = `
+                    <tr>
+                        <td style="padding: 10px 0; color: #999999; font-size: 14px; border-bottom: 1px solid #222222;">Endereço:</td>
+                        <td style="padding: 10px 0; color: #ffffff; font-size: 14px; text-align: right; border-bottom: 1px solid #222222;">CEP ${meta.cep_aluno || 'N/I'}, Nº ${meta.numero_casa_aluno || 'S/N'}</td>
+                    </tr>
+                `;
+            }
+
             const htmlRecibo = `
             <div style="background-color: #f4f4f4; padding: 20px; font-family: Arial, Helvetica, sans-serif;">
                 <div style="max-width: 600px; margin: 0 auto; background-color: #0d0d0d; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
@@ -114,9 +140,10 @@ export default async function handler(req, res) {
                                 <td style="padding: 10px 0; color: #999999; font-size: 14px; border-bottom: 1px solid #222222;">Celular:</td>
                                 <td style="padding: 10px 0; color: #ffffff; font-size: 14px; text-align: right; border-bottom: 1px solid #222222;">${celularAluno}</td>
                             </tr>
+                            ${linhaEnderecoHTML}
                             <tr>
                                 <td style="padding: 10px 0; color: #999999; font-size: 14px; border-bottom: 1px solid #222222;">Tipo de Registro:</td>
-                                <td style="padding: 10px 0; color: #ffffff; font-size: 14px; text-align: right; border-bottom: 1px solid #222222;"><strong>${tipo}</strong></td>
+                                <td style="padding: 10px 0; color: #ffffff; font-size: 14px; text-align: right; border-bottom: 1px solid #222222;"><strong>${tipoLabel}</strong></td>
                             </tr>
                             <tr>
                                 <td style="padding: 10px 0; color: #999999; font-size: 14px; border-bottom: 1px solid #222222;">Unidade:</td>

@@ -2,8 +2,9 @@
 const { get } = require('@vercel/edge-config');
 
 const PAGINA_RETORNO = {
-    'pre-matricula': 'https://muskelfit-academia.vercel.app/matriculas/prematricula.html',
-    'matricula':     'https://muskelfit-academia.vercel.app/matriculas/matricula.html'
+    'pre-matricula':   'https://muskelfit-academia.vercel.app/matriculas/prematricula.html',
+    'matricula':       'https://muskelfit-academia.vercel.app/matriculas/matricula.html',
+    'matricula-aluno': 'https://muskelfit-academia.vercel.app/matriculas/matricula-aluno.html' // NOVA PÁGINA DE RETORNO
 };
 
 const TIPO_MP = {
@@ -18,13 +19,19 @@ module.exports = async function handler(req, res) {
     if (req.method !== 'POST') return res.status(405).json({ erro: 'Método não permitido' });
 
     try {
-        // Adicionado data_nascimento na desestruturação
-        const { tipo, unidade, modalidade, planoId, pagamento, nome, celular, data_nascimento } = req.body || {};
+        // Adicionado cep e numero_casa na desestruturação
+        const { tipo, unidade, modalidade, planoId, pagamento, nome, celular, data_nascimento, cep, numero_casa } = req.body || {};
 
-        const tipoNormalizado = tipo === 'matricula' ? 'matricula' : 'pre-matricula';
+        // Normaliza o tipo para garantir que só aceita os válidos
+        const tiposValidos = ['matricula', 'pre-matricula', 'matricula-aluno'];
+        const tipoNormalizado = tiposValidos.includes(tipo) ? tipo : 'pre-matricula';
+        
         const paginaRetorno = PAGINA_RETORNO[tipoNormalizado];
 
-        const catalogo = await get(tipoNormalizado);
+        const catalogo = await get(tipoNormalizado === 'matricula-aluno' ? 'matricula' : tipoNormalizado); 
+        // Nota: Se o catálogo de matrícula-aluno for o mesmo de matrícula, usamos 'matricula' como fallback na busca.
+        // Se for um catálogo novo, troque para: await get(tipoNormalizado);
+        
         if (!catalogo) return res.status(500).json({ erro: 'Catálogo indisponível' });
 
         const unidadeCfg = catalogo?.[unidade];
@@ -42,7 +49,10 @@ module.exports = async function handler(req, res) {
         const token = process.env.MP_ACCESS_TOKEN;
         if (!token) return res.status(500).json({ erro: 'Pagamento indisponível' });
 
-        const prefixoTitulo = tipoNormalizado === 'matricula' ? 'Matrícula' : 'Pré-Matrícula';
+        // Ajuste no título do pagamento no Mercado Pago
+        let prefixoTitulo = 'Pré-Matrícula';
+        if (tipoNormalizado === 'matricula') prefixoTitulo = 'Matrícula (Mensalidade)';
+        if (tipoNormalizado === 'matricula-aluno') prefixoTitulo = 'Nova Matrícula (Aluno)';
 
         const resposta = await fetch('https://api.mercadopago.com/checkout/preferences', {
             method: 'POST',
@@ -72,10 +82,12 @@ module.exports = async function handler(req, res) {
                     unidade: unidade,
                     modalidade: modalidade,
                     plano: plano.nome,
-                    tipo: tipoNormalizado,
+                    tipo: tipoNormalizado, // Pode ser 'matricula-aluno'
                     nome_aluno: nome,
                     celular_aluno: celular,
-                    data_nascimento_aluno: data_nascimento
+                    data_nascimento_aluno: data_nascimento,
+                    cep_aluno: cep,                   // NOVO
+                    numero_casa_aluno: numero_casa    // NOVO
                 },
 
                 notification_url: 'https://muskelfit-academia.vercel.app/api/webhook-mercadopago',
