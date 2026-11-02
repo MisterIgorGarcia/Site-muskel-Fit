@@ -1,3 +1,5 @@
+//ESSE ARQUIVO CONTROLA A FUNCIONALIDADE DO CRONOMETRO DO SITE
+
 import { calcularStatusAcademia } from './status.js';
 import { formatarCronometro } from './utils.js';
 
