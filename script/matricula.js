@@ -39,11 +39,14 @@ function renderizarDependentes(qtd) {
 
     if (qtd <= 0) {
         bloco.hidden = true;
+        bloco.style.display = 'none'; // Força o CSS a esconder a div
         lista.innerHTML = '';
         return;
     }
 
     bloco.hidden = false;
+    bloco.style.display = ''; // Remove o display:none e deixa o CSS agir normalmente (block/flex)
+    
     let html = '';
     for (let i = 1; i <= qtd; i++) {
         html += `
