@@ -5,7 +5,6 @@ const supabase = createClient(
     process.env.SUPABASE_SECRET_KEY
 );
 
-// Função para remover acentos e deixar minúsculo
 const normalizarTexto = (str) => {
     return str ? str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim() : "";
 };
@@ -36,28 +35,37 @@ export default async function handler(req, res) {
         // 2ª TENTATIVA: Fallback por Telefone + Primeiro Nome
         if (celular) {
             const celularLimpo = celular.replace(/\D/g, '');
-            // Pega os últimos 8 dígitos para buscar (ignora DDD e formatação)
-            const sufixo = celularLimpo.slice(-8); 
+            
+            // Como o banco salva formatado (ex: (12) 99999-9999), 
+            // buscamos apenas os últimos 4 dígitos para não ter erro de formatação
+            const sufixo = celularLimpo.slice(-4); 
 
             const { data: porTelefone, error: errTel } = await supabase
                 .from('alunos_matriculados')
                 .select('nome, celular')
-                .ilike('celular', `%${sufixo}%`);
+                .ilike('celular', `%${sufixo}`);
 
             if (porTelefone && porTelefone.length > 0) {
                 const primeiroNomeDigitado = normalizarTexto(nomeDigitado.split(' ')[0]);
                 
-                // Acha o registro cujo primeiro nome bata (ignorando acentos)
                 const match = porTelefone.find(reg => {
+                    // Limpa a formatação do telefone do banco para comparar
+                    const telBancoLimpo = (reg.celular || '').replace(/\D/g, '');
+                    
+                    // Verifica se o número é o mesmo (lida com DDD, formatações e o 9 extra)
+                    const telMatches = telBancoLimpo.includes(celularLimpo) || celularLimpo.includes(telBancoLimpo);
+                    
                     const primeiroNomeBanco = normalizarTexto(reg.nome.split(' ')[0]);
-                    return primeiroNomeBanco === primeiroNomeDigitado;
+                    const nomeMatches = primeiroNomeBanco === primeiroNomeDigitado;
+
+                    return telMatches && nomeMatches;
                 });
 
                 if (match) {
                     return res.status(200).json({ 
                         existe: true, 
                         nome_sugerido: match.nome,
-                        match_aproximado: true // Avisa o front que o nome não era idêntico
+                        match_aproximado: true
                     });
                 }
             }
