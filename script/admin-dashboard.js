@@ -230,11 +230,14 @@ function renderizarTabelaAlunos(dados) {
             const endereco = item.rua ? `${item.rua}, ${item.numero_casa || 'S/N'}` : '<span style="color:#ef4444;">Falta</span>';
             const nasc = item.data_nascimento ? item.data_nascimento.split('-').reverse().join('/') : '<span style="color:#ef4444;">Falta</span>';
             
+            // NOVO: Verifica se o celular existe
+            const celular = item.celular ? item.celular : '<span style="color:#ef4444;">Falta</span>';
+            
             tbody.innerHTML += `
                 <tr>
                     <td>${data}</td>
                     <td><strong>${item.nome}</strong></td>
-                    <td>${item.celular}</td>
+                    <td>${celular}</td> <!-- Usa a nova variável aqui -->
                     <td>${cep} <br><small style="color:#888;">${endereco}</small></td>
                     <td>${nasc}</td>
                     <td>${item.plano}</td>
@@ -256,6 +259,7 @@ function abrirModalEditarAluno(index) {
 
     document.getElementById('edit-aluno-id').value = aluno.id;
     document.getElementById('edit-aluno-nome').value = aluno.nome;
+       document.getElementById('edit-aluno-celular').value = aluno.celular || '';
     document.getElementById('edit-aluno-nascimento').value = aluno.data_nascimento || '';
     document.getElementById('edit-aluno-cep').value = aluno.cep || '';
     document.getElementById('edit-aluno-rua').value = aluno.rua || '';
@@ -309,6 +313,7 @@ async function salvarEdicaoAluno(e) {
     const dados = {
         tipo: 'aluno',
         id: id,
+        celular: document.getElementById('edit-aluno-celular').value.trim() || null,
         data_nascimento: document.getElementById('edit-aluno-nascimento').value || null,
         cep: document.getElementById('edit-aluno-cep').value.trim() || null,
         rua: document.getElementById('edit-aluno-rua').value.trim() || null,

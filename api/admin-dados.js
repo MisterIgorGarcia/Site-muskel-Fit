@@ -49,7 +49,7 @@ export default async function handler(req, res) {
 
             // Filtro de Dados Incompletos
             if (tipo === 'aluno' && incompletos === 'true') {
-                query = query.or('cep.is.null,data_nascimento.is.null');
+                query = query.or('cep.is.null,data_nascimento.is.null,celular.is.null');
             }
 
             // NOVO: Filtro de Busca por Nome (Case-insensitive)
