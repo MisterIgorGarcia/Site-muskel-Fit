@@ -87,14 +87,14 @@
 .countdown-container i { font-size: 1.2rem; }
 
 /* ============================================
-   MODAL DE ALERTA — MUSKEL FIT
+   MODAL DE ALERTA — MUSKEL FIT (DARK MODE)
    ============================================ */
 .mf-alerta-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.6);
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -112,12 +112,13 @@
 @keyframes mfFadeOut { to { opacity: 0; } }
 
 .mf-alerta-card {
-    background: #fff;
+    background: #141414; /* Fundo escuro igual aos blocos do site */
+    border: 1px solid #1f1f1f;
     border-radius: 16px;
     width: 100%;
     max-width: 420px;
     padding: 30px 24px 22px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
     text-align: center;
     transform: translateY(20px) scale(0.95);
     animation: mfPopIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
@@ -126,6 +127,7 @@
 }
 @keyframes mfPopIn { to { transform: translateY(0) scale(1); } }
 
+/* Linha colorida no topo do modal */
 .mf-alerta-card::before {
     content: '';
     position: absolute;
@@ -135,9 +137,10 @@
 }
 .mf-tipo-sucesso::before { background: #22c55e; }
 .mf-tipo-erro::before    { background: #ef4444; }
-.mf-tipo-aviso::before   { background: #f59e0b; }
-.mf-tipo-info::before    { background: #3b82f6; }
+.mf-tipo-aviso::before   { background: var(--cor-secundaria); }
+.mf-tipo-info::before    { background: var(--cor-secundaria); }
 
+/* Ícones */
 .mf-alerta-icone {
     width: 68px;
     height: 68px;
@@ -147,33 +150,35 @@
     justify-content: center;
     margin: 0 auto 16px;
     font-size: 32px;
-    color: #fff;
     animation: mfIconIn 0.4s ease 0.1s both;
 }
 @keyframes mfIconIn {
     from { transform: scale(0); opacity: 0; }
     to   { transform: scale(1); opacity: 1; }
 }
-.mf-tipo-sucesso .mf-alerta-icone { background: #22c55e; }
-.mf-tipo-erro    .mf-alerta-icone { background: #ef4444; }
-.mf-tipo-aviso   .mf-alerta-icone { background: #f59e0b; }
-.mf-tipo-info    .mf-alerta-icone { background: #3b82f6; }
+/* Cores dos ícones: Aviso/Info em amarelo, Erro em vermelho, Sucesso em verde */
+.mf-tipo-sucesso .mf-alerta-icone { background: #22c55e; color: #fff; }
+.mf-tipo-erro    .mf-alerta-icone { background: #ef4444; color: #fff; }
+.mf-tipo-aviso   .mf-alerta-icone { background: var(--cor-secundaria); color: var(--cor-primaria); }
+.mf-tipo-info    .mf-alerta-icone { background: var(--cor-secundaria); color: var(--cor-primaria); }
 
+/* Tipografia */
 .mf-alerta-titulo {
     font-size: 20px;
     font-weight: 700;
-    color: #111827;
+    color: var(--cor-texto-claro);
     margin-bottom: 8px;
 }
 
 .mf-alerta-mensagem {
     font-size: 15px;
-    color: #4b5563;
+    color: #b5b5b5; /* Cinza claro, igual aos subtítulos do site */
     line-height: 1.55;
     margin-bottom: 24px;
-    white-space: pre-line;
+    white-space: pre-line; 
 }
 
+/* Botões */
 .mf-alerta-botoes {
     display: flex;
     gap: 10px;
@@ -186,25 +191,50 @@
     min-width: 120px;
     padding: 12px 20px;
     border: none;
-    border-radius: 10px;
+    border-radius: 6px; /* Igual aos botões do site */
     font-size: 15px;
-    font-weight: 600;
+    font-weight: bold;
     cursor: pointer;
     transition: all 0.2s ease;
     font-family: inherit;
 }
-.mf-alerta-btn-confirma { background: #111827; color: #fff; }
-.mf-alerta-btn-confirma:hover { background: #000; transform: translateY(-1px); box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2); }
-.mf-tipo-sucesso .mf-alerta-btn-confirma { background: #22c55e; }
-.mf-tipo-sucesso .mf-alerta-btn-confirma:hover { background: #16a34a; }
-.mf-tipo-erro .mf-alerta-btn-confirma { background: #ef4444; }
-.mf-tipo-erro .mf-alerta-btn-confirma:hover { background: #dc2626; }
-.mf-tipo-aviso .mf-alerta-btn-confirma { background: #f59e0b; }
-.mf-tipo-aviso .mf-alerta-btn-confirma:hover { background: #d97706; }
 
-.mf-alerta-btn-cancela { background: #f3f4f6; color: #374151; }
-.mf-alerta-btn-cancela:hover { background: #e5e7eb; }
+/* Botão Principal - Sempre Amarelo */
+.mf-alerta-btn-confirma {
+    background: var(--cor-secundaria);
+    color: var(--cor-primaria);
+}
+.mf-alerta-btn-confirma:hover {
+    background: #ffe066;
+    transform: scale(1.03);
+    box-shadow: 0 4px 15px rgba(255, 214, 10, 0.3);
+}
 
+/* Sobrescreve as cores dos botões dependendo do tipo (todos ficam amarelos para manter a identidade) */
+.mf-tipo-sucesso .mf-alerta-btn-confirma,
+.mf-tipo-erro .mf-alerta-btn-confirma,
+.mf-tipo-aviso .mf-alerta-btn-confirma { 
+    background: var(--cor-secundaria); 
+    color: var(--cor-primaria); 
+}
+.mf-tipo-sucesso .mf-alerta-btn-confirma:hover,
+.mf-tipo-erro .mf-alerta-btn-confirma:hover,
+.mf-tipo-aviso .mf-alerta-btn-confirma:hover { 
+    background: #ffe066; 
+}
+
+/* Botão Cancelar */
+.mf-alerta-btn-cancela {
+    background: #1a1a1a;
+    color: var(--cor-texto-claro);
+    border: 1px solid #333;
+}
+.mf-alerta-btn-cancela:hover { 
+    background: #2a2a2a; 
+    border-color: #444;
+}
+
+/* Responsividade Mobile */
 @media (max-width: 480px) {
     .mf-alerta-card      { padding: 26px 20px 18px; }
     .mf-alerta-icone     { width: 58px; height: 58px; font-size: 26px; }
