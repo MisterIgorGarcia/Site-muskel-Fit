@@ -51,7 +51,7 @@ function configurarChecagemNome() {
         }
 
         msgEl.textContent = 'Verificando disponibilidade...';
-        msgEl.style.color = '#ffd60a'; // Amarelo
+        msgEl.style.color = '#ffd60a';
 
         timeoutChecagem = setTimeout(async () => {
             try {
@@ -64,18 +64,18 @@ function configurarChecagemNome() {
 
                 if (data.existe) {
                     msgEl.textContent = '⚠️ Este nome já está no sistema. Vá para a tela de Mensalidade.';
-                    msgEl.style.color = '#ef4444'; // Vermelho
+                    msgEl.style.color = '#ef4444';
                     nomeJaExiste = true;
                 } else {
                     msgEl.textContent = '✅ Nome disponível para matrícula!';
-                    msgEl.style.color = '#22c55e'; // Verde
+                    msgEl.style.color = '#22c55e';
                     nomeJaExiste = false;
                 }
             } catch (error) {
                 msgEl.textContent = '';
                 nomeJaExiste = false;
             }
-        }, 600); // Espera 600ms após parar de digitar
+        }, 600);
     });
 }
 
@@ -178,7 +178,7 @@ function renderizarDependentes(qtd) {
                         document.getElementById(`dep-${i}-cidade`).value = `${data.localidade} - ${data.uf}`;
                         document.getElementById(`dep-${i}-numero`).focus();
                     } else {
-                        alert(`CEP do dependente ${i} não encontrado.`);
+                        Alerta.aviso(`CEP do Dependente ${i}`, 'CEP não encontrado. Confira e tente novamente, ou preencha o endereço manualmente.');
                     }
                 } catch (err) {
                     console.error(`[CEP] erro na busca do dependente ${i}:`, err);
@@ -201,21 +201,21 @@ function coletarDependentes(fd, qtd) {
         const cidade      = (fd.get(`dep_${i}_cidade`) || '').trim();
 
         if (!nome || !nascimento || !celular || !cep || !rua || !numero_casa || !bairro || !cidade) {
-            alert(`Preencha todos os campos do dependente ${i}.`);
+            Alerta.aviso(`Dependente ${i}`, `Preencha todos os campos do dependente ${i}.`);
             return null;
         }
         
         const erroNasc = validarNascimento(nascimento);
         if (erroNasc) {
-            alert(`Dependente ${i}: ${erroNasc}`);
+            Alerta.aviso(`Dependente ${i}`, erroNasc);
             return null;
         }
         if (celular.replace(/\D/g, '').length < 10) {
-            alert(`Dependente ${i}: celular inválido.`);
+            Alerta.aviso(`Dependente ${i}`, 'Celular inválido. Use o formato (12) 99999-9999.');
             return null;
         }
         if (cep.replace(/\D/g, '').length < 8) {
-            alert(`Dependente ${i}: CEP inválido.`);
+            Alerta.aviso(`Dependente ${i}`, 'CEP inválido. Use o formato 12700-000.');
             return null;
         }
 
@@ -259,7 +259,7 @@ function configurarBuscaCEP() {
         const cep = e.target.value.replace(/\D/g, '');
 
         if (cep.length === 0) { limparCamposEndereco(); return; }
-        if (cep.length !== 8) { alert('CEP incompleto. Digite os 8 dígitos (ex: 12700-000).'); return; }
+        if (cep.length !== 8) { Alerta.aviso('CEP incompleto', 'Digite os 8 dígitos (ex: 12700-000).'); return; }
         if (cep === ultimoCepBuscado) return;
         ultimoCepBuscado = cep;
 
@@ -268,7 +268,7 @@ function configurarBuscaCEP() {
             const data = await res.json();
 
             if (data.erro) {
-                alert('CEP não encontrado. Confira e tente novamente, ou preencha o endereço manualmente.');
+                Alerta.aviso('CEP não encontrado', 'Confira e tente novamente, ou preencha o endereço manualmente.');
                 return;
             }
             document.getElementById('rua').value    = data.logradouro || '';
@@ -277,7 +277,7 @@ function configurarBuscaCEP() {
             document.getElementById('numero_casa')?.focus();
         } catch (err) {
             console.error('[CEP] erro na busca:', err);
-            alert('Não foi possível buscar o CEP agora. Preencha manualmente.');
+            Alerta.erro('Erro ao buscar CEP', 'Não foi possível buscar o CEP agora. Preencha manualmente.');
         }
     });
 
@@ -290,7 +290,7 @@ async function buscarEnderecoPorRua() {
     if (!ruaInput || !btnBusca) return;
 
     const rua = ruaInput.value.trim();
-    if (rua.length < 3) { alert('Digite pelo menos 3 letras do nome da rua para buscar.'); return; }
+    if (rua.length < 3) { Alerta.aviso('Rua muito curta', 'Digite pelo menos 3 letras do nome da rua para buscar.'); return; }
 
     const iconeOriginal = btnBusca.innerHTML;
     btnBusca.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
@@ -310,7 +310,7 @@ async function buscarEnderecoPorRua() {
         if (Array.isArray(dataLavrinhas)) resultados = resultados.concat(dataLavrinhas);
 
         if (resultados.length === 0) {
-            alert('Rua não encontrada em Cruzeiro ou Lavrinhas - SP. Tente digitar o CEP diretamente.');
+            Alerta.aviso('Rua não encontrada', 'Rua não encontrada em Cruzeiro ou Lavrinhas - SP. Tente digitar o CEP diretamente.');
             return;
         }
 
@@ -322,7 +322,7 @@ async function buscarEnderecoPorRua() {
         document.getElementById('numero_casa')?.focus();
     } catch (err) {
         console.error('[busca-rua] erro:', err);
-        alert('Não foi possível buscar o endereço agora. Digite o CEP manualmente.');
+        Alerta.erro('Erro ao buscar endereço', 'Não foi possível buscar o endereço agora. Digite o CEP manualmente.');
     } finally {
         btnBusca.innerHTML = iconeOriginal;
         btnBusca.disabled = false;
@@ -487,7 +487,7 @@ async function redirecionarParaPagamento(dados) {
             botao.style.padding = '14px 30px';
             botao.innerHTML = `<i class="fa-solid fa-lock"></i> Ir para o pagamento`;
         }
-        alert('Não foi possível iniciar o pagamento agora. Tente novamente em instantes ou fale com a academia.');
+        Alerta.erro('Erro no pagamento', 'Não foi possível iniciar o pagamento agora. Tente novamente em instantes ou fale com a academia.');
     }
 }
 
@@ -502,12 +502,12 @@ async function iniciarFormulario() {
         await carregarCatalogo();
     } catch (e) {
         console.error(e);
-        alert('Não foi possível carregar os planos. Recarregue a página.');
+        Alerta.erro('Erro ao carregar', 'Não foi possível carregar os planos. Recarregue a página.');
         return;
     }
 
     preencherUnidades();
-    configurarChecagemNome(); // ATIVA A CHECAGEM AQUI
+    configurarChecagemNome();
 
     const celularEl = document.getElementById('celular');
     if (celularEl) celularEl.addEventListener('input', e => e.target.value = formatarTelefone(e.target.value));
@@ -538,7 +538,8 @@ async function iniciarFormulario() {
         e.preventDefault();
 
         if (nomeJaExiste) {
-            return alert('Este nome já está no sistema. Vá para a tela de mensalidade.');
+            Alerta.erro('Nome já cadastrado', 'Este nome já está no sistema. Vá para a tela de mensalidade.');
+            return;
         }
 
         const fd = new FormData(e.target);
@@ -556,16 +557,29 @@ async function iniciarFormulario() {
         const pagamento   = fd.get('pagamento');
 
         const erroNasc = validarNascimento(nascimento);
-        if (erroNasc) return alert(erroNasc);
+        if (erroNasc) {
+            Alerta.aviso('Data de nascimento', erroNasc);
+            return;
+        }
 
         if (!nome || !celular || !cep || !numero_casa || !rua || !bairro || !cidade || !planoId || !pagamento) {
-            return alert('Preencha todos os campos obrigatórios (*).');
+            Alerta.aviso('Campos obrigatórios', 'Preencha todos os campos obrigatórios (*).');
+            return;
         }
-        if (celular.replace(/\D/g, '').length < 10) return alert('Celular inválido.');
-        if (cep.replace(/\D/g, '').length < 8) return alert('CEP inválido.');
+        if (celular.replace(/\D/g, '').length < 10) {
+            Alerta.aviso('Celular inválido', 'Use o formato (12) 99999-9999.');
+            return;
+        }
+        if (cep.replace(/\D/g, '').length < 8) {
+            Alerta.aviso('CEP inválido', 'Use o formato 12700-000.');
+            return;
+        }
 
         const planoObj = CATALOGO.respostaAPI[unidade]?.modalidades[modalidade]?.planos.find(p => p.id === planoId);
-        if (!planoObj) return alert('Plano selecionado inválido.');
+        if (!planoObj) {
+            Alerta.aviso('Plano indisponível', 'O plano selecionado não está disponível nesta modalidade.');
+            return;
+        }
 
         const qtdDeps = getQuantidadeDependentes(planoId);
         const dependentes = qtdDeps > 0 ? coletarDependentes(fd, qtdDeps) : [];

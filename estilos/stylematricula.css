@@ -86,6 +86,134 @@
 .countdown-container { margin-top: 12px; padding-top: 10px; border-top: 1px dashed rgba(0, 0, 0, 0.2); font-size: 1.1rem; font-weight: bold; color: #cc0000; display: flex; align-items: center; justify-content: center; gap: 8px; }
 .countdown-container i { font-size: 1.2rem; }
 
+/* ============================================
+   MODAL DE ALERTA — MUSKEL FIT
+   ============================================ */
+.mf-alerta-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 99999;
+    padding: 20px;
+    opacity: 0;
+    animation: mfFadeIn 0.2s ease forwards;
+}
+@keyframes mfFadeIn  { to { opacity: 1; } }
+
+.mf-alerta-overlay.mf-fechando {
+    animation: mfFadeOut 0.2s ease forwards;
+    pointer-events: none;
+}
+@keyframes mfFadeOut { to { opacity: 0; } }
+
+.mf-alerta-card {
+    background: #fff;
+    border-radius: 16px;
+    width: 100%;
+    max-width: 420px;
+    padding: 30px 24px 22px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+    text-align: center;
+    transform: translateY(20px) scale(0.95);
+    animation: mfPopIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    position: relative;
+    overflow: hidden;
+}
+@keyframes mfPopIn { to { transform: translateY(0) scale(1); } }
+
+.mf-alerta-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 5px;
+    background: #3b82f6;
+}
+.mf-tipo-sucesso::before { background: #22c55e; }
+.mf-tipo-erro::before    { background: #ef4444; }
+.mf-tipo-aviso::before   { background: #f59e0b; }
+.mf-tipo-info::before    { background: #3b82f6; }
+
+.mf-alerta-icone {
+    width: 68px;
+    height: 68px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 16px;
+    font-size: 32px;
+    color: #fff;
+    animation: mfIconIn 0.4s ease 0.1s both;
+}
+@keyframes mfIconIn {
+    from { transform: scale(0); opacity: 0; }
+    to   { transform: scale(1); opacity: 1; }
+}
+.mf-tipo-sucesso .mf-alerta-icone { background: #22c55e; }
+.mf-tipo-erro    .mf-alerta-icone { background: #ef4444; }
+.mf-tipo-aviso   .mf-alerta-icone { background: #f59e0b; }
+.mf-tipo-info    .mf-alerta-icone { background: #3b82f6; }
+
+.mf-alerta-titulo {
+    font-size: 20px;
+    font-weight: 700;
+    color: #111827;
+    margin-bottom: 8px;
+}
+
+.mf-alerta-mensagem {
+    font-size: 15px;
+    color: #4b5563;
+    line-height: 1.55;
+    margin-bottom: 24px;
+    white-space: pre-line;
+}
+
+.mf-alerta-botoes {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.mf-alerta-btn {
+    flex: 1;
+    min-width: 120px;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: inherit;
+}
+.mf-alerta-btn-confirma { background: #111827; color: #fff; }
+.mf-alerta-btn-confirma:hover { background: #000; transform: translateY(-1px); box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2); }
+.mf-tipo-sucesso .mf-alerta-btn-confirma { background: #22c55e; }
+.mf-tipo-sucesso .mf-alerta-btn-confirma:hover { background: #16a34a; }
+.mf-tipo-erro .mf-alerta-btn-confirma { background: #ef4444; }
+.mf-tipo-erro .mf-alerta-btn-confirma:hover { background: #dc2626; }
+.mf-tipo-aviso .mf-alerta-btn-confirma { background: #f59e0b; }
+.mf-tipo-aviso .mf-alerta-btn-confirma:hover { background: #d97706; }
+
+.mf-alerta-btn-cancela { background: #f3f4f6; color: #374151; }
+.mf-alerta-btn-cancela:hover { background: #e5e7eb; }
+
+@media (max-width: 480px) {
+    .mf-alerta-card      { padding: 26px 20px 18px; }
+    .mf-alerta-icone     { width: 58px; height: 58px; font-size: 26px; }
+    .mf-alerta-titulo    { font-size: 18px; }
+    .mf-alerta-mensagem  { font-size: 14px; }
+    .mf-alerta-botoes    { flex-direction: column-reverse; }
+    .mf-alerta-btn       { width: 100%; }
+}
+
 /* ===================== RESPONSIVIDADE MATRÍCULA ===================== */
 @media (max-width: 768px) {
     .matricula-hero { padding: 45px 20px 35px; }

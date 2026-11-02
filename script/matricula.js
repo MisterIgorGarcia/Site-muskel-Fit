@@ -44,7 +44,7 @@ function configurarChecagemNome() {
         }
 
         msgEl.textContent = 'Verificando...';
-        msgEl.style.color = '#ffd60a'; // Amarelo
+        msgEl.style.color = '#ffd60a';
 
         timeoutChecagem = setTimeout(async () => {
             try {
@@ -57,26 +57,24 @@ function configurarChecagemNome() {
 
                 if (data.existe) {
                     if (data.match_aproximado && data.nome_sugerido) {
-                        // SUGESTÃO DO NOME
                         msgEl.innerHTML = `⚠️ Encontramos um cadastro com este telefone: <strong>${data.nome_sugerido}</strong>.<br>
                         <a href="#" id="btn-aceitar-sugestao" style="color: #ffd60a; text-decoration: underline; margin-top: 5px; display: inline-block;">Clique aqui para usar este nome</a>`;
                         msgEl.style.color = '#fdfdfb';
                         nomeJaExiste = false;
 
-                        // Ação do botão de corrigir
                         document.getElementById('btn-aceitar-sugestao').addEventListener('click', (e) => {
                             e.preventDefault();
                             nomeEl.value = data.nome_sugerido;
-                            fazerChecagem(); // Roda novamente, agora vai achar exato
+                            fazerChecagem();
                         });
                     } else {
                         msgEl.textContent = '✅ Usuário encontrado! Pronto para pagar.';
-                        msgEl.style.color = '#22c55e'; // Verde
+                        msgEl.style.color = '#22c55e';
                         nomeJaExiste = true;
                     }
                 } else {
                     msgEl.textContent = '⚠️ Usuário não encontrado. Faça a matrícula de aluno novo primeiro.';
-                    msgEl.style.color = '#ef4444'; // Vermelho
+                    msgEl.style.color = '#ef4444';
                     nomeJaExiste = false;
                 }
             } catch (error) {
@@ -89,7 +87,7 @@ function configurarChecagemNome() {
     nomeEl.addEventListener('input', fazerChecagem);
     if (celularEl) {
         celularEl.addEventListener('blur', fazerChecagem);
-        celularEl.addEventListener('input', fazerChecagem); // NOVO: Busca enquanto digita
+        celularEl.addEventListener('input', fazerChecagem);
     }
 }
 
@@ -154,11 +152,11 @@ function coletarDependentes(fd, qtd) {
         const celular = (fd.get(`dep_${i}_celular`) || '').trim();
 
         if (!nome || !celular) {
-            alert(`Preencha todos os campos do dependente ${i}.`);
+            Alerta.aviso(`Dependente ${i}`, `Preencha todos os campos do dependente ${i}.`);
             return null;
         }
         if (celular.replace(/\D/g, '').length < 10) {
-            alert(`Dependente ${i}: celular inválido.`);
+            Alerta.aviso(`Dependente ${i}`, 'Celular inválido. Use o formato (12) 99999-9999.');
             return null;
         }
         dependentes.push({ nome, celular });
@@ -358,7 +356,7 @@ async function redirecionarParaPagamento(dados) {
             botao.innerHTML = `<i class="fa-solid fa-lock"></i> Ir para o pagamento`;
         }
         
-        alert(erro.message);
+        Alerta.erro('Erro no pagamento', erro.message || 'Não foi possível iniciar o pagamento agora. Tente novamente em instantes ou fale com a academia pelo WhatsApp.');
     }
 }
 
@@ -371,7 +369,7 @@ async function iniciarFormulario() {
         await carregarCatalogo();
     } catch (e) {
         console.error(e);
-        alert('Não foi possível carregar as opções de planos. Recarregue a página.');
+        Alerta.erro('Erro ao carregar', 'Não foi possível carregar as opções de planos. Recarregue a página.');
         return;
     }
 
@@ -418,7 +416,8 @@ async function iniciarFormulario() {
         e.preventDefault();
 
         if (!nomeJaExiste) {
-            return alert('Aluno não encontrado no sistema. Você precisa realizar a matrícula de aluno novo antes de pagar a mensalidade, ou usar o nome sugerido.');
+            Alerta.erro('Aluno não encontrado', 'Aluno não encontrado no sistema. Você precisa realizar a matrícula de aluno novo antes de pagar a mensalidade, ou usar o nome sugerido.');
+            return;
         }
 
         const fd = new FormData(e.target);
@@ -430,30 +429,33 @@ async function iniciarFormulario() {
         const pagamento  = fd.get('pagamento');
 
         if (!nome || !celular || !planoId || !pagamento) {
-            alert('Preencha todos os campos obrigatórios (*).');
+            Alerta.aviso('Campos obrigatórios', 'Preencha todos os campos obrigatórios (*).');
             return;
         }
         if (!unidade || !modalidade) {
-            alert('Selecione a unidade e a modalidade.');
+            Alerta.aviso('Seleção incompleta', 'Selecione a unidade e a modalidade.');
             return;
         }
         if (celular.replace(/\D/g, '').length < 10) {
-            alert('Celular inválido. Use o formato (12) 99999-9999.');
+            Alerta.aviso('Celular inválido', 'Use o formato (12) 99999-9999.');
             return;
         }
 
         const unidadeCfg = CATALOGO.respostaAPI[unidade];
-        if (!unidadeCfg) { alert('Unidade inválida.'); return; }
+        if (!unidadeCfg) {
+            Alerta.erro('Unidade inválida', 'A unidade selecionada não existe no catálogo.');
+            return;
+        }
 
         const modalidadeCfg = unidadeCfg.modalidades[modalidade];
         if (!modalidadeCfg) {
-            alert('A modalidade selecionada não está disponível nesta unidade.');
+            Alerta.aviso('Modalidade indisponível', 'A modalidade selecionada não está disponível nesta unidade.');
             return;
         }
 
         const planoObj = modalidadeCfg.planos.find(p => p.id === planoId);
         if (!planoObj) {
-            alert('O plano selecionado não está disponível nesta modalidade.');
+            Alerta.aviso('Plano indisponível', 'O plano selecionado não está disponível nesta modalidade.');
             return;
         }
 

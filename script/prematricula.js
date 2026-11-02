@@ -185,7 +185,6 @@ async function redirecionarParaPagamento(dados) {
     }
 
     try {
-        // 1️⃣ CRIAR PAGAMENTO NO MERCADO PAGO (A gravação no banco agora é feita pelo Webhook)
         if (botao) botao.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Gerando PIX...`;
 
         const resposta = await fetch('/api/criar-pagamento', {
@@ -199,7 +198,7 @@ async function redirecionarParaPagamento(dados) {
                 pagamento:  dados.pagamento,
                 nome:       dados.nome,
                 celular:    dados.celular,
-                data_nascimento: dados.nascimento // Enviando a data para o MP
+                data_nascimento: dados.nascimento
             })
         });
 
@@ -213,7 +212,6 @@ async function redirecionarParaPagamento(dados) {
 
         let segundos = 5;
         
-        // 2️⃣ TRANSFORMA O BOTÃO NO AVISO COM CONTADOR
         if (botao) {
             botao.style.flexDirection = 'column';
             botao.style.padding = '12px 15px';
@@ -252,7 +250,7 @@ async function redirecionarParaPagamento(dados) {
             botao.innerHTML = `<i class="fa-solid fa-lock"></i> Ir para o pagamento`;
         }
         
-        alert('Não foi possível iniciar o pagamento agora. Tente novamente em instantes ou fale com a academia pelo WhatsApp.');
+        Alerta.erro('Erro no pagamento', 'Não foi possível iniciar o pagamento agora. Tente novamente em instantes ou fale com a academia pelo WhatsApp.');
     }
 }
 
@@ -266,7 +264,7 @@ async function iniciarFormulario() {
         await Promise.all([carregarCatalogo(), carregarPreview()]);
     } catch (e) {
         console.error(e);
-        alert('Não foi possível carregar as opções de planos. Recarregue a página.');
+        Alerta.erro('Erro ao carregar', 'Não foi possível carregar as opções de planos. Recarregue a página.');
         return;
     }
 
@@ -331,33 +329,36 @@ async function iniciarFormulario() {
         const pagamento  = fd.get('pagamento');
 
         const erroNasc = validarNascimento(nascimento);
-        if (erroNasc) { alert(erroNasc); return; }
+        if (erroNasc) { Alerta.aviso('Data de nascimento', erroNasc); return; }
 
         if (!nome || !celular || !planoId || !pagamento) {
-            alert('Preencha todos os campos obrigatórios (*).');
+            Alerta.aviso('Campos obrigatórios', 'Preencha todos os campos obrigatórios (*).');
             return;
         }
         if (!unidade || !modalidade) {
-            alert('Selecione a unidade e a modalidade.');
+            Alerta.aviso('Seleção incompleta', 'Selecione a unidade e a modalidade.');
             return;
         }
         if (celular.replace(/\D/g, '').length < 10) {
-            alert('Celular inválido. Use o formato (12) 99999-9999.');
+            Alerta.aviso('Celular inválido', 'Use o formato (12) 99999-9999.');
             return;
         }
 
         const unidadeCfg = CATALOGO.respostaAPI[unidade];
-        if (!unidadeCfg) { alert('Unidade inválida.'); return; }
+        if (!unidadeCfg) {
+            Alerta.erro('Unidade inválida', 'A unidade selecionada não existe no catálogo.');
+            return;
+        }
 
         const modalidadeCfg = unidadeCfg.modalidades[modalidade];
         if (!modalidadeCfg) {
-            alert('A modalidade selecionada não está disponível nesta unidade.');
+            Alerta.aviso('Modalidade indisponível', 'A modalidade selecionada não está disponível nesta unidade.');
             return;
         }
 
         const planoObj = modalidadeCfg.planos.find(p => p.id === planoId);
         if (!planoObj) {
-            alert('O plano selecionado não está disponível nesta modalidade.');
+            Alerta.aviso('Plano indisponível', 'O plano selecionado não está disponível nesta modalidade.');
             return;
         }
 
