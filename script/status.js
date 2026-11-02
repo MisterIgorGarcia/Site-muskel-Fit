@@ -1,8 +1,6 @@
-// status.js
-import { HORARIOS, NOMES_DIAS } from './config.js';
+import { HORARIOS, NOMES_DIAS, HORARIO_FERIADO_PADRAO, HORARIOS_FERIADOS_CUSTOMIZADOS } from './config.js';
 
-// ===================== CACHE DE FERIADOS =====================
-const CACHE_FERIADOS = new Map(); // ano -> array de feriados
+const CACHE_FERIADOS = new Map();
 
 async function obterFeriadosDoAno(ano) {
     if (CACHE_FERIADOS.has(ano)) return CACHE_FERIADOS.get(ano);
@@ -22,18 +20,13 @@ async function verificarFeriado(dataISO) {
     const ano = parseInt(dataISO.slice(0, 4), 10);
     const feriados = await obterFeriadosDoAno(ano);
     const feriado = feriados.find(f => f.date === dataISO);
-    return feriado
-        ? { ehFeriado: true, nome: feriado.name }
-        : { ehFeriado: false };
+    return feriado ? { ehFeriado: true, nome: feriado.name } : { ehFeriado: false };
 }
 
 export function intervalosAbertos(dia) {
     const h = HORARIOS[dia];
     if (h.pausa) {
-        return [
-            [h.abertura, h.pausa.inicio],
-            [h.pausa.fim, h.fechamento]
-        ];
+        return [[h.abertura, h.pausa.inicio], [h.pausa.fim, h.fechamento]];
     }
     return [[h.abertura, h.fechamento]];
 }
@@ -45,28 +38,52 @@ function formatarHoraLocal(h) {
 export async function calcularStatusAcademia() {
     const agora = new Date();
     const dia = agora.getDay();
-    const dataISO = agora.toISOString().slice(0, 10);
+    const dataISO = agora.toLocaleDateString('sv-SE'); // Formato YYYY-MM-DD local
 
-    // 1. Verifica se hoje é feriado
     const { ehFeriado, nome: nomeFeriado } = await verificarFeriado(dataISO);
 
     if (ehFeriado) {
-        const proximoDia = (dia + 1) % 7;
-        const proximoEvento = new Date(agora);
-        proximoEvento.setDate(proximoEvento.getDate() + 1);
-        proximoEvento.setHours(HORARIOS[proximoDia].abertura, 0, 0, 0);
+        const horasDecimais = agora.getHours() + agora.getMinutes() / 60 + agora.getSeconds() / 3600;
+        const regraFeriado = HORARIOS_FERIADOS_CUSTOMIZADOS[nomeFeriado] || HORARIO_FERIADO_PADRAO;
+        
+        let abertura = regraFeriado.abertura;
+        let fechamento = regraFeriado.fechamento;
+        const fechadoOdiaTodo = (abertura === null || fechamento === null);
+        const aberto = !fechadoOdiaTodo && (horasDecimais >= abertura && horasDecimais < fechamento);
 
-        const quando = 'amanhã';
+        let proximoEvento = new Date(agora);
+        let mensagem = '';
+
+        if (fechadoOdiaTodo) {
+            const proximoDia = (dia + 1) % 7;
+            proximoEvento.setDate(proximoEvento.getDate() + 1);
+            proximoEvento.setHours(HORARIOS[proximoDia].abertura, 0, 0, 0);
+            mensagem = `Hoje é feriado (<strong>${nomeFeriado}</strong>) e estaremos <strong>fechados</strong>. Abriremos <strong>amanhã</strong> às <strong>${formatarHoraLocal(HORARIOS[proximoDia].abertura)}</strong>.`;
+        } else if (aberto) {
+            proximoEvento.setHours(fechamento, 0, 0, 0);
+            mensagem = `Hoje é feriado (<strong>${nomeFeriado}</strong>). Horário especial: <strong>fecharemos às ${String(fechamento).padStart(2, '0')}:00</strong>.`;
+        } else if (horasDecimais < abertura) {
+            proximoEvento.setHours(abertura, 0, 0, 0);
+            mensagem = `Hoje é feriado (<strong>${nomeFeriado}</strong>). Abriremos às <strong>${String(abertura).padStart(2, '0')}:00</strong>.`;
+        } else {
+            const proximoDia = (dia + 1) % 7;
+            proximoEvento.setDate(proximoEvento.getDate() + 1);
+            proximoEvento.setHours(HORARIOS[proximoDia].abertura, 0, 0, 0);
+            mensagem = `Hoje é feriado (<strong>${nomeFeriado}</strong>). Academia fechada no momento. Abriremos <strong>amanhã</strong> às <strong>${formatarHoraLocal(HORARIOS[proximoDia].abertura)}</strong>.`;
+        }
+
         return {
-            aberto: false,
-            ehFeriado: true,           // <-- ADICIONADO (Para o cronometro saber)
-            nomeFeriado: nomeFeriado,  // <-- ADICIONADO (Para o card mostrar o nome)
+            aberto,
+            ehFeriado: true,
+            nomeFeriado: nomeFeriado,
+            fechadoOdiaTodo: fechadoOdiaTodo,
+            horarioFeriado: { abertura, fechamento },
             proximoEvento,
-            mensagem: `Academia <strong>fechada</strong> hoje por ser feriado: <strong>${nomeFeriado}</strong>. Abriremos <strong>${quando}</strong> às <strong>${formatarHoraLocal(HORARIOS[proximoDia].abertura)}</strong>.`
+            mensagem
         };
     }
 
-    // 2. Lógica original (dias normais)
+    // Lógica original (dias normais)
     const horasDecimais = agora.getHours() + agora.getMinutes() / 60 + agora.getSeconds() / 3600;
     const intervalos = intervalosAbertos(dia);
     const aberto = intervalos.some(([ini, fim]) => horasDecimais >= ini && horasDecimais < fim);
@@ -79,7 +96,6 @@ export async function calcularStatusAcademia() {
     eventosHoje.sort((a, b) => a.hora - b.hora);
 
     const proximoHoje = eventosHoje.find(e => e.hora > horasDecimais);
-
     let proximoEventoData;
     let mensagem;
     const h = HORARIOS[dia];
@@ -87,35 +103,27 @@ export async function calcularStatusAcademia() {
     if (aberto) {
         const [, fimAtual] = intervalos.find(([ini, fim]) => horasDecimais >= ini && horasDecimais < fim);
         const ehPausa = h.pausa && fimAtual === h.pausa.inicio;
-
         proximoEventoData = new Date(agora);
         proximoEventoData.setHours(fimAtual, 0, 0, 0);
-
         mensagem = ehPausa
             ? `Academia <strong>aberta</strong>. Pausa para almoço às <strong>${formatarHoraLocal(fimAtual)}</strong>.`
             : `Academia <strong>aberta</strong>. Fecharemos às <strong>${formatarHoraLocal(fimAtual)}</strong>.`;
-
     } else if (proximoHoje) {
         proximoEventoData = new Date(agora);
         proximoEventoData.setHours(proximoHoje.hora, 0, 0, 0);
-
         const emPausa = h.pausa && horasDecimais >= h.pausa.inicio && horasDecimais < h.pausa.fim;
-
         mensagem = emPausa
             ? `Academia em <strong>pausa para almoço</strong>. Reabriremos às <strong>${formatarHoraLocal(proximoHoje.hora)}</strong>.`
             : `Academia fechada no momento. Abrirá <strong>hoje</strong> às <strong>${formatarHoraLocal(proximoHoje.hora)}</strong>.`;
-
     } else {
         const offset = 1;
         const proximoDia = (dia + offset) % 7;
         proximoEventoData = new Date(agora);
         proximoEventoData.setDate(proximoEventoData.getDate() + offset);
         proximoEventoData.setHours(HORARIOS[proximoDia].abertura, 0, 0, 0);
-
         const quando = offset === 1 ? 'amanhã' : `na ${NOMES_DIAS[proximoDia]}`;
         mensagem = `Academia fechada no momento. Abrirá <strong>${quando}</strong> às <strong>${formatarHoraLocal(HORARIOS[proximoDia].abertura)}</strong>.`;
     }
 
-    // <-- ADICIONADO ehFeriado: false no retorno normal
     return { aberto, ehFeriado: false, proximoEvento: proximoEventoData, mensagem };
 }

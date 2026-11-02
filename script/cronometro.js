@@ -1,6 +1,5 @@
 import { calcularStatusAcademia } from './status.js';
 import { formatarCronometro } from './utils.js';
-import { HORARIO_FERIADO } from './config.js'; // Importando o horário
 
 export async function atualizarCronometroHorarios() {
     const status = await calcularStatusAcademia();
@@ -31,34 +30,40 @@ export async function atualizarCronometroHorarios() {
         const isHoje = dias.includes(dia);
         card.classList.toggle('hoje', isHoje);
 
-        // ==========================================
-        // LÓGICA DE PINTAR O FERIADO NO CARD
-        // ==========================================
         if (isHoje && status.ehFeriado) {
             card.classList.add('card-feriado');
             
-            // Muda o ícone
             const iconeEl = card.querySelector('.horario-icone i');
-            if (iconeEl) iconeEl.className = 'fa-solid fa-calendar-day';
-            
-            // Altera o texto das horas para mostrar o horário de feriado
             const linhas = card.querySelectorAll('.horario-linha');
-            if (linhas.length > 0) {
-                linhas[0].innerHTML = `<i class="fa-regular fa-clock"></i> ${HORARIO_FERIADO.abertura.toString().padStart(2, '0')}h — ${HORARIO_FERIADO.fechamento}h`;
-                for(let i = 1; i < linhas.length; i++) linhas[i].style.display = 'none'; // Esconde a pausa de sábado
-            }
-
-            // Altera a tag para amarelo (se aberto) ou vermelho (se fechado)
             const tagEl = card.querySelector('.horario-tag');
-            if (tagEl) {
-                if (status.aberto) {
-                    tagEl.className = 'horario-tag atencao';
-                    tagEl.textContent = `Feriado - Aberto até ${HORARIO_FERIADO.fechamento}h`;
-                } else {
+
+            if (status.fechadoOdiaTodo) {
+                if (iconeEl) iconeEl.className = 'fa-solid fa-calendar-xmark';
+                linhas.forEach(l => l.style.display = 'none');
+                if (tagEl) {
                     tagEl.className = 'horario-tag fechado';
-                    tagEl.textContent = `Feriado - Fechado`;
+                    tagEl.textContent = `Fechado - ${status.nomeFeriado}`;
+                }
+                const tituloEl = card.querySelector('h3');
+                if (tituloEl) tituloEl.style.textDecoration = 'line-through';
+            } else {
+                if (iconeEl) iconeEl.className = 'fa-solid fa-calendar-day';
+                if (linhas.length > 0) {
+                    const ab = status.horarioFeriado.abertura.toString().padStart(2, '0');
+                    const fe = status.horarioFeriado.fechamento.toString().padStart(2, '0');
+                    linhas[0].innerHTML = `<i class="fa-regular fa-clock"></i> ${ab}h — ${fe}h`;
+                    for(let i = 1; i < linhas.length; i++) linhas[i].style.display = 'none';
+                }
+                if (tagEl) {
+                    tagEl.className = status.aberto ? 'horario-tag atencao' : 'horario-tag folga';
+                    tagEl.textContent = status.aberto ? `Feriado - Aberto` : `Feriado - Fechado`;
                 }
             }
         }
     });
+}
+
+export async function iniciarCronometro() {
+    await atualizarCronometroHorarios();
+    setInterval(atualizarCronometroHorarios, 1000);
 }
