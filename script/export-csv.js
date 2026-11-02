@@ -44,8 +44,8 @@ async function exportarCSV() {
                 Plano: item.plano,
                 Valor: item.preco || '',
                 Pagamento: item.pagamento || '',
-                Endereço: end,          // NOVO
-                Dependentes: deps       // NOVO
+                Endereço: end,
+                Dependentes: deps
             };
         }).sort((a, b) => {
             const [dA, mA, aA] = a.Data.split('/');
