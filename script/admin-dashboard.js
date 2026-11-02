@@ -438,18 +438,22 @@ async function buscarTodosOsDados() {
         queryUnidade = `&unidade=${encodeURIComponent(minhaUnidade)}`;
     }
 
-    const [resMat, resPre] = await Promise.all([
+    // NOVO: Adicionado a busca de 'aluno' no Promise.all
+    const [resMat, resPre, resAlu] = await Promise.all([
         fetch(`/api/admin-dados?tipo=matricula&all=true${queryUnidade}`),
-        fetch(`/api/admin-dados?tipo=prematricula&all=true${queryUnidade}`)
+        fetch(`/api/admin-dados?tipo=prematricula&all=true${queryUnidade}`),
+        fetch(`/api/admin-dados?tipo=aluno&all=true${queryUnidade}`)
     ]);
 
-    if (!resMat.ok || !resPre.ok) throw new Error('Falha ao buscar dados no servidor');
+    if (!resMat.ok || !resPre.ok || !resAlu.ok) throw new Error('Falha ao buscar dados no servidor');
 
     const dataMat = await resMat.json();
     const dataPre = await resPre.json();
+    const dataAlu = await resAlu.json();
 
     dadosGlobaisCompletos.matriculas = dataMat.dados || [];
     dadosGlobaisCompletos.prematriculas = dataPre.dados || [];
+    dadosGlobaisCompletos.alunos = dataAlu.dados || []; // NOVO
     dadosCarregados = true;
 
     return dadosGlobaisCompletos;

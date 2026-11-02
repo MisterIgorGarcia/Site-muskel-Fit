@@ -2,7 +2,7 @@
 
 async function exportarExcel() {
     // Verifica se há dados (usando a variável global de paginação)
-    if (typeof paginacao !== 'undefined' && paginacao.matriculas.total === 0 && paginacao.prematriculas.total === 0) {
+    if (typeof paginacao !== 'undefined' && paginacao.matriculas.total === 0 && paginacao.prematriculas.total === 0 && paginacao.alunos.total === 0) {
         return alert('Não há dados cadastrados para exportar.');
     }
 
@@ -10,29 +10,47 @@ async function exportarExcel() {
     const textoOriginal = btnExcel ? btnExcel.innerHTML : 'Exportar Excel';
 
     try {
-        // Muda o texto do botão para avisar o usuário
         if (btnExcel) btnExcel.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Gerando Excel...';
 
-        // Chama a função do admin-dashboard.js que busca TODOS os dados no banco
         const dados = await buscarTodosOsDados();
         
-        const todos = [...dados.matriculas, ...dados.prematriculas];
+        // Junta as 3 tabelas (garante que alunos exista usando || [])
+        const todos = [
+            ...dados.matriculas, 
+            ...dados.prematriculas, 
+            ...(dados.alunos || [])
+        ];
         
         if (todos.length === 0) {
             return alert('Não há dados para exportar.');
         }
 
-        const dadosFormatados = todos.map(item => ({
-            Data: new Date(item.created_at).toLocaleDateString('pt-BR'),
-            Tipo: item.tipo === 'pre-matricula' ? 'Pré-Matrícula' : 'Matrícula',
-            Nome: item.nome, 
-            Celular: item.celular, 
-            Unidade: item.unidade,
-            Modalidade: item.modalidade, 
-            Plano: item.plano, 
-            Valor: item.preco, 
-            Pagamento: item.pagamento
-        })).sort((a, b) => {
+        const dadosFormatados = todos.map(item => {
+            // Lógica para identificar o Tipo corretamente
+            let tipoExibicao = 'Matrícula';
+            if (item.tipo === 'pre-matricula') tipoExibicao = 'Pré-Matrícula';
+            else if (item.tipo === 'matricula-aluno' || item.tipo === 'aluno') tipoExibicao = 'Aluno Novo';
+
+            // Lógica para formatar o Endereço e Dependentes (se existirem)
+            const end = item.rua ? `${item.rua}, ${item.numero_casa || 'S/N'} - ${item.bairro}` : '';
+            const deps = Array.isArray(item.dependentes) && item.dependentes.length > 0 
+                         ? item.dependentes.map(d => d.nome).join(', ') 
+                         : '';
+
+            return {
+                Data: new Date(item.created_at).toLocaleDateString('pt-BR'),
+                Tipo: tipoExibicao,
+                Nome: item.nome, 
+                Celular: item.celular, 
+                Unidade: item.unidade,
+                Modalidade: item.modalidade, 
+                Plano: item.plano, 
+                Valor: item.preco || '',
+                Pagamento: item.pagamento || '',
+                Endereço: end,          // NOVO
+                Dependentes: deps       // NOVO
+            };
+        }).sort((a, b) => {
             const [dA, mA, aA] = a.Data.split('/'); 
             const [dB, mB, aB] = b.Data.split('/');
             return new Date(aB, mB - 1, dB) - new Date(aA, mA - 1, dA);
@@ -55,7 +73,6 @@ async function exportarExcel() {
         console.error('Erro ao exportar:', erro);
         alert('Ocorreu um erro ao gerar a planilha.');
     } finally {
-        // Restaura o botão
         if (btnExcel) btnExcel.innerHTML = textoOriginal;
     }
 }
