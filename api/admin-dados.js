@@ -11,7 +11,6 @@ export default async function handler(req, res) {
     try {
         // ================= LISTAR (READ) =================
         if (req.method === 'GET') {
-            // NOVO: Adicionado 'nome' na desestruturação
             const { tipo, unidade, page = 1, limit = 10, all, incompletos, nome } = req.query;
 
             if (!tipo) {
@@ -47,18 +46,19 @@ export default async function handler(req, res) {
                 query = query.eq('unidade', unidade);
             }
 
-            // Filtro de Dados Incompletos
+            // Filtro de Dados Incompletos (Apenas para Alunos)
             if (tipo === 'aluno' && incompletos === 'true') {
                 query = query.or('cep.is.null,data_nascimento.is.null,celular.is.null');
             }
 
-            // NOVO: Filtro de Busca por Nome (Case-insensitive)
+            // Filtro de Busca por Nome (Case-insensitive para todas as tabelas)
             if (nome && nome.trim() !== '') {
                 query = query.ilike('nome', `%${nome.trim()}%`);
             }
 
             // Se 'all' for true, não aplica paginação
             if (all !== 'true') {
+                // REGRA: Obrigatório o uso de parseInt para evitar bugs de concatenação
                 const pageNum = parseInt(page, 10) || 1;
                 const limitNum = parseInt(limit, 10) || 10;
                 
@@ -87,7 +87,12 @@ export default async function handler(req, res) {
                 return res.status(400).json({ erro: 'Nome e celular são obrigatórios.' });
             }
 
-            const { data, error } = await supabase.from(tabela).insert([dadosAluno]).select();
+            // REGRA: Mantendo o upsert com onConflict: 'nome,celular'
+            const { data, error } = await supabase
+                .from(tabela)
+                .upsert([dadosAluno], { onConflict: 'nome,celular' })
+                .select();
+                
             if (error) throw error;
             return res.status(201).json({ sucesso: true, dados: data[0] });
         }

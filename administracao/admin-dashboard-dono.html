@@ -126,6 +126,15 @@
                     <i class="fa-solid fa-chevron-down arrow"></i>
                 </summary>
                 <div class="accordion-content">
+                        <div style="display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;">
+                            <input type="text" id="busca-matricula-input" placeholder="Pesquisar por nome do aluno..." class="admin-select" style="flex: 1; min-width: 200px;" onkeypress="if(event.key === 'Enter') pesquisarMatricula()">
+                        <button onclick="pesquisarMatricula()" class="btn-amarelo" style="padding: 0 20px;">
+                            <i class="fa-solid fa-magnifying-glass"></i> Pesquisar
+                        </button>
+                        <button onclick="limparPesquisaMatricula()" class="btn-voltar-header" style="padding: 0 20px;">
+                            <i class="fa-solid fa-eraser"></i> Limpar
+                        </button>
+                    </div>
                     <div class="tabela-responsiva">
                         <table class="tabela-admin">
                             <thead>
@@ -156,6 +165,15 @@
                     <i class="fa-solid fa-chevron-down arrow"></i>
                 </summary>
                 <div class="accordion-content">
+                    <div style="display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;">
+                        <input type="text" id="busca-prematricula-input" placeholder="Pesquisar por nome do aluno..." class="admin-select" style="flex: 1; min-width: 200px;" onkeypress="if(event.key === 'Enter') pesquisarPrematricula()">
+                        <button onclick="pesquisarPrematricula()" class="btn-amarelo" style="padding: 0 20px;">
+                            <i class="fa-solid fa-magnifying-glass"></i> Pesquisar
+                        </button>
+                        <button onclick="limparPesquisaPrematricula()" class="btn-voltar-header" style="padding: 0 20px;">
+                            <i class="fa-solid fa-eraser"></i> Limpar
+                        </button>
+                    </div>
                     <div class="tabela-responsiva">
                         <table class="tabela-admin">
                             <thead>

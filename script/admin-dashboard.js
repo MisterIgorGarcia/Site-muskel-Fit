@@ -18,6 +18,8 @@ let dadosCarregados = false;
 // FILTROS
 let filtroAlunosIncompletos = false;
 let filtroAlunoNome = '';
+let filtroMatriculaNome = '';    
+let filtroPrematriculaNome = ''; 
 
 // CACHES DE TABELAS
 let dadosMatriculasTabela = []; // NOVO: Cache para os dependentes
@@ -70,9 +72,14 @@ async function buscarPaginaTabela(tipo) {
         url += `&unidade=${encodeURIComponent(minhaUnidade)}`;
     }
 
+    // Lógica de Filtros por Nome
     if (tipo === 'alunos') {
         if (filtroAlunosIncompletos) url += `&incompletos=true`;
         if (filtroAlunoNome.trim() !== '') url += `&nome=${encodeURIComponent(filtroAlunoNome.trim())}`;
+    } else if (tipo === 'matriculas') {
+        if (filtroMatriculaNome.trim() !== '') url += `&nome=${encodeURIComponent(filtroMatriculaNome.trim())}`;
+    } else if (tipo === 'prematriculas') {
+        if (filtroPrematriculaNome.trim() !== '') url += `&nome=${encodeURIComponent(filtroPrematriculaNome.trim())}`;
     }
 
     const resposta = await fetch(url);
@@ -100,6 +107,32 @@ function limparPesquisaAluno() {
     filtroAlunoNome = '';
     paginacao.alunos.pagina = 1;
     buscarPaginaTabela('alunos');
+}
+
+// ===================== PESQUISA DE MENSALIDADES =====================
+function pesquisarMatricula() {
+    filtroMatriculaNome = document.getElementById('busca-matricula-input').value;
+    paginacao.matriculas.pagina = 1; 
+    buscarPaginaTabela('matriculas');
+}
+function limparPesquisaMatricula() {
+    document.getElementById('busca-matricula-input').value = '';
+    filtroMatriculaNome = '';
+    paginacao.matriculas.pagina = 1;
+    buscarPaginaTabela('matriculas');
+}
+
+// ===================== PESQUISA DE PRÉ-MATRÍCULAS =====================
+function pesquisarPrematricula() {
+    filtroPrematriculaNome = document.getElementById('busca-prematricula-input').value;
+    paginacao.prematriculas.pagina = 1; 
+    buscarPaginaTabela('prematriculas');
+}
+function limparPesquisaPrematricula() {
+    document.getElementById('busca-prematricula-input').value = '';
+    filtroPrematriculaNome = '';
+    paginacao.prematriculas.pagina = 1;
+    buscarPaginaTabela('prematriculas');
 }
 
 // ===================== CHECAGEM DE DADOS INCOMPLETOS =====================
