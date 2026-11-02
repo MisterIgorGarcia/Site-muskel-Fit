@@ -25,7 +25,7 @@ export default async function handler(req, res) {
 
         if (payment.status === 'approved') {
             const valor = payment.transaction_amount.toFixed(2).replace('.', ',');
-            
+
             const metodos = {
                 'pix': 'PIX',
                 'credit_card': 'Cartão de Crédito',
@@ -45,7 +45,7 @@ export default async function handler(req, res) {
             const unidade = meta.unidade || 'Não informada';
             const modalidade = meta.modalidade || 'Não informada';
             const plano = meta.plano || 'Não informado';
-            
+
             const nomeAluno = meta.nome_aluno || 'Aluno(a)';
             const celularAluno = meta.celular_aluno || 'Não informado';
             const dataNascAluno = meta.data_nascimento_aluno || null;
@@ -68,31 +68,34 @@ export default async function handler(req, res) {
 
             // Lógica de salvamento baseada no tipo de pagamento
             if (meta.tipo === 'matricula-aluno') {
-                // A) Salva na tabela de Alunos Matriculados (com endereço)
+                // A) Salva na tabela de Alunos Matriculados (COM endereço e data de nascimento)
                 const dadosAluno = {
                     ...dadosBasicos,
                     tipo: 'matricula-aluno',
                     data_nascimento: dataNascAluno,
                     cep: meta.cep_aluno,
-                    numero_casa: meta.numero_casa_aluno
+                    numero_casa: meta.numero_casa_aluno,
+                    rua: meta.rua_aluno,           // ← NOVO
+                    bairro: meta.bairro_aluno,     // ← NOVO
+                    cidade: meta.cidade_aluno      // ← NOVO
                 };
-                
+
                 const { error: errAluno } = await supabase
                     .from('alunos_matriculados')
                     .upsert(dadosAluno, { onConflict: 'nome,celular' });
-                    
+
                 if (errAluno) console.error("🚨 Erro ao salvar aluno matriculado:", errAluno);
 
-                // B) Salva TAMBÉM na tabela de Matrículas para aparecer no Admin
+                // B) Salva TAMBÉM na tabela de Matrículas (SEM endereço, SEM data de nascimento)
                 const dadosMensalidade = {
                     ...dadosBasicos,
                     tipo: 'matricula' // Salva como matrícula padrão para aparecer na tabela do painel
                 };
-                
+
                 const { error: errMat } = await supabase
                     .from('matriculas')
                     .upsert(dadosMensalidade, { onConflict: 'nome,celular' });
-                    
+
                 if (errMat) console.error("🚨 Erro ao salvar na tabela matriculas geral:", errMat);
 
             } else if (meta.tipo === 'matricula') {
@@ -101,11 +104,11 @@ export default async function handler(req, res) {
                     ...dadosBasicos,
                     tipo: meta.tipo
                 };
-                
+
                 const { error } = await supabase
                     .from('matriculas')
                     .upsert(dadosMatricula, { onConflict: 'nome,celular' });
-                    
+
                 if (error) console.error("🚨 Erro ao salvar matrícula:", error);
 
             } else {
@@ -115,27 +118,34 @@ export default async function handler(req, res) {
                     tipo: 'pre-matricula',
                     data_nascimento: dataNascAluno
                 };
-                
+
                 const { error } = await supabase
                     .from('prematriculas')
                     .upsert(dadosPre, { onConflict: 'nome,celular' });
-                    
+
                 if (error) console.error("🚨 Erro ao salvar prematrícula:", error);
             }
-            
+
             console.log("✅ Processo de gravação no banco finalizado!");
 
             // ==========================================
             // 2. ENVIAR O E-MAIL (Template HTML Premium)
             // ==========================================
-            
+
             // Monta as linhas extras do e-mail se for aluno novo
             let linhaEnderecoHTML = '';
             if (meta.tipo === 'matricula-aluno') {
+                const enderecoCompleto = [
+                    meta.rua_aluno && `${meta.rua_aluno}, ${meta.numero_casa_aluno || 'S/N'}`,
+                    meta.bairro_aluno,
+                    meta.cidade_aluno,
+                    meta.cep_aluno && `CEP ${meta.cep_aluno}`
+                ].filter(Boolean).join(' — ') || 'Não informado';
+
                 linhaEnderecoHTML = `
                     <tr>
                         <td style="padding: 10px 0; color: #999999; font-size: 14px; border-bottom: 1px solid #222222;">Endereço:</td>
-                        <td style="padding: 10px 0; color: #ffffff; font-size: 14px; text-align: right; border-bottom: 1px solid #222222;">CEP ${meta.cep_aluno || 'N/I'}, Nº ${meta.numero_casa_aluno || 'S/N'}</td>
+                        <td style="padding: 10px 0; color: #ffffff; font-size: 14px; text-align: right; border-bottom: 1px solid #222222;">${enderecoCompleto}</td>
                     </tr>
                 `;
             }
@@ -147,7 +157,7 @@ export default async function handler(req, res) {
             const htmlRecibo = `
             <div style="background-color: #f4f4f4; padding: 20px; font-family: Arial, Helvetica, sans-serif;">
                 <div style="max-width: 600px; margin: 0 auto; background-color: #0d0d0d; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
-                    
+
                     <div style="background-color: #ffd60a; padding: 25px; text-align: center;">
                         <h1 style="color: #0d0d0d; margin: 0; font-size: 28px; font-weight: 900; letter-spacing: 1px; text-transform: uppercase;">MUSKEL FIT</h1>
                         <p style="color: #0d0d0d; margin: 5px 0 0 0; font-size: 14px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;">Recibo de Pagamento</p>
@@ -209,7 +219,7 @@ export default async function handler(req, res) {
             const emailResponse = await resend.emails.send({
                 from: 'Muskel Fit <onboarding@resend.dev>',
                 to: process.env.EMAIL_DONO,
-                subject: `Pagamento realizado: Aluno ${nomeAluno}`, 
+                subject: `Pagamento realizado: Aluno ${nomeAluno}`,
                 html: htmlRecibo
             });
 

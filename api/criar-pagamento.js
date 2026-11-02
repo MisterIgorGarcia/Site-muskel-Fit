@@ -19,19 +19,20 @@ module.exports = async function handler(req, res) {
     if (req.method !== 'POST') return res.status(405).json({ erro: 'Método não permitido' });
 
     try {
-        // Adicionado cep e numero_casa na desestruturação
-        const { tipo, unidade, modalidade, planoId, pagamento, nome, celular, data_nascimento, cep, numero_casa } = req.body || {};
+        // Adicionado rua, bairro e cidade na desestruturação
+        const { tipo, unidade, modalidade, planoId, pagamento, nome, celular,
+                data_nascimento, cep, numero_casa, rua, bairro, cidade } = req.body || {};
 
         // Normaliza o tipo para garantir que só aceita os válidos
         const tiposValidos = ['matricula', 'pre-matricula', 'matricula-aluno'];
         const tipoNormalizado = tiposValidos.includes(tipo) ? tipo : 'pre-matricula';
-        
+
         const paginaRetorno = PAGINA_RETORNO[tipoNormalizado];
 
-        const catalogo = await get(tipoNormalizado === 'matricula-aluno' ? 'matricula' : tipoNormalizado); 
+        const catalogo = await get(tipoNormalizado === 'matricula-aluno' ? 'matricula' : tipoNormalizado);
         // Nota: Se o catálogo de matrícula-aluno for o mesmo de matrícula, usamos 'matricula' como fallback na busca.
         // Se for um catálogo novo, troque para: await get(tipoNormalizado);
-        
+
         if (!catalogo) return res.status(500).json({ erro: 'Catálogo indisponível' });
 
         const unidadeCfg = catalogo?.[unidade];
@@ -69,7 +70,7 @@ module.exports = async function handler(req, res) {
                 }],
                 payer: {
                     name: nome || "Aluno Muskel Fit",
-                    email: "test_user_123@testuser.com" 
+                    email: "test_user_123@testuser.com"
                 },
                 back_urls: {
                     success: `${paginaRetorno}?status=success`,
@@ -77,21 +78,24 @@ module.exports = async function handler(req, res) {
                     failure: `${paginaRetorno}?status=failure`
                 },
                 auto_return: 'approved',
-                
+
                 metadata: {
                     unidade: unidade,
                     modalidade: modalidade,
                     plano: plano.nome,
-                    tipo: tipoNormalizado, // Pode ser 'matricula-aluno'
+                    tipo: tipoNormalizado,
                     nome_aluno: nome,
                     celular_aluno: celular,
                     data_nascimento_aluno: data_nascimento,
-                    cep_aluno: cep,                   // NOVO
-                    numero_casa_aluno: numero_casa    // NOVO
+                    cep_aluno: cep,                   
+                    numero_casa_aluno: numero_casa,   
+                    rua_aluno: rua,                   
+                    bairro_aluno: bairro,             
+                    cidade_aluno: cidade              
                 },
 
                 notification_url: 'https://muskelfit-academia.vercel.app/api/webhook-mercadopago',
-                
+
                 payment_methods: {
                     excluded_payment_types: TIPOS_ESCONDIVEIS
                         .filter(t => t !== tipoEscolhido)
