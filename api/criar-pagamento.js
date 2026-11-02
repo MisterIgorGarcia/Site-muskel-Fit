@@ -45,12 +45,19 @@ module.exports = async function handler(req, res) {
         const token = process.env.MP_ACCESS_TOKEN;
         if (!token) return res.status(500).json({ erro: 'Pagamento indisponível' });
 
-        // Prepara dependentes em campos separados (limite 256 chars por campo do MP)
+        // Prepara dependentes em campos separados (omitindo vazios para evitar 400 do MP)
         const depsArr = Array.isArray(dependentes) ? dependentes : [];
         const dependentesMetadata = {};
-        for (let i = 0; i < 4; i++) {
-            dependentesMetadata[`dependente_${i + 1}`] =
-                depsArr[i] ? JSON.stringify(depsArr[i]) : '';
+        for (let i = 0; i < 4 && i < depsArr.length; i++) {
+            const dep = depsArr[i] || {};
+            const depSafe = {
+                nome: String(dep.nome || '').slice(0, 120),
+                celular: String(dep.celular || '').slice(0, 20)
+            };
+            if (dep.data_nascimento) {
+                depSafe.data_nascimento = String(dep.data_nascimento).slice(0, 10);
+            }
+            dependentesMetadata[`dependente_${i + 1}`] = JSON.stringify(depSafe);
         }
 
         let prefixoTitulo = 'Pré-Matrícula';
