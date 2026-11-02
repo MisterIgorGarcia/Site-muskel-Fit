@@ -1,6 +1,5 @@
 // script/admin-dashboard.js
 
-// Verifica se a pessoa tem permissão para ver a página
 const cargo = sessionStorage.getItem('adminCargo');
 if (!cargo) {
     window.location.href = 'admin.html';
@@ -13,18 +12,17 @@ let carregando = false;
 let instanciaGrafico = null;
 let funcionarioEditandoUnidadeId = null;
 
-// Cache para os dados completos (Gráficos e Excel)
 let dadosGlobaisCompletos = { matriculas: [], prematriculas: [] };
 let dadosCarregados = false;
-
-// Filtro de alunos incompletos
 let filtroAlunosIncompletos = false;
 
-// Controle de Paginação Server-Side
+// Cache local da tabela de alunos (para edição fácil)
+let dadosAlunosTabela = [];
+
 let paginacao = {
     matriculas: { pagina: 1, limite: 10, total: 0 },
     prematriculas: { pagina: 1, limite: 10, total: 0 },
-    alunos: { pagina: 1, limite: 10, total: 0 } // NOVO
+    alunos: { pagina: 1, limite: 10, total: 0 }
 };
 
 // ===================== CARREGAR DADOS DAS TABELAS (PAGINADO) =====================
@@ -41,13 +39,12 @@ async function carregarDados(manual = false) {
         await Promise.all([
             buscarPaginaTabela('matriculas'),
             buscarPaginaTabela('prematriculas'),
-            buscarPaginaTabela('alunos') // NOVO
+            buscarPaginaTabela('alunos')
         ]);
 
-        // Se for manual ou a primeira carga, atualiza os cards e gráficos também
         if (manual || !dadosCarregados) {
             await atualizarCardsEGraficos();
-            await verificarDadosIncompletos(); // NOVO
+            await verificarDadosIncompletos();
         }
 
     } catch (erro) {
@@ -56,7 +53,7 @@ async function carregarDados(manual = false) {
     } finally {
         carregando = false;
         if (btnAtualizar && manual) {
-            btnAtualizar.innerHTML = '<i class="fa-solid fa-rotate-right"></i> Atualizar Dados';
+            btnAtualizar.innerHTML = '<i class="fa-solid fa-rotate-right"></i> Atualizar';
         }
     }
 }
@@ -81,7 +78,7 @@ async function buscarPaginaTabela(tipo) {
     
     if (tipo === 'matriculas') renderizarTabelaMatriculas(json.dados);
     else if (tipo === 'prematriculas') renderizarTabelaPrematriculas(json.dados);
-    else renderizarTabelaAlunos(json.dados); // NOVO
+    else renderizarTabelaAlunos(json.dados);
 }
 
 // ===================== NOVA CHECAGEM DE DADOS INCOMPLETOS =====================
@@ -111,10 +108,8 @@ function filtrarIncompletos() {
     paginacao.alunos.pagina = 1;
     buscarPaginaTabela('alunos');
     
-    // Rola a tela até a tabela de alunos
     document.getElementById('tabela-alunos-body').scrollIntoView({ behavior: 'smooth', block: 'center' });
     
-    // Muda o botão do alerta temporariamente para limpar o filtro
     const btn = document.querySelector('#alerta-incompletos button');
     if (btn) {
         btn.textContent = 'Limpar Filtro';
@@ -202,13 +197,14 @@ function renderizarTabelaAlunos(dados) {
     const tbody = document.getElementById('tabela-alunos-body');
     if (!tbody) return;
     tbody.innerHTML = '';
+    dadosAlunosTabela = dados; // Salva no cache para o modal
 
     if (dados.length === 0) {
         tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;">Nenhum aluno encontrado.</td></tr>`;
     } else {
-        dados.forEach(item => {
+        dados.forEach((item, index) => {
             const data = new Date(item.created_at).toLocaleDateString('pt-BR');
-            const cep = item.cep || '<span style="color:#ef4444;">Falta</span>';
+            const cep = item.cep ? item.cep : '<span style="color:#ef4444;">Falta</span>';
             const endereco = item.rua ? `${item.rua}, ${item.numero_casa || 'S/N'}` : '<span style="color:#ef4444;">Falta</span>';
             const nasc = item.data_nascimento ? item.data_nascimento.split('-').reverse().join('/') : '<span style="color:#ef4444;">Falta</span>';
             
@@ -220,13 +216,107 @@ function renderizarTabelaAlunos(dados) {
                     <td>${cep} <br><small style="color:#888;">${endereco}</small></td>
                     <td>${nasc}</td>
                     <td>${item.plano}</td>
-                    <td><button onclick="removerRegistro(${item.id}, 'aluno')" style="background: transparent; border: none; color: #ef4444; cursor: pointer;" title="Excluir"><i class="fa-solid fa-trash"></i></button></td>
+                    <td>
+                        <button onclick="abrirModalEditarAluno(${index})" style="background: transparent; border: none; color: #3b82f6; cursor: pointer; margin-right: 10px;" title="Completar Dados"><i class="fa-solid fa-pen"></i></button>
+                        <button onclick="removerRegistro(${item.id}, 'aluno')" style="background: transparent; border: none; color: #ef4444; cursor: pointer;" title="Excluir"><i class="fa-solid fa-trash"></i></button>
+                    </td>
                 </tr>
             `;
         });
     }
     renderizarBotoesPaginacao('alunos');
 }
+
+// ===================== EDIÇÃO E VIACEP DO ALUNO =====================
+function abrirModalEditarAluno(index) {
+    const aluno = dadosAlunosTabela[index];
+    if (!aluno) return;
+
+    document.getElementById('edit-aluno-id').value = aluno.id;
+    document.getElementById('edit-aluno-nome').value = aluno.nome;
+    document.getElementById('edit-aluno-nascimento').value = aluno.data_nascimento || '';
+    document.getElementById('edit-aluno-cep').value = aluno.cep || '';
+    document.getElementById('edit-aluno-rua').value = aluno.rua || '';
+    document.getElementById('edit-aluno-numero').value = aluno.numero_casa || '';
+    document.getElementById('edit-aluno-bairro').value = aluno.bairro || '';
+    document.getElementById('edit-aluno-cidade').value = aluno.cidade || '';
+
+    document.getElementById('modal-editar-aluno').style.display = 'flex';
+}
+
+function fecharModalEditarAluno() {
+    document.getElementById('modal-editar-aluno').style.display = 'none';
+}
+
+function mascaraCEP(input) {
+    let val = input.value.replace(/\D/g, '');
+    if (val.length > 5) val = val.replace(/^(\d{5})(\d)/, '$1-$2');
+    input.value = val;
+}
+
+async function buscarCEPAdmin() {
+    const cepInput = document.getElementById('edit-aluno-cep');
+    const cep = cepInput.value.replace(/\D/g, '');
+    
+    if (cep.length !== 8) return;
+
+    try {
+        const res = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+        const data = await res.json();
+
+        if (!data.erro) {
+            document.getElementById('edit-aluno-rua').value = data.logradouro || '';
+            document.getElementById('edit-aluno-bairro').value = data.bairro || '';
+            document.getElementById('edit-aluno-cidade').value = `${data.localidade} - ${data.uf}`;
+            document.getElementById('edit-aluno-numero').focus();
+        } else {
+            alert('CEP não encontrado.');
+        }
+    } catch (err) {
+        console.error('Erro ao buscar CEP:', err);
+    }
+}
+
+async function salvarEdicaoAluno(e) {
+    e.preventDefault();
+    const btn = document.getElementById('btn-salvar-aluno');
+    btn.innerHTML = 'Salvando...';
+    btn.disabled = true;
+
+    const id = document.getElementById('edit-aluno-id').value;
+    const dados = {
+        tipo: 'aluno',
+        id: id,
+        data_nascimento: document.getElementById('edit-aluno-nascimento').value || null,
+        cep: document.getElementById('edit-aluno-cep').value.trim() || null,
+        rua: document.getElementById('edit-aluno-rua').value.trim() || null,
+        numero_casa: document.getElementById('edit-aluno-numero').value.trim() || null,
+        bairro: document.getElementById('edit-aluno-bairro').value.trim() || null,
+        cidade: document.getElementById('edit-aluno-cidade').value.trim() || null
+    };
+
+    try {
+        const res = await fetch('/api/admin-dados', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(dados)
+        });
+
+        if (!res.ok) throw new Error('Erro ao salvar');
+        
+        alert('Dados atualizados com sucesso!');
+        fecharModalEditarAluno();
+        dadosCarregados = false;
+        carregarDados(true); // Recarrega as tabelas
+
+    } catch (err) {
+        alert('Erro ao salvar os dados. Tente novamente.');
+    } finally {
+        btn.innerHTML = 'Salvar Dados';
+        btn.disabled = false;
+    }
+}
+
 
 // ===================== BOTÕES DE PAGINAÇÃO =====================
 function renderizarBotoesPaginacao(tipo) {

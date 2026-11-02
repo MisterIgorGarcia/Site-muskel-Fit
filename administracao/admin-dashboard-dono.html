@@ -17,71 +17,6 @@
         }
     </script>
 
-    <!-- ESTILOS DAS ABAS SANFONA -->
-    <style>
-        /* Remove a seta padrão do navegador */
-        summary::-webkit-details-marker { display: none; }
-        
-        .admin-accordion {
-            background: #1a1a1a;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            border: 1px solid #333;
-            overflow: hidden;
-        }
-
-        .admin-accordion summary {
-            padding: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            cursor: pointer;
-            background: #141414;
-            list-style: none;
-            transition: background 0.3s;
-        }
-
-        .admin-accordion summary:hover {
-            background: #222;
-        }
-
-        .admin-accordion summary h3 {
-            margin: 0;
-            font-size: 1.1rem;
-            color: var(--cor-secundaria);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        /* Seta animada */
-        .admin-accordion .arrow {
-            transition: transform 0.3s;
-            color: var(--cor-secundaria);
-            font-size: 1.2rem;
-        }
-
-        /* Rotaciona a seta quando aberto */
-        .admin-accordion[open] .arrow {
-            transform: rotate(180deg);
-        }
-
-        .accordion-content {
-            padding: 20px;
-            border-top: 1px solid #333;
-            background: #1a1a1a;
-            /* Animação de fade-in */
-            animation: fadeIn 0.3s ease-in-out;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        /* Ajustes de margem das tabelas dentro das abas */
-        .accordion-content h3 { margin-top: 0 !important; }
-    </style>
 </head>
 
 <body class="admin-body">
@@ -330,6 +265,61 @@
                 <button onclick="fecharModalUnidade()" class="btn-voltar-header" style="padding: 10px 20px;">Cancelar</button>
                 <button onclick="salvarNovaUnidade()" class="btn-amarelo" style="padding: 10px 20px;">Salvar</button>
             </div>
+        </div>
+    </div>
+
+        <!-- MODAL PARA EDITAR DADOS DO ALUNO -->
+    <div id="modal-editar-aluno" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 9999; justify-content: center; align-items: center;">
+        <div style="background: #1a1a1a; padding: 30px; border-radius: 10px; border: 1px solid var(--cor-secundaria); width: 90%; max-width: 500px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); max-height: 90vh; overflow-y: auto;">
+            <h3 style="color: var(--cor-secundaria); margin-bottom: 20px; font-size: 1.2rem;">
+                <i class="fa-solid fa-user-pen"></i> Completar Cadastro do Aluno
+            </h3>
+            
+            <form id="form-editar-aluno" onsubmit="salvarEdicaoAluno(event)">
+                <input type="hidden" id="edit-aluno-id">
+                <input type="hidden" id="edit-aluno-tipo" value="aluno">
+
+                <div class="campo" style="margin-bottom: 15px;">
+                    <label style="color: #999; font-size: 0.85rem; margin-bottom: 5px; display: block;">Nome Completo (Não editável)</label>
+                    <input type="text" id="edit-aluno-nome" readonly style="width: 100%; padding: 12px; border-radius: 5px; border: 1px solid #333; background: #0d0d0d; color: #666; cursor: not-allowed;">
+                </div>
+
+                <div class="campo" style="margin-bottom: 15px;">
+                    <label style="color: #999; font-size: 0.85rem; margin-bottom: 5px; display: block;">Data de Nascimento</label>
+                    <input type="date" id="edit-aluno-nascimento" style="width: 100%; padding: 12px; border-radius: 5px; border: 1px solid #333; background: #0d0d0d; color: #fff; outline: none;">
+                </div>
+
+                <div class="campo" style="margin-bottom: 15px;">
+                    <label style="color: #999; font-size: 0.85rem; margin-bottom: 5px; display: block;">CEP</label>
+                    <input type="text" id="edit-aluno-cep" placeholder="Ex: 12700-000" maxlength="9" oninput="mascaraCEP(this)" onblur="buscarCEPAdmin()" style="width: 100%; padding: 12px; border-radius: 5px; border: 1px solid #333; background: #0d0d0d; color: #fff; outline: none;">
+                </div>
+
+                <div class="campo" style="margin-bottom: 15px;">
+                    <label style="color: #999; font-size: 0.85rem; margin-bottom: 5px; display: block;">Rua / Logradouro</label>
+                    <input type="text" id="edit-aluno-rua" style="width: 100%; padding: 12px; border-radius: 5px; border: 1px solid #333; background: #0d0d0d; color: #fff; outline: none;">
+                </div>
+
+                <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                    <div class="campo" style="flex: 1;">
+                        <label style="color: #999; font-size: 0.85rem; margin-bottom: 5px; display: block;">Número</label>
+                        <input type="text" id="edit-aluno-numero" style="width: 100%; padding: 12px; border-radius: 5px; border: 1px solid #333; background: #0d0d0d; color: #fff; outline: none;">
+                    </div>
+                    <div class="campo" style="flex: 2;">
+                        <label style="color: #999; font-size: 0.85rem; margin-bottom: 5px; display: block;">Bairro</label>
+                        <input type="text" id="edit-aluno-bairro" style="width: 100%; padding: 12px; border-radius: 5px; border: 1px solid #333; background: #0d0d0d; color: #fff; outline: none;">
+                    </div>
+                </div>
+
+                <div class="campo" style="margin-bottom: 25px;">
+                    <label style="color: #999; font-size: 0.85rem; margin-bottom: 5px; display: block;">Cidade / UF</label>
+                    <input type="text" id="edit-aluno-cidade" style="width: 100%; padding: 12px; border-radius: 5px; border: 1px solid #333; background: #0d0d0d; color: #fff; outline: none;">
+                </div>
+                
+                <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                    <button type="button" onclick="fecharModalEditarAluno()" class="btn-voltar-header" style="padding: 10px 20px;">Cancelar</button>
+                    <button type="submit" id="btn-salvar-aluno" class="btn-amarelo" style="padding: 10px 20px;">Salvar Dados</button>
+                </div>
+            </form>
         </div>
     </div>
 
