@@ -33,8 +33,6 @@ function validarNascimento(dataStr) {
 }
 
 /* ===================== DEPENDENTES (PLANOS FAMÍLIA) ===================== */
-// Retorna quantos dependentes o plano exige
-// familia-2 => 1, familia-3 => 2, familia-4 => 3, familia-5 => 4
 function getQuantidadeDependentes(planoId) {
     if (!planoId) return 0;
     const match = String(planoId).match(/^familia-(\d+)$/);
@@ -51,13 +49,13 @@ function renderizarDependentes(qtd) {
 
     if (qtd <= 0) {
         bloco.hidden = true;
-        bloco.style.display = 'none'; // Força o CSS a esconder a div
+        bloco.style.display = 'none'; // Força o CSS a esconder
         lista.innerHTML = '';
         return;
     }
 
     bloco.hidden = false;
-    bloco.style.display = ''; // Remove o display:none e deixa o CSS agir normalmente (block/flex)
+    bloco.style.display = ''; // Deixa o CSS agir (block/flex)
     
     let html = '';
     for (let i = 1; i <= qtd; i++) {
@@ -82,30 +80,86 @@ function renderizarDependentes(qtd) {
                     <input type="tel" id="dep-${i}-celular" name="dep_${i}_celular"
                            placeholder="(12) 99999-9999" required autocomplete="off">
                 </div>
+
+                <!-- ENDEREÇO DO DEPENDENTE -->
+                <div class="campo">
+                    <label for="dep-${i}-cep">CEP *</label>
+                    <input type="text" id="dep-${i}-cep" name="dep_${i}_cep" 
+                           placeholder="Ex: 12700-000" maxlength="9" inputmode="numeric" required autocomplete="off">
+                </div>
+
+                <div class="campo">
+                    <label for="dep-${i}-rua">Rua / Logradouro *</label>
+                    <input type="text" id="dep-${i}-rua" name="dep_${i}_rua" placeholder="Rua" required autocomplete="off">
+                </div>
+
+                <div class="campo">
+                    <label for="dep-${i}-numero">Número da casa *</label>
+                    <input type="text" id="dep-${i}-numero" name="dep_${i}_numero" placeholder="Ex: 123" required autocomplete="off">
+                </div>
+
+                <div class="campo">
+                    <label for="dep-${i}-bairro">Bairro *</label>
+                    <input type="text" id="dep-${i}-bairro" name="dep_${i}_bairro" placeholder="Bairro" required autocomplete="off">
+                </div>
+
+                <div class="campo">
+                    <label for="dep-${i}-cidade">Cidade / UF *</label>
+                    <input type="text" id="dep-${i}-cidade" name="dep_${i}_cidade" placeholder="Cidade - UF" required autocomplete="off">
+                </div>
             </div>
         `;
     }
     lista.innerHTML = html;
 
-    // Aplica máscara de telefone em cada dependente
+    // Aplica máscaras e busca de CEP em cada dependente
     for (let i = 1; i <= qtd; i++) {
-        const el = document.getElementById(`dep-${i}-celular`);
-        if (el) el.addEventListener('input', e => e.target.value = formatarTelefone(e.target.value));
+        const celEl = document.getElementById(`dep-${i}-celular`);
+        if (celEl) celEl.addEventListener('input', e => e.target.value = formatarTelefone(e.target.value));
+
+        const cepEl = document.getElementById(`dep-${i}-cep`);
+        if (cepEl) {
+            cepEl.addEventListener('input', e => e.target.value = formatarCEP(e.target.value));
+            cepEl.addEventListener('blur', async (e) => {
+                const cep = e.target.value.replace(/\D/g, '');
+                if (cep.length !== 8) return;
+
+                try {
+                    const res = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+                    const data = await res.json();
+                    if (!data.erro) {
+                        document.getElementById(`dep-${i}-rua`).value = data.logradouro || '';
+                        document.getElementById(`dep-${i}-bairro`).value = data.bairro || '';
+                        document.getElementById(`dep-${i}-cidade`).value = `${data.localidade} - ${data.uf}`;
+                        document.getElementById(`dep-${i}-numero`).focus();
+                    } else {
+                        alert(`CEP do dependente ${i} não encontrado.`);
+                    }
+                } catch (err) {
+                    console.error(`[CEP] erro na busca do dependente ${i}:`, err);
+                }
+            });
+        }
     }
 }
 
-// Coleta e valida os dependentes do form. Retorna array ou lança alerta.
 function coletarDependentes(fd, qtd) {
     const dependentes = [];
     for (let i = 1; i <= qtd; i++) {
         const nome        = (fd.get(`dep_${i}_nome`) || '').trim();
         const nascimento  = fd.get(`dep_${i}_nascimento`) || '';
         const celular     = (fd.get(`dep_${i}_celular`) || '').trim();
+        const cep         = (fd.get(`dep_${i}_cep`) || '').trim();
+        const rua         = (fd.get(`dep_${i}_rua`) || '').trim();
+        const numero_casa = (fd.get(`dep_${i}_numero`) || '').trim();
+        const bairro      = (fd.get(`dep_${i}_bairro`) || '').trim();
+        const cidade      = (fd.get(`dep_${i}_cidade`) || '').trim();
 
-        if (!nome || !nascimento || !celular) {
+        if (!nome || !nascimento || !celular || !cep || !rua || !numero_casa || !bairro || !cidade) {
             alert(`Preencha todos os campos do dependente ${i}.`);
             return null;
         }
+        
         const erroNasc = validarNascimento(nascimento);
         if (erroNasc) {
             alert(`Dependente ${i}: ${erroNasc}`);
@@ -115,8 +169,21 @@ function coletarDependentes(fd, qtd) {
             alert(`Dependente ${i}: celular inválido.`);
             return null;
         }
+        if (cep.replace(/\D/g, '').length < 8) {
+            alert(`Dependente ${i}: CEP inválido.`);
+            return null;
+        }
 
-        dependentes.push({ nome, celular, data_nascimento: nascimento });
+        dependentes.push({ 
+            nome, 
+            celular, 
+            data_nascimento: nascimento, 
+            cep, 
+            rua, 
+            numero_casa, 
+            bairro, 
+            cidade 
+        });
     }
     return dependentes;
 }
@@ -132,13 +199,12 @@ window.addEventListener('pageshow', (event) => {
             botao.style.padding = '14px 30px';
             botao.innerHTML = `<i class="fa-solid fa-lock"></i> Ir para o pagamento`;
         }
-        // Re-renderiza dependentes se o plano voltou selecionado
         const planoEl = document.getElementById('plano');
         if (planoEl) renderizarDependentes(getQuantidadeDependentes(planoEl.value));
     }
 });
 
-/* ===================== BUSCA DE CEP + BUSCA REVERSA POR RUA ===================== */
+/* ===================== BUSCA DE CEP TITULAR ===================== */
 function limparCamposEndereco() {
     ['rua', 'bairro', 'cidade'].forEach(id => {
         const el = document.getElementById(id);
@@ -516,9 +582,19 @@ function tratarRetornoMercadoPago(status) {
             dados.cep && `CEP ${dados.cep}`
         ].filter(Boolean).join(' — ') || 'Não informado';
 
-        const dependentesHTML = dependentes.length > 0
-            ? `<p style="color:#ccc; margin-bottom:8px;"><strong>Dependentes:</strong> ${dependentes.map(d => d.nome).join(', ')}</p>`
-            : '';
+        // Cria a lista de dependentes para o resumo na tela
+        let dependentesHTML = '';
+        if (dependentes.length > 0) {
+            dependentesHTML = `<div style="margin-top:10px; border-top:1px solid #333; padding-top:10px;">
+                <p style="color:#ccc; margin-bottom:8px;"><strong>Dependentes:</strong></p>`;
+            dependentes.forEach(d => {
+                const endDep = [d.rua && `${d.rua}, ${d.numero_casa}`, d.bairro, d.cidade].filter(Boolean).join(' — ');
+                dependentesHTML += `<p style="color:#aaa; margin-bottom:4px; font-size:0.9em;">
+                    • ${d.nome} (${d.celular}) - ${endDep}
+                </p>`;
+            });
+            dependentesHTML += `</div>`;
+        }
 
         resumoEl.innerHTML = `
             <h4 style="color: var(--cor-secundaria); margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 10px;"><i class="fa-solid fa-receipt"></i> Resumo do Pedido</h4>
@@ -560,9 +636,14 @@ function tratarRetornoMercadoPago(status) {
         dados.cep && `CEP ${dados.cep}`
     ].filter(Boolean).join(' — ');
 
-    const dependentesMsg = dependentes.length > 0
-        ? `*Dependentes:*\n` + dependentes.map(d => `  - ${d.nome} — ${d.celular} — Nasc. ${d.data_nascimento.split('-').reverse().join('/')}`).join('\n') + '\n'
-        : '';
+    // Monta a mensagem do WhatsApp incluindo os endereços dos dependentes
+    let dependentesMsg = '';
+    if (dependentes.length > 0) {
+        dependentesMsg = `*Dependentes:*\n` + dependentes.map(d => {
+            const endDep = [d.rua && `${d.rua}, ${d.numero_casa}`, d.bairro, d.cidade, d.cep && `CEP ${d.cep}`].filter(Boolean).join(' - ');
+            return `  - ${d.nome} — ${d.celular} — Nasc: ${d.data_nascimento.split('-').reverse().join('/')}\n    End: ${endDep}`;
+        }).join('\n') + '\n';
+    }
 
     const msg = `*NOVA MATRÍCULA — Muskel Fit*\n\n` +
         `*Nome:* ${dados.nome}\n` +
