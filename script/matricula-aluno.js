@@ -7,6 +7,8 @@ const CONFIG = {
 let CATALOGO = null;
 let contadorInterval = null;
 let ultimoCepBuscado = '';
+let nomeJaExiste = false;
+let timeoutChecagem = null;
 
 /* ===================== HELPERS ===================== */
 function formatarTelefone(valor) {
@@ -32,6 +34,51 @@ function validarNascimento(dataStr) {
     return null;
 }
 
+/* ===================== CHECAGEM DE NOME ===================== */
+function configurarChecagemNome() {
+    const nomeEl = document.getElementById('nome');
+    const msgEl = document.getElementById('status-nome-msg');
+    if (!nomeEl || !msgEl) return;
+
+    nomeEl.addEventListener('input', (e) => {
+        clearTimeout(timeoutChecagem);
+        const nome = e.target.value.trim();
+
+        if (nome.length < 3) {
+            msgEl.textContent = '';
+            nomeJaExiste = false;
+            return;
+        }
+
+        msgEl.textContent = 'Verificando disponibilidade...';
+        msgEl.style.color = '#ffd60a'; // Amarelo
+
+        timeoutChecagem = setTimeout(async () => {
+            try {
+                const res = await fetch('/api/checar-matricula', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ nome })
+                });
+                const data = await res.json();
+
+                if (data.existe) {
+                    msgEl.textContent = '⚠️ Este nome já está no sistema. Vá para a tela de Mensalidade.';
+                    msgEl.style.color = '#ef4444'; // Vermelho
+                    nomeJaExiste = true;
+                } else {
+                    msgEl.textContent = '✅ Nome disponível para matrícula!';
+                    msgEl.style.color = '#22c55e'; // Verde
+                    nomeJaExiste = false;
+                }
+            } catch (error) {
+                msgEl.textContent = '';
+                nomeJaExiste = false;
+            }
+        }, 600); // Espera 600ms após parar de digitar
+    });
+}
+
 /* ===================== DEPENDENTES (PLANOS FAMÍLIA) ===================== */
 function getQuantidadeDependentes(planoId) {
     if (!planoId) return 0;
@@ -49,13 +96,13 @@ function renderizarDependentes(qtd) {
 
     if (qtd <= 0) {
         bloco.hidden = true;
-        bloco.style.display = 'none'; // Força o CSS a esconder
+        bloco.style.display = 'none';
         lista.innerHTML = '';
         return;
     }
 
     bloco.hidden = false;
-    bloco.style.display = ''; // Deixa o CSS agir (block/flex)
+    bloco.style.display = '';
     
     let html = '';
     for (let i = 1; i <= qtd; i++) {
@@ -81,7 +128,6 @@ function renderizarDependentes(qtd) {
                            placeholder="(12) 99999-9999" required autocomplete="off">
                 </div>
 
-                <!-- ENDEREÇO DO DEPENDENTE -->
                 <div class="campo">
                     <label for="dep-${i}-cep">CEP *</label>
                     <input type="text" id="dep-${i}-cep" name="dep_${i}_cep" 
@@ -112,7 +158,6 @@ function renderizarDependentes(qtd) {
     }
     lista.innerHTML = html;
 
-    // Aplica máscaras e busca de CEP em cada dependente
     for (let i = 1; i <= qtd; i++) {
         const celEl = document.getElementById(`dep-${i}-celular`);
         if (celEl) celEl.addEventListener('input', e => e.target.value = formatarTelefone(e.target.value));
@@ -175,14 +220,7 @@ function coletarDependentes(fd, qtd) {
         }
 
         dependentes.push({ 
-            nome, 
-            celular, 
-            data_nascimento: nascimento, 
-            cep, 
-            rua, 
-            numero_casa, 
-            bairro, 
-            cidade 
+            nome, celular, data_nascimento: nascimento, cep, rua, numero_casa, bairro, cidade 
         });
     }
     return dependentes;
@@ -458,7 +496,6 @@ async function iniciarFormulario() {
     const form = document.getElementById('form-matricula-aluno');
     if (!form) return;
 
-    // GARANTE QUE A CAIXA DE DEPENDENTES COMECE FECHADA
     renderizarDependentes(0);
 
     try {
@@ -470,6 +507,7 @@ async function iniciarFormulario() {
     }
 
     preencherUnidades();
+    configurarChecagemNome(); // ATIVA A CHECAGEM AQUI
 
     const celularEl = document.getElementById('celular');
     if (celularEl) celularEl.addEventListener('input', e => e.target.value = formatarTelefone(e.target.value));
@@ -499,6 +537,10 @@ async function iniciarFormulario() {
     form.addEventListener('submit', (e) => {
         e.preventDefault();
 
+        if (nomeJaExiste) {
+            return alert('Este nome já está no sistema. Vá para a tela de mensalidade.');
+        }
+
         const fd = new FormData(e.target);
         const nome        = (fd.get('nome') || '').trim();
         const nascimento  = fd.get('nascimento');
@@ -525,10 +567,9 @@ async function iniciarFormulario() {
         const planoObj = CATALOGO.respostaAPI[unidade]?.modalidades[modalidade]?.planos.find(p => p.id === planoId);
         if (!planoObj) return alert('Plano selecionado inválido.');
 
-        // Coleta dependentes (se plano família)
         const qtdDeps = getQuantidadeDependentes(planoId);
         const dependentes = qtdDeps > 0 ? coletarDependentes(fd, qtdDeps) : [];
-        if (dependentes === null) return; // erro já alertado
+        if (dependentes === null) return;
 
         const dados = {
             nome, nascimento, celular, cep, numero_casa, rua, bairro, cidade,
@@ -585,7 +626,6 @@ function tratarRetornoMercadoPago(status) {
             dados.cep && `CEP ${dados.cep}`
         ].filter(Boolean).join(' — ') || 'Não informado';
 
-        // Cria a lista de dependentes para o resumo na tela
         let dependentesHTML = '';
         if (dependentes.length > 0) {
             dependentesHTML = `<div style="margin-top:10px; border-top:1px solid #333; padding-top:10px;">
@@ -639,7 +679,6 @@ function tratarRetornoMercadoPago(status) {
         dados.cep && `CEP ${dados.cep}`
     ].filter(Boolean).join(' — ');
 
-    // Monta a mensagem do WhatsApp incluindo os endereços dos dependentes
     let dependentesMsg = '';
     if (dependentes.length > 0) {
         dependentesMsg = `*Dependentes:*\n` + dependentes.map(d => {

@@ -6,6 +6,8 @@ const CONFIG = {
 
 let CATALOGO = null;
 let contadorInterval = null;
+let nomeJaExiste = false;
+let timeoutChecagem = null;
 
 /* ===================== HELPERS ===================== */
 function formatarTelefone(valor) {
@@ -20,6 +22,51 @@ function definirCarregando(carregando) {
     if (!botao.dataset.textoOriginal) botao.dataset.textoOriginal = botao.innerHTML;
     botao.disabled = carregando;
     botao.innerHTML = carregando ? 'Aguarde...' : botao.dataset.textoOriginal;
+}
+
+/* ===================== CHECAGEM DE NOME ===================== */
+function configurarChecagemNome() {
+    const nomeEl = document.getElementById('nome');
+    const msgEl = document.getElementById('status-nome-msg');
+    if (!nomeEl || !msgEl) return;
+
+    nomeEl.addEventListener('input', (e) => {
+        clearTimeout(timeoutChecagem);
+        const nome = e.target.value.trim();
+
+        if (nome.length < 3) {
+            msgEl.textContent = '';
+            nomeJaExiste = false;
+            return;
+        }
+
+        msgEl.textContent = 'Verificando...';
+        msgEl.style.color = '#ffd60a'; // Amarelo
+
+        timeoutChecagem = setTimeout(async () => {
+            try {
+                const res = await fetch('/api/checar-matricula', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ nome })
+                });
+                const data = await res.json();
+
+                if (data.existe) {
+                    msgEl.textContent = '✅ Usuário encontrado! Pronto para pagar.';
+                    msgEl.style.color = '#22c55e'; // Verde
+                    nomeJaExiste = true;
+                } else {
+                    msgEl.textContent = '⚠️ Usuário não encontrado. Faça a matrícula de aluno novo primeiro.';
+                    msgEl.style.color = '#ef4444'; // Vermelho
+                    nomeJaExiste = false;
+                }
+            } catch (error) {
+                msgEl.textContent = '';
+                nomeJaExiste = false;
+            }
+        }, 600); // Espera 600ms
+    });
 }
 
 /* ===================== DEPENDENTES (PLANOS FAMÍLIA) ===================== */
@@ -222,28 +269,10 @@ async function redirecionarParaPagamento(dados) {
     if (botao) {
         botao.disabled = true;
         botao.style.pointerEvents = 'none';
-        botao.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Verificando cadastro...`;
+        botao.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Processando...`;
     }
 
     try {
-        // 1º PASSO: Checar se o aluno existe na base de dados (alunos_matriculados)
-        const checkRes = await fetch('/api/checar-matricula', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ nome: dados.nome })
-        });
-
-        const checkData = await checkRes.json();
-
-        if (!checkRes.ok) {
-            throw new Error(checkData.erro || 'Erro ao verificar a matrícula.');
-        }
-
-        if (!checkData.existe) {
-            throw new Error('Aluno não encontrado no sistema. Você precisa realizar a matrícula de aluno novo antes de pagar a mensalidade.');
-        }
-
-        // 2º PASSO: Se passou na checagem, gera o pagamento no Mercado Pago
         if (botao) botao.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Gerando PIX...`;
 
         const resposta = await fetch('/api/criar-pagamento', {
@@ -269,7 +298,6 @@ async function redirecionarParaPagamento(dados) {
 
         localStorage.setItem('dadosMatricula', JSON.stringify(dados));
 
-        // 3º PASSO: Redirecionamento com contador
         let segundos = 5;
         if (botao) {
             botao.style.flexDirection = 'column';
@@ -306,7 +334,6 @@ async function redirecionarParaPagamento(dados) {
             botao.innerHTML = `<i class="fa-solid fa-lock"></i> Ir para o pagamento`;
         }
         
-        // Mostra a mensagem exata de erro (seja "Aluno não encontrado" ou erro na geração do PIX)
         alert(erro.message);
     }
 }
@@ -325,6 +352,7 @@ async function iniciarFormulario() {
     }
 
     preencherUnidades();
+    configurarChecagemNome(); // ATIVA A CHECAGEM AQUI
 
     ['telefone', 'celular'].forEach(id => {
         const el = document.getElementById(id);
@@ -365,6 +393,10 @@ async function iniciarFormulario() {
     form.addEventListener('submit', (e) => {
         e.preventDefault();
 
+        if (!nomeJaExiste) {
+            return alert('Aluno não encontrado no sistema. Você precisa realizar a matrícula de aluno novo antes de pagar a mensalidade.');
+        }
+
         const fd = new FormData(e.target);
         const nome       = (fd.get('nome') || '').trim();
         const celular    = (fd.get('celular') || '').trim();
@@ -401,7 +433,6 @@ async function iniciarFormulario() {
             return;
         }
 
-        // Coleta dependentes (se plano família)
         const qtdDeps = getQuantidadeDependentes(planoId);
         const dependentes = qtdDeps > 0 ? coletarDependentes(fd, qtdDeps) : [];
         if (dependentes === null) return;

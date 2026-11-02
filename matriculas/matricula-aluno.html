@@ -48,6 +48,8 @@
             <div class="campo">
                 <label for="nome">Nome completo *</label>
                 <input type="text" id="nome" name="nome" required autocomplete="name">
+                <!-- AVISO DE CHECAGEM EM TEMPO REAL -->
+                <small id="status-nome-msg" style="display: block; margin-top: 5px; font-weight: bold; font-size: 0.85rem;"></small>
             </div>
 
             <div class="campo">
@@ -128,7 +130,7 @@
             </div>
         </div>
 
-        <!-- Bloco DINÂMICO: Dependentes (COM O STYLE DISPLAY NONE ADICIONADO AQUI) -->
+        <!-- Bloco DINÂMICO: Dependentes -->
         <div class="form-bloco" id="bloco-dependentes" style="display: none;">
             <h3 class="form-bloco-titulo">
                 <i class="fa-solid fa-users"></i> Dependentes do plano família
