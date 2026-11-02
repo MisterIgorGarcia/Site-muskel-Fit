@@ -11,7 +11,8 @@ export default async function handler(req, res) {
     try {
         // ================= LISTAR (READ) =================
         if (req.method === 'GET') {
-            const { tipo, unidade, page = 1, limit = 10, all, incompletos } = req.query;
+            // NOVO: Adicionado 'nome' na desestruturação
+            const { tipo, unidade, page = 1, limit = 10, all, incompletos, nome } = req.query;
 
             if (!tipo) {
                 return res.status(400).json({ erro: 'Parâmetro "tipo" é obrigatório.' });
@@ -21,7 +22,7 @@ export default async function handler(req, res) {
             if (tipo === 'matricula') tabela = 'matriculas';
             else if (tipo === 'aluno') tabela = 'alunos_matriculados';
             
-            // Inicia a query pedindo a contagem exata de registros
+            // Inicia a query ordenando do mais recente para o mais antigo
             let query = supabase
                 .from(tabela)
                 .select('*', { count: 'exact' })
@@ -46,14 +47,18 @@ export default async function handler(req, res) {
                 query = query.eq('unidade', unidade);
             }
 
-            // Filtro de Dados Incompletos (para a tabela de alunos)
+            // Filtro de Dados Incompletos
             if (tipo === 'aluno' && incompletos === 'true') {
                 query = query.or('cep.is.null,data_nascimento.is.null');
             }
 
+            // NOVO: Filtro de Busca por Nome (Case-insensitive)
+            if (nome && nome.trim() !== '') {
+                query = query.ilike('nome', `%${nome.trim()}%`);
+            }
+
             // Se 'all' for true, não aplica paginação
             if (all !== 'true') {
-                // CORREÇÃO AQUI: Força page e limit a serem números inteiros
                 const pageNum = parseInt(page, 10) || 1;
                 const limitNum = parseInt(limit, 10) || 10;
                 
@@ -71,7 +76,7 @@ export default async function handler(req, res) {
             });
         }
 
-        // ================= CRIAR (CREATE) =================
+        // ================= CRIAR, ATUALIZAR E DELETAR =================
         if (req.method === 'POST') {
             const { tipo, ...dadosAluno } = req.body;
             let tabela = 'prematriculas';
@@ -87,7 +92,6 @@ export default async function handler(req, res) {
             return res.status(201).json({ sucesso: true, dados: data[0] });
         }
 
-        // ================= ATUALIZAR (UPDATE) =================
         if (req.method === 'PUT') {
             const { tipo, id, ...dadosAtualizados } = req.body;
             if (!id) return res.status(400).json({ erro: 'O ID é obrigatório para atualizar.' });
@@ -101,7 +105,6 @@ export default async function handler(req, res) {
             return res.status(200).json({ sucesso: true, dados: data[0] });
         }
 
-        // ================= DELETAR (DELETE) =================
         if (req.method === 'DELETE') {
             const { id, tipo } = req.body;
             let tabela = 'prematriculas';
