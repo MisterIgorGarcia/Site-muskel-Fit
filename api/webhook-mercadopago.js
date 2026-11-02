@@ -132,6 +132,9 @@ export default async function handler(req, res) {
                 if (error) console.error("🚨 Erro ao salvar matrícula:", error);
 
             } else {
+                // =========================================================
+                // PRE-MATRÍCULA
+                // =========================================================
                 const dadosPre = {
                     ...dadosBasicos,
                     tipo: 'pre-matricula',
@@ -139,11 +142,32 @@ export default async function handler(req, res) {
                     dependentes: dependentes
                 };
 
+                // A) Salva na tabela prematriculas
                 const { error } = await supabase
                     .from('prematriculas')
                     .upsert(dadosPre, { onConflict: 'nome,celular' });
 
                 if (error) console.error("🚨 Erro ao salvar prematrícula:", error);
+
+                // B) NOVO: Salva TAMBÉM na tabela alunos_matriculados 
+                // (Campos como CEP e endereço vão como NULL, o admin preenche depois)
+                const dadosAlunoPre = {
+                    ...dadosBasicos,
+                    tipo: 'pre-matricula',
+                    data_nascimento: dataNascAluno,
+                    cep: meta.cep_aluno || null,
+                    numero_casa: meta.numero_casa_aluno || null,
+                    rua: meta.rua_aluno || null,
+                    bairro: meta.bairro_aluno || null,
+                    cidade: meta.cidade_aluno || null,
+                    dependentes: dependentes
+                };
+
+                const { error: errAlunoPre } = await supabase
+                    .from('alunos_matriculados')
+                    .upsert(dadosAlunoPre, { onConflict: 'nome,celular' });
+
+                if (errAlunoPre) console.error("🚨 Erro ao salvar prematrícula em alunos_matriculados:", errAlunoPre);
             }
 
             console.log("✅ Processo de gravação no banco finalizado!");
