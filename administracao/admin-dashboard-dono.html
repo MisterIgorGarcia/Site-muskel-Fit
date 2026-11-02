@@ -8,31 +8,93 @@
     <link rel="stylesheet" href="../estilos/styleadmin.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
-    <!-- BIBLIOTECA DO CHARTS -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- BIBLIOTECA PARA GERAR EXCELL -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <!-- TRAVA DE SEGURANÇA -->
+    
     <script>
         if (sessionStorage.getItem('adminLogado') !== 'sim' || sessionStorage.getItem('adminCargo') !== 'dono') {
             window.location.href = 'admin.html';
         }
     </script>
+
+    <!-- ESTILOS DAS ABAS SANFONA -->
+    <style>
+        /* Remove a seta padrão do navegador */
+        summary::-webkit-details-marker { display: none; }
+        
+        .admin-accordion {
+            background: #1a1a1a;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid #333;
+            overflow: hidden;
+        }
+
+        .admin-accordion summary {
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            background: #141414;
+            list-style: none;
+            transition: background 0.3s;
+        }
+
+        .admin-accordion summary:hover {
+            background: #222;
+        }
+
+        .admin-accordion summary h3 {
+            margin: 0;
+            font-size: 1.1rem;
+            color: var(--cor-secundaria);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Seta animada */
+        .admin-accordion .arrow {
+            transition: transform 0.3s;
+            color: var(--cor-secundaria);
+            font-size: 1.2rem;
+        }
+
+        /* Rotaciona a seta quando aberto */
+        .admin-accordion[open] .arrow {
+            transform: rotate(180deg);
+        }
+
+        .accordion-content {
+            padding: 20px;
+            border-top: 1px solid #333;
+            background: #1a1a1a;
+            /* Animação de fade-in */
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Ajustes de margem das tabelas dentro das abas */
+        .accordion-content h3 { margin-top: 0 !important; }
+    </style>
 </head>
 
 <body class="admin-body">
     <div id="painel-admin">
-        <!-- CABEÇALHO CORRIGIDO -->
         <header id="cabecalho" style="margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center;">
             <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 10px;">
-                <h1><span class="spanm">M</span>USKEL <span class="spanfit">FIT</span> - ADMINISTRADOR</h1>
+                <h1><span class="spanm">M</span>USKEL <span class="spanfit">FIT</span> - ADMIN</h1>
                 
                 <div class="badge-usuario-header">
                     <i class="fa-solid fa-circle-user"></i>
                     <span>Olá, <strong id="nome-usuario-logado">...</strong></span>
                 </div>
 
-                <!-- Badge da Unidade para o Dono -->
                 <div class="badge-unidade-header" id="header-unidade">
                     <i class="fa-solid fa-location-dot"></i>
                     <span id="texto-unidade-badge">Carregando...</span>
@@ -44,7 +106,7 @@
 
         <main class="admin-container">
             <!-- ALERTA DE DADOS INCOMPLETOS -->
-            <div id="alerta-incompletos" style="display: none; background: rgba(239, 68, 68, 0.1); border: 1px solid #ef4444; border-radius: 8px; padding: 15px; margin-bottom: 20px; align-items: center; justify-content: space-between;">
+            <div id="alerta-incompletos" style="display: none; background: rgba(239, 68, 68, 0.1); border: 1px solid #ef4444; border-radius: 8px; padding: 15px; margin-bottom: 20px; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
                 <div style="display: flex; align-items: center; gap: 10px;">
                     <i class="fa-solid fa-triangle-exclamation" style="color: #ef4444; font-size: 1.5rem;"></i>
                     <div>
@@ -55,56 +117,21 @@
                 <button onclick="filtrarIncompletos()" style="background: #ef4444; color: #fff; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer;">Ver Alunos</button>
             </div>
 
-            <div class="admin-header-titulo">
-                <h2>Visão Geral da Academia</h2>
-                 <div style="display: flex; gap: 10px;">
+            <div class="admin-header-titulo" style="margin-bottom: 20px;">
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
                     <button onclick="exportarExcel()" class="btn-export" style="background-color: #22c55e; color: #fff;">
-                        <i class="ti ti-file-type-xls"></i> Exportar Excel
+                        <i class="ti ti-file-type-xls"></i> Excel
                     </button>
                     <button onclick="exportarCSV()" class="btn-export" style="background-color: #3b82f6; color: #fff;">
-                        <i class="ti ti-file-type-csv"></i> Exportar CSV
+                        <i class="ti ti-file-type-csv"></i> CSV
                     </button>
                     <button id="btn-atualizar" class="btn-amarelo" onclick="carregarDados(true)">
-                        <i class="fa-solid fa-rotate-right"></i> Atualizar Dados
+                        <i class="fa-solid fa-rotate-right"></i> Atualizar
                     </button>
                 </div>
             </div>
 
-            <!-- GRÁFICO COM FILTROS E ABAS -->
-            <div class="admin-card" style="flex-direction: column; align-items: stretch; margin-bottom: 40px; background-color: #141414;">
-                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; margin-bottom: 20px;">
-                    <h3 style="color: var(--cor-secundaria); font-size: 1.2rem; margin: 0;">
-                        <i class="fa-solid fa-chart-pie"></i> Análise de Dados
-                    </h3>
-                    <div class="abas-container">
-                        <button id="btn-aba-composicao" class="aba-btn ativa" onclick="mudarAba('composicao')">Composição</button>
-                        <button id="btn-aba-historico" class="aba-btn" onclick="mudarAba('historico')">Histórico</button>
-                    </div>
-                </div>
-
-                <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px;">
-                    <select id="filtro-origem" class="admin-select" onchange="atualizarGraficos()">
-                        <option value="todos">Visão Geral (Tudo)</option>
-                        <option value="matriculas">Somente Mensalidades</option>
-                        <option value="prematriculas">Somente Pré-Matrículas</option>
-                    </select>
-                    <select id="filtro-agrupamento" class="admin-select" onchange="atualizarGraficos()">
-                        <option value="plano">Agrupar por Plano</option>
-                        <option value="unidade">Agrupar por Unidade</option>
-                        <option value="modalidade">Agrupar por Modalidade</option>
-                        <option value="pagamento">Agrupar por Pagamento</option>
-                    </select>
-                </div>
-
-                <div id="div-grafico-composicao" style="position: relative; height: 350px; width: 100%; display: flex; justify-content: center;">
-                    <canvas id="grafico-unico"></canvas>
-                </div>
-                <div id="div-grafico-historico" style="position: relative; height: 350px; width: 100%; display: none; justify-content: center;">
-                    <canvas id="grafico-historico"></canvas>
-                </div>
-            </div>
-
-            <div class="admin-cards">
+            <div class="admin-cards" style="margin-bottom: 20px;">
                 <div class="admin-card">
                     <i class="fa-solid fa-users"></i>
                     <div>
@@ -121,110 +148,171 @@
                 </div>
             </div>
 
-            <div class="admin-tabelas">
-                <h3>Últimas Mensalidades</h3>
-                <div class="tabela-responsiva">
-                    <table class="tabela-admin">
-                        <thead>
-                            <tr>
-                                <th>Data</th>
-                                <th>Nome</th>
-                                <th>Celular</th>
-                                <th>Unidade</th>
-                                <th>Modalidade</th>
-                                <th>Plano</th>
-                                <th>Valor</th>
-                                <th>Pagamento</th>
-                                <th>Ações</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tabela-matriculas-body"></tbody>
-                    </table>
-                </div>
-                <div id="paginacao-matriculas" class="paginacao-container"></div>
+            <!-- ABA 1: GRÁFICOS -->
+            <details class="admin-accordion" open>
+                <summary>
+                    <h3><i class="fa-solid fa-chart-pie"></i> Análise de Dados e Gráficos</h3>
+                    <i class="fa-solid fa-chevron-down arrow"></i>
+                </summary>
+                <div class="accordion-content">
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; margin-bottom: 20px;">
+                        <div class="abas-container">
+                            <button id="btn-aba-composicao" class="aba-btn ativa" onclick="mudarAba('composicao')">Composição</button>
+                            <button id="btn-aba-historico" class="aba-btn" onclick="mudarAba('historico')">Histórico</button>
+                        </div>
+                        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                            <select id="filtro-origem" class="admin-select" onchange="atualizarGraficos()">
+                                <option value="todos">Visão Geral (Tudo)</option>
+                                <option value="matriculas">Somente Mensalidades</option>
+                                <option value="prematriculas">Somente Pré-Matrículas</option>
+                            </select>
+                            <select id="filtro-agrupamento" class="admin-select" onchange="atualizarGraficos()">
+                                <option value="plano">Agrupar por Plano</option>
+                                <option value="unidade">Agrupar por Unidade</option>
+                                <option value="modalidade">Agrupar por Modalidade</option>
+                                <option value="pagamento">Agrupar por Pagamento</option>
+                            </select>
+                        </div>
+                    </div>
 
-                <h3 style="margin-top: 40px;">Últimas Pré-Matrículas</h3>
-                <div class="tabela-responsiva">
-                    <table class="tabela-admin">
-                        <thead>
-                            <tr>
-                                <th>Data</th>
-                                <th>Nome</th>
-                                <th>Celular</th>
-                                <th>Unidade</th>
-                                <th>Modalidade</th>
-                                <th>Plano</th>
-                                <th>Valor</th>
-                                <th>Pagamento</th>
-                                <th>Ações</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tabela-prematriculas-body"></tbody>
-                    </table>
+                    <div id="div-grafico-composicao" style="position: relative; height: 350px; width: 100%; display: flex; justify-content: center;">
+                        <canvas id="grafico-unico"></canvas>
+                    </div>
+                    <div id="div-grafico-historico" style="position: relative; height: 350px; width: 100%; display: none; justify-content: center;">
+                        <canvas id="grafico-historico"></canvas>
+                    </div>
                 </div>
-                <div id="paginacao-prematriculas" class="paginacao-container"></div>
+            </details>
 
-                <!-- NOVA TABELA DE ALUNOS MATRICULADOS -->
-                <h3 style="margin-top: 40px;"><i class="fa-solid fa-address-card"></i> Todos os Alunos Matriculados</h3>
-                <p style="color: #999; font-size: 0.9rem; margin-bottom: 15px;">Estes são os alunos com cadastro completo no sistema (podem pagar a mensalidade).</p>
-                <div class="tabela-responsiva">
-                    <table class="tabela-admin">
-                        <thead>
-                            <tr>
-                                <th>Data</th>
-                                <th>Nome</th>
-                                <th>Celular</th>
-                                <th>CEP / Endereço</th>
-                                <th>Nascimento</th>
-                                <th>Plano</th>
-                                <th>Ações</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tabela-alunos-body"></tbody>
-                    </table>
+            <!-- ABA 2: MENSALIDADES -->
+            <details class="admin-accordion">
+                <summary>
+                    <h3><i class="fa-solid fa-file-invoice-dollar"></i> Últimas Mensalidades</h3>
+                    <i class="fa-solid fa-chevron-down arrow"></i>
+                </summary>
+                <div class="accordion-content">
+                    <div class="tabela-responsiva">
+                        <table class="tabela-admin">
+                            <thead>
+                                <tr>
+                                    <th>Data</th>
+                                    <th>Nome</th>
+                                    <th>Celular</th>
+                                    <th>Unidade</th>
+                                    <th>Modalidade</th>
+                                    <th>Plano</th>
+                                    <th>Valor</th>
+                                    <th>Pagamento</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabela-matriculas-body"></tbody>
+                        </table>
+                    </div>
+                    <div id="paginacao-matriculas" class="paginacao-container"></div>
                 </div>
-                <div id="paginacao-alunos" class="paginacao-container"></div>
-            </div>
+            </details>
+
+            <!-- ABA 3: PRÉ-MATRÍCULAS -->
+            <details class="admin-accordion">
+                <summary>
+                    <h3><i class="fa-solid fa-clipboard-list"></i> Últimas Pré-Matrículas</h3>
+                    <i class="fa-solid fa-chevron-down arrow"></i>
+                </summary>
+                <div class="accordion-content">
+                    <div class="tabela-responsiva">
+                        <table class="tabela-admin">
+                            <thead>
+                                <tr>
+                                    <th>Data</th>
+                                    <th>Nome</th>
+                                    <th>Celular</th>
+                                    <th>Unidade</th>
+                                    <th>Modalidade</th>
+                                    <th>Plano</th>
+                                    <th>Valor</th>
+                                    <th>Pagamento</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabela-prematriculas-body"></tbody>
+                        </table>
+                    </div>
+                    <div id="paginacao-prematriculas" class="paginacao-container"></div>
+                </div>
+            </details>
+
+            <!-- ABA 4: ALUNOS MATRICULADOS -->
+            <details class="admin-accordion">
+                <summary>
+                    <h3><i class="fa-solid fa-address-card"></i> Todos os Alunos Matriculados</h3>
+                    <i class="fa-solid fa-chevron-down arrow"></i>
+                </summary>
+                <div class="accordion-content">
+                    <p style="color: #999; font-size: 0.9rem; margin-bottom: 15px;">Estes são os alunos com cadastro completo no sistema (podem pagar a mensalidade).</p>
+                    <div class="tabela-responsiva">
+                        <table class="tabela-admin">
+                            <thead>
+                                <tr>
+                                    <th>Data</th>
+                                    <th>Nome</th>
+                                    <th>Celular</th>
+                                    <th>CEP / Endereço</th>
+                                    <th>Nascimento</th>
+                                    <th>Plano</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabela-alunos-body"></tbody>
+                        </table>
+                    </div>
+                    <div id="paginacao-alunos" class="paginacao-container"></div>
+                </div>
+            </details>
             
-            <!-- GERENCIAR FUNCIONÁRIOS -->
-            <div style="margin-top: 50px; padding-top: 30px; border-top: 1px solid #333;">
-                <h3><i class="fa-solid fa-users-gear"></i> Gerenciar Acessos da Equipe</h3>
-                
-                <div class="admin-card" style="margin-top: 15px; align-items: flex-end; gap: 15px; flex-wrap: wrap; background-color: #141414; border-left-color: #3b82f6;">
-                    <div style="flex: 1; min-width: 150px;">
-                        <label style="color: #999; font-size: 0.85rem; margin-bottom: 5px; display: block;">Novo Usuário</label>
-                        <input type="text" id="novo-user" placeholder="Ex: joao.silva" style="width: 100%; padding: 12px; border-radius: 5px; border: 1px solid #333; background: #0d0d0d; color: #fff; outline: none;">
+            <!-- ABA 5: FUNCIONÁRIOS -->
+            <details class="admin-accordion">
+                <summary>
+                    <h3><i class="fa-solid fa-users-gear"></i> Gerenciar Acessos da Equipe</h3>
+                    <i class="fa-solid fa-chevron-down arrow"></i>
+                </summary>
+                <div class="accordion-content">
+                    <div class="admin-card" style="margin-top: 15px; align-items: flex-end; gap: 15px; flex-wrap: wrap; background-color: #141414; border-left-color: #3b82f6;">
+                        <div style="flex: 1; min-width: 150px;">
+                            <label style="color: #999; font-size: 0.85rem; margin-bottom: 5px; display: block;">Novo Usuário</label>
+                            <input type="text" id="novo-user" placeholder="Ex: joao.silva" style="width: 100%; padding: 12px; border-radius: 5px; border: 1px solid #333; background: #0d0d0d; color: #fff; outline: none;">
+                        </div>
+                        <div style="flex: 1; min-width: 150px;">
+                            <label style="color: #999; font-size: 0.85rem; margin-bottom: 5px; display: block;">Senha de Acesso</label>
+                            <input type="text" id="nova-senha" placeholder="Ex: senha123" style="width: 100%; padding: 12px; border-radius: 5px; border: 1px solid #333; background: #0d0d0d; color: #fff; outline: none;">
+                        </div>
+                        <div style="flex: 1; min-width: 150px;">
+                            <label style="color: #999; font-size: 0.85rem; margin-bottom: 5px; display: block;">Unidade</label>
+                            <select id="nova-unidade" class="admin-select" style="width: 100%; padding: 12px; border-radius: 5px; border: 1px solid #333; background: #0d0d0d; color: #fff; outline: none;">
+                                <option value="">Carregando...</option>
+                            </select>
+                        </div>
+                        <button onclick="adicionarFuncionario()" class="btn-amarelo" style="padding: 12px 20px; height: 43px;">
+                            <i class="fa-solid fa-plus" style="color: rgb(0, 0, 0);"></i> Adicionar
+                        </button>
                     </div>
-                    <div style="flex: 1; min-width: 150px;">
-                        <label style="color: #999; font-size: 0.85rem; margin-bottom: 5px; display: block;">Senha de Acesso</label>
-                        <input type="text" id="nova-senha" placeholder="Ex: senha123" style="width: 100%; padding: 12px; border-radius: 5px; border: 1px solid #333; background: #0d0d0d; color: #fff; outline: none;">
-                    </div>
-                    <div style="flex: 1; min-width: 150px;">
-                        <label style="color: #999; font-size: 0.85rem; margin-bottom: 5px; display: block;">Unidade</label>
-                        <select id="nova-unidade" class="admin-select" style="width: 100%; padding: 12px; border-radius: 5px; border: 1px solid #333; background: #0d0d0d; color: #fff; outline: none;">
-                            <option value="">Carregando unidades...</option>
-                        </select>
-                    </div>
-                    <button onclick="adicionarFuncionario()" class="btn-amarelo" style="padding: 12px 20px; height: 43px;">
-                        <i class="fa-solid fa-plus" style="color: rgb(0, 0, 0);"></i> Adicionar
-                    </button>
-                </div>
 
-                <div class="tabela-responsiva" style="margin-top: 20px;">
-                    <table class="tabela-admin">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Usuário</th>
-                                <th>Cargo</th>
-                                <th>Unidade</th>
-                                <th>Ações</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tabela-usuarios-body"></tbody>
-                    </table>
+                    <div class="tabela-responsiva" style="margin-top: 20px;">
+                        <table class="tabela-admin">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Usuário</th>
+                                    <th>Cargo</th>
+                                    <th>Unidade</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabela-usuarios-body"></tbody>
+                        </table>
+                    </div>
                 </div>
-            </div>
+            </details>
         </main>
     </div>
 
@@ -232,7 +320,7 @@
     <div id="modal-mudar-unidade" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 9999; justify-content: center; align-items: center;">
         <div style="background: #1a1a1a; padding: 30px; border-radius: 10px; border: 1px solid var(--cor-secundaria); width: 90%; max-width: 400px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
             <h3 style="color: var(--cor-secundaria); margin-bottom: 20px; font-size: 1.2rem;">
-                <i class="fa-solid fa-building"></i> Mudar Unidade do Funcionário
+                <i class="fa-solid fa-building"></i> Mudar Unidade
             </h3>
             
             <label style="color: #999; font-size: 0.9rem; margin-bottom: 8px; display: block;">Selecione a nova unidade:</label>
