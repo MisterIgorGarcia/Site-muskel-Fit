@@ -15,10 +15,12 @@ let funcionarioEditandoUnidadeId = null;
 let dadosGlobaisCompletos = { matriculas: [], prematriculas: [] };
 let dadosCarregados = false;
 
-// NOVOS FILTROS
+// FILTROS
 let filtroAlunosIncompletos = false;
 let filtroAlunoNome = '';
 
+// CACHES DE TABELAS
+let dadosMatriculasTabela = []; // NOVO: Cache para os dependentes
 let dadosAlunosTabela = [];
 
 let paginacao = {
@@ -149,16 +151,25 @@ function renderizarTabelaMatriculas(dados) {
     const tbody = document.getElementById('tabela-matriculas-body');
     if (!tbody) return;
     tbody.innerHTML = '';
+    dadosMatriculasTabela = dados; // Salva no cache para o modal
 
     if (dados.length === 0) {
-        const colunas = cargo === 'dono' ? 9 : 8; 
+        const colunas = cargo === 'dono' ? 10 : 9; 
         tbody.innerHTML = `<tr><td colspan="${colunas}" style="text-align:center;">Nenhuma matrícula registrada.</td></tr>`;
     } else {
-        dados.forEach(item => {
+        dados.forEach((item, index) => {
             const data = new Date(item.created_at).toLocaleDateString('pt-BR');
             const valor = Number(item.preco) || 0;
             const pagamentoFormatado = item.pagamento ? item.pagamento.charAt(0).toUpperCase() + item.pagamento.slice(1).toLowerCase() : '-';
             
+            // NOVO: Lógica dos dependentes com Hyperlink
+            let dependentesHTML = '';
+            if (item.dependentes && Array.isArray(item.dependentes) && item.dependentes.length > 0) {
+                dependentesHTML = item.dependentes.map((dep, depIndex) => 
+                    `<a href="javascript:void(0)" onclick="abrirModalDependente(${index}, ${depIndex})" style="color: var(--cor-secundaria); text-decoration: underline; display: block; margin-bottom: 4px;"><i class="fa-solid fa-user"></i> ${dep.nome.split(' ')[0]}</a>`
+                ).join('');
+            }
+
             const colunaValor = cargo === 'dono' ? `<td class="destaque-valor">R$ ${valor.toFixed(2).replace('.', ',')}</td>` : '';
             const colunaAcao = cargo === 'dono' ? `<td><button onclick="removerRegistro(${item.id}, 'matricula')" style="background: transparent; border: none; color: #ef4444; cursor: pointer;" title="Excluir"><i class="fa-solid fa-trash"></i></button></td>` : '';
 
@@ -170,6 +181,7 @@ function renderizarTabelaMatriculas(dados) {
                     <td>${item.unidade}</td>
                     <td>${item.modalidade}</td>
                     <td>${item.plano}</td>
+                    <td>${dependentesHTML}</td> <!-- NOVA COLUNA AQUI -->
                     ${colunaValor}
                     <td>${pagamentoFormatado}</td>
                     ${colunaAcao}
@@ -229,15 +241,13 @@ function renderizarTabelaAlunos(dados) {
             const cep = item.cep ? item.cep : '<span style="color:#ef4444;">Falta</span>';
             const endereco = item.rua ? `${item.rua}, ${item.numero_casa || 'S/N'}` : '<span style="color:#ef4444;">Falta</span>';
             const nasc = item.data_nascimento ? item.data_nascimento.split('-').reverse().join('/') : '<span style="color:#ef4444;">Falta</span>';
-            
-            // NOVO: Verifica se o celular existe
             const celular = item.celular ? item.celular : '<span style="color:#ef4444;">Falta</span>';
             
             tbody.innerHTML += `
                 <tr>
                     <td>${data}</td>
                     <td><strong>${item.nome}</strong></td>
-                    <td>${celular}</td> <!-- Usa a nova variável aqui -->
+                    <td>${celular}</td>
                     <td>${cep} <br><small style="color:#888;">${endereco}</small></td>
                     <td>${nasc}</td>
                     <td>${item.plano}</td>
@@ -252,6 +262,31 @@ function renderizarTabelaAlunos(dados) {
     renderizarBotoesPaginacao('alunos');
 }
 
+// ===================== MODAL DE DETALHES DO DEPENDENTE =====================
+function abrirModalDependente(indexMatricula, indexDependente) {
+    const matricula = dadosMatriculasTabela[indexMatricula];
+    if (!matricula || !matricula.dependentes) return;
+
+    const dep = matricula.dependentes[indexDependente];
+    if (!dep) return;
+
+    document.getElementById('dep-detalhe-nome').textContent = dep.nome || 'Não informado';
+    document.getElementById('dep-detalhe-celular').textContent = dep.celular || 'Não informado';
+    document.getElementById('dep-detalhe-nascimento').textContent = dep.data_nascimento ? dep.data_nascimento.split('-').reverse().join('/') : 'Não informado';
+    
+    document.getElementById('dep-detalhe-cep').textContent = dep.cep || 'Não informado';
+    document.getElementById('dep-detalhe-rua').textContent = dep.rua || 'Não informado';
+    document.getElementById('dep-detalhe-numero').textContent = dep.numero_casa || 'Não informado';
+    document.getElementById('dep-detalhe-bairro').textContent = dep.bairro || 'Não informado';
+    document.getElementById('dep-detalhe-cidade').textContent = dep.cidade || 'Não informado';
+
+    document.getElementById('modal-detalhes-dependente').style.display = 'flex';
+}
+
+function fecharModalDependente() {
+    document.getElementById('modal-detalhes-dependente').style.display = 'none';
+}
+
 // ===================== EDIÇÃO E VIACEP DO ALUNO =====================
 function abrirModalEditarAluno(index) {
     const aluno = dadosAlunosTabela[index];
@@ -259,7 +294,7 @@ function abrirModalEditarAluno(index) {
 
     document.getElementById('edit-aluno-id').value = aluno.id;
     document.getElementById('edit-aluno-nome').value = aluno.nome;
-       document.getElementById('edit-aluno-celular').value = aluno.celular || '';
+    document.getElementById('edit-aluno-celular').value = aluno.celular || '';
     document.getElementById('edit-aluno-nascimento').value = aluno.data_nascimento || '';
     document.getElementById('edit-aluno-cep').value = aluno.cep || '';
     document.getElementById('edit-aluno-rua').value = aluno.rua || '';
