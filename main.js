@@ -6,15 +6,22 @@ import { iniciarCronometro } from './script/cronometro.js';
 import { iniciarOcultarAvaliacao } from './script/ocultar-avaliacao.js'; 
 import './script/externos.js';
 
-function init() {
+async function init() {
+    // Inicializa os módulos que são síncronos (rápidos)
     iniciarBadge();
     iniciarMenu();
-    iniciarCronometro();
     iniciarOcultarAvaliacao();
+
+    // O cronômetro agora precisa de await, pois busca os feriados na API
+    try {
+        await iniciarCronometro();
+    } catch (erro) {
+        console.error("Erro ao iniciar o cronômetro:", erro);
+    }
 }
 
-if (document.readyState === 'loading') { //if para impedir que o JS rode antes do HTML carregar
+if (document.readyState === 'loading') { 
     document.addEventListener('DOMContentLoaded', init);
-} else { //caso documento readyState seja 'complete' ou 'interactive'
-    init(); //inicializa o javascript
+} else { 
+    init(); 
 }

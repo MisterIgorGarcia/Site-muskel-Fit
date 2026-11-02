@@ -1,14 +1,32 @@
-//ESSE ARQUIVO CONTROLA O STATUS DE ABERTO E FECHADADO DOS HORARIOS DO SITE, INCLUINDO AS PAUSAS DE
-//ALMOÇO
-
+// status.js
 import { HORARIOS, NOMES_DIAS } from './config.js';
 
-/**
- * Retorna os intervalos abertos de um dia.
- * Se tiver pausa, vira dois intervalos.
- * @param {number} dia - 0 (dom) a 6 (sáb)
- * @returns {Array<[number, number]>}
- */
+// ===================== CACHE DE FERIADOS =====================
+const CACHE_FERIADOS = new Map(); // ano -> array de feriados
+
+async function obterFeriadosDoAno(ano) {
+    if (CACHE_FERIADOS.has(ano)) return CACHE_FERIADOS.get(ano);
+    try {
+        const resp = await fetch(`https://brasilapi.com.br/api/feriados/v1/${ano}`);
+        if (!resp.ok) throw new Error('Falha ao buscar feriados');
+        const feriados = await resp.json();
+        CACHE_FERIADOS.set(ano, feriados);
+        return feriados;
+    } catch (erro) {
+        console.error('Erro ao buscar feriados:', erro);
+        return [];
+    }
+}
+
+async function verificarFeriado(dataISO) {
+    const ano = parseInt(dataISO.slice(0, 4), 10);
+    const feriados = await obterFeriadosDoAno(ano);
+    const feriado = feriados.find(f => f.date === dataISO);
+    return feriado
+        ? { ehFeriado: true, nome: feriado.name }
+        : { ehFeriado: false };
+}
+
 export function intervalosAbertos(dia) {
     const h = HORARIOS[dia];
     if (h.pausa) {
@@ -20,19 +38,39 @@ export function intervalosAbertos(dia) {
     return [[h.abertura, h.fechamento]];
 }
 
-/**
- * Calcula o status atual da academia.
- * @returns {{ aberto: boolean, proximoEvento: Date, mensagem: string }}
- */
-export function calcularStatusAcademia() {
+function formatarHoraLocal(h) {
+    return String(h).padStart(2, '0') + ':00';
+}
+
+export async function calcularStatusAcademia() {
     const agora = new Date();
     const dia = agora.getDay();
-    const horasDecimais = agora.getHours() + agora.getMinutes() / 60 + agora.getSeconds() / 3600;
+    const dataISO = agora.toISOString().slice(0, 10);
 
+    // 1. Verifica se hoje é feriado
+    const { ehFeriado, nome: nomeFeriado } = await verificarFeriado(dataISO);
+
+    if (ehFeriado) {
+        const proximoDia = (dia + 1) % 7;
+        const proximoEvento = new Date(agora);
+        proximoEvento.setDate(proximoEvento.getDate() + 1);
+        proximoEvento.setHours(HORARIOS[proximoDia].abertura, 0, 0, 0);
+
+        const quando = 'amanhã';
+        return {
+            aberto: false,
+            ehFeriado: true,           // <-- ADICIONADO (Para o cronometro saber)
+            nomeFeriado: nomeFeriado,  // <-- ADICIONADO (Para o card mostrar o nome)
+            proximoEvento,
+            mensagem: `Academia <strong>fechada</strong> hoje por ser feriado: <strong>${nomeFeriado}</strong>. Abriremos <strong>${quando}</strong> às <strong>${formatarHoraLocal(HORARIOS[proximoDia].abertura)}</strong>.`
+        };
+    }
+
+    // 2. Lógica original (dias normais)
+    const horasDecimais = agora.getHours() + agora.getMinutes() / 60 + agora.getSeconds() / 3600;
     const intervalos = intervalosAbertos(dia);
     const aberto = intervalos.some(([ini, fim]) => horasDecimais >= ini && horasDecimais < fim);
 
-    // Monta a lista de eventos do dia (aberturas e fechamentos)
     const eventosHoje = [];
     intervalos.forEach(([ini, fim]) => {
         eventosHoje.push({ hora: ini, tipo: 'abertura' });
@@ -78,10 +116,6 @@ export function calcularStatusAcademia() {
         mensagem = `Academia fechada no momento. Abrirá <strong>${quando}</strong> às <strong>${formatarHoraLocal(HORARIOS[proximoDia].abertura)}</strong>.`;
     }
 
-    return { aberto, proximoEvento: proximoEventoData, mensagem };
-}
-
-// helper local pra não criar dependência circular com utils
-function formatarHoraLocal(h) {
-    return String(h).padStart(2, '0') + ':00';
+    // <-- ADICIONADO ehFeriado: false no retorno normal
+    return { aberto, ehFeriado: false, proximoEvento: proximoEventoData, mensagem };
 }

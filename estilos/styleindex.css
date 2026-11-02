@@ -154,6 +154,17 @@
 .card-horario.hoje { border-color: var(--cor-secundaria); transform: translateY(-5px); } 
 .card-horario.hoje h3 { color: var(--cor-secundaria); }
 
+/* ===================== CARD DE FERIADO ===================== */ 
+.card-horario.card-feriado { 
+    border-color: #f97316 !important; /* Laranja para indicar aviso */
+    background-color: rgba(249, 115, 22, 0.05); 
+} 
+.card-horario.card-feriado .horario-icone { color: #f97316; } 
+/* Removemos o line-through e a cor acinzentada do título */
+.card-horario.card-feriado h3 { 
+    color: var(--cor-texto-claro); 
+}
+
 /* ===================== PÁGINA LEGAL (PRIVACIDADE) ===================== */ 
 .pagina-legal { max-width: 900px; margin: 0 auto; padding: 80px 40px 100px; color: var(--cor-texto-claro); } 
 .pagina-legal-header { text-align: center; margin-bottom: 60px; padding-bottom: 30px; border-bottom: 3px solid var(--cor-secundaria); } 

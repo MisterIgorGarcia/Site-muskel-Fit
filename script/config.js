@@ -24,3 +24,30 @@ export const HORARIOS_BADGE = {
     sabado: { manha: [6, 12], tarde: [14, 18] },
     domingo: { abre: 8, fecha: 12 }
 };
+
+// Horário PADRÃO para feriados (6h às 18h)
+export const HORARIO_FERIADO_PADRAO = {
+    abertura: 6,
+    fechamento: 18
+};
+
+// =========================================================================
+// ⚙️ PAINEL DE CONTROLE DE FERIADOS
+// =========================================================================
+// Coloque o nome EXATO do feriado (como vem da BrasilAPI) e defina os horários.
+// Para deixar a academia FECHADA o dia todo, use: abertura: null
+// Qualquer feriado que NÃO estiver aqui, usará o HORARIO_FERIADO_PADRAO acima.
+export const HORARIOS_FERIADOS_CUSTOMIZADOS = {
+    "Confraternização Universal": { abertura: null, fechamento: null }, // 1 de Jan (Fechado)
+    "Carnaval": { abertura: 6, fechamento: 18 },                         
+    "Sexta-feira Santa": { abertura: 6, fechamento: 18 },           
+    "Tiradentes": { abertura: 6, fechamento: 18 },                       
+    "Dia do Trabalhador": { abertura: 6, fechamento: 18 },               
+    "Corpus Christi": { abertura: 6, fechamento: 18 },                   
+    "Independência do Brasil": { abertura: 6, fechamento: 18 },          
+    "Nossa Senhora Aparecida": { abertura: 6, fechamento: 18 },
+    "Finados": { abertura: 6, fechamento: 18 },                          
+    "Proclamação da República": { abertura: 6, fechamento: 18 },
+    "Dia Nacional de Zumbi e da Consciência Negra": { abertura: 6, fechamento: 18 },
+    "Natal": { abertura: 6, fechamento: 18 }                        
+};
