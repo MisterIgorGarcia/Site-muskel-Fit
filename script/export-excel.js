@@ -29,7 +29,7 @@ async function exportarExcel() {
             // Lógica para identificar o Tipo corretamente
             let tipoExibicao = 'Matrícula';
             if (item.tipo === 'pre-matricula') tipoExibicao = 'Pré-Matrícula';
-            else if (item.tipo === 'matricula-aluno' || item.tipo === 'aluno') tipoExibicao = 'Aluno Novo';
+            else if (item.tipo === 'matricula-aluno' || item.tipo === 'aluno') tipoExibicao = 'Aluno Cadastrado';
 
             // Lógica para formatar o Endereço e Dependentes (se existirem)
             const end = item.rua ? `${item.rua}, ${item.numero_casa || 'S/N'} - ${item.bairro}` : '';

@@ -27,7 +27,7 @@ async function exportarCSV() {
         const dadosFormatados = todos.map(item => {
             let tipoExibicao = 'Matrícula';
             if (item.tipo === 'pre-matricula') tipoExibicao = 'Pré-Matrícula';
-            else if (item.tipo === 'matricula-aluno' || item.tipo === 'aluno') tipoExibicao = 'Aluno Novo';
+            else if (item.tipo === 'matricula-aluno' || item.tipo === 'aluno') tipoExibicao = 'Aluno Cadastrado';
 
             const end = item.rua ? `${item.rua}, ${item.numero_casa || 'S/N'} - ${item.bairro}` : '';
             const deps = Array.isArray(item.dependentes) && item.dependentes.length > 0 
