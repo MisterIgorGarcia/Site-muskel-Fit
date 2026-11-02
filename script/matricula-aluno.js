@@ -458,6 +458,9 @@ async function iniciarFormulario() {
     const form = document.getElementById('form-matricula-aluno');
     if (!form) return;
 
+    // GARANTE QUE A CAIXA DE DEPENDENTES COMECE FECHADA
+    renderizarDependentes(0);
+
     try {
         await carregarCatalogo();
     } catch (e) {
