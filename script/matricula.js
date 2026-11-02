@@ -60,7 +60,7 @@ function configurarChecagemNome() {
                         // SUGESTÃO DO NOME
                         msgEl.innerHTML = `⚠️ Encontramos um cadastro com este telefone: <strong>${data.nome_sugerido}</strong>.<br>
                         <a href="#" id="btn-aceitar-sugestao" style="color: #ffd60a; text-decoration: underline; margin-top: 5px; display: inline-block;">Clique aqui para usar este nome</a>`;
-                        msgEl.style.color = '#ef4444';
+                        msgEl.style.color = '#fdfdfb';
                         nomeJaExiste = false;
 
                         // Ação do botão de corrigir
