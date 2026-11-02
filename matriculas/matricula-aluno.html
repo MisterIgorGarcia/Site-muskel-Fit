@@ -39,7 +39,7 @@
 <section class="matricula-container">
     <form id="form-matricula-aluno" class="form-matricula" novalidate>
 
-        <!-- Bloco 1: Dados pessoais (Agora com mais campos) -->
+        <!-- Bloco 1: Dados pessoais -->
         <div class="form-bloco">
             <h3 class="form-bloco-titulo">
                 <i class="fa-solid fa-user"></i> Seus dados
@@ -60,14 +60,43 @@
                 <input type="tel" id="celular" name="celular" placeholder="(12) 99999-9999" required autocomplete="tel">
             </div>
 
+            <!-- ===================== ENDEREÇO ===================== -->
             <div class="campo">
                 <label for="cep">CEP *</label>
-                <input type="text" id="cep" name="cep" placeholder="Ex: 12700-000" required>
+                <input type="text" id="cep" name="cep" placeholder="Ex: 12700-000"
+                       maxlength="9" inputmode="numeric" required autocomplete="postal-code">
+            </div>
+
+            <div class="campo">
+                <label for="rua">Rua / Logradouro *</label>
+                <div style="display: flex; gap: 8px; align-items: stretch;">
+                    <input type="text" id="rua" name="rua"
+                           placeholder="Digite a rua ou use a lupa" required autocomplete="address-line1"
+                           style="flex: 1;">
+                    <button type="button" id="btn-buscar-rua"
+                            onclick="buscarEnderecoPorRua()"
+                            title="Buscar rua pelo nome"
+                            style="background: var(--cor-secundaria, #ffd60a); color: #0d0d0d;
+                                   border: none; padding: 0 16px; border-radius: 8px;
+                                   cursor: pointer; font-size: 1rem; min-width: 48px;">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </button>
+                </div>
             </div>
 
             <div class="campo">
                 <label for="numero_casa">Número da casa *</label>
-                <input type="text" id="numero_casa" name="numero_casa" placeholder="Ex: 123" required>
+                <input type="text" id="numero_casa" name="numero_casa" placeholder="Ex: 123" required autocomplete="address-line2">
+            </div>
+
+            <div class="campo">
+                <label for="bairro">Bairro *</label>
+                <input type="text" id="bairro" name="bairro" placeholder="Bairro" required autocomplete="address-level3">
+            </div>
+
+            <div class="campo">
+                <label for="cidade">Cidade / UF *</label>
+                <input type="text" id="cidade" name="cidade" placeholder="Cidade - UF" required autocomplete="address-level2">
             </div>
         </div>
 

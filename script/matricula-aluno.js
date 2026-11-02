@@ -6,6 +6,7 @@ const CONFIG = {
 
 let CATALOGO = null;
 let contadorInterval = null;
+let ultimoCepBuscado = '';
 
 /* ===================== HELPERS ===================== */
 function formatarTelefone(valor) {
@@ -45,10 +46,112 @@ window.addEventListener('pageshow', (event) => {
     }
 });
 
+/* ===================== BUSCA DE CEP + BUSCA REVERSA POR RUA ===================== */
+function limparCamposEndereco() {
+    ['rua', 'bairro', 'cidade'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = '';
+    });
+    ultimoCepBuscado = '';
+}
+
+function configurarBuscaCEP() {
+    const cepEl = document.getElementById('cep');
+    if (!cepEl) return;
+
+    // Ao sair do campo, busca o CEP
+    cepEl.addEventListener('blur', async (e) => {
+        const cep = e.target.value.replace(/\D/g, '');
+
+        if (cep.length === 0) {
+            limparCamposEndereco();
+            return;
+        }
+        if (cep.length !== 8) {
+            alert('CEP incompleto. Digite os 8 dígitos (ex: 12700-000).');
+            return;
+        }
+        if (cep === ultimoCepBuscado) return;
+        ultimoCepBuscado = cep;
+
+        try {
+            const res = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+            const data = await res.json();
+
+            if (data.erro) {
+                alert('CEP não encontrado. Confira e tente novamente, ou preencha o endereço manualmente.');
+                return;
+            }
+
+            document.getElementById('rua').value    = data.logradouro || '';
+            document.getElementById('bairro').value = data.bairro     || '';
+            document.getElementById('cidade').value = `${data.localidade} - ${data.uf}`;
+            document.getElementById('numero_casa')?.focus();
+        } catch (err) {
+            console.error('[CEP] erro na busca:', err);
+            alert('Não foi possível buscar o CEP agora. Preencha manualmente.');
+        }
+    });
+
+    // Qualquer alteração no CEP reseta o cache de "última busca"
+    cepEl.addEventListener('input', () => {
+        ultimoCepBuscado = '';
+    });
+}
+
+async function buscarEnderecoPorRua() {
+    const ruaInput = document.getElementById('rua');
+    const btnBusca = document.getElementById('btn-buscar-rua');
+    if (!ruaInput || !btnBusca) return;
+
+    const rua = ruaInput.value.trim();
+    if (rua.length < 3) {
+        alert('Digite pelo menos 3 letras do nome da rua para buscar.');
+        return;
+    }
+
+    const iconeOriginal = btnBusca.innerHTML;
+    btnBusca.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+    btnBusca.disabled = true;
+
+    try {
+        const [resCruzeiro, resLavrinhas] = await Promise.all([
+            fetch(`https://viacep.com.br/ws/SP/Cruzeiro/${encodeURIComponent(rua)}/json/`),
+            fetch(`https://viacep.com.br/ws/SP/Lavrinhas/${encodeURIComponent(rua)}/json/`)
+        ]);
+
+        const dataCruzeiro  = await resCruzeiro.json();
+        const dataLavrinhas = await resLavrinhas.json();
+
+        let resultados = [];
+        if (Array.isArray(dataCruzeiro))  resultados = resultados.concat(dataCruzeiro);
+        if (Array.isArray(dataLavrinhas)) resultados = resultados.concat(dataLavrinhas);
+
+        if (resultados.length === 0) {
+            alert('Rua não encontrada em Cruzeiro ou Lavrinhas - SP. Tente digitar o CEP diretamente.');
+            return;
+        }
+
+        // Pega o primeiro resultado (mesmo comportamento do projeto de referência)
+        const data = resultados[0];
+
+        document.getElementById('cep').value    = data.cep;
+        document.getElementById('rua').value    = data.logradouro;
+        document.getElementById('bairro').value = data.bairro;
+        document.getElementById('cidade').value = `${data.localidade} - ${data.uf}`;
+        document.getElementById('numero_casa')?.focus();
+    } catch (err) {
+        console.error('[busca-rua] erro:', err);
+        alert('Não foi possível buscar o endereço agora. Digite o CEP manualmente.');
+    } finally {
+        btnBusca.innerHTML = iconeOriginal;
+        btnBusca.disabled = false;
+    }
+}
+
 /* ===================== CATÁLOGO ===================== */
 async function carregarCatalogo() {
     if (CATALOGO) return CATALOGO;
-    // Puxa o catálogo de matrícula oficial
     const resp = await fetch(`/api/catalogo?tipo=matricula`, { cache: 'no-cache' });
     if (!resp.ok) throw new Error('Falha ao carregar catálogo de planos.');
     CATALOGO = await resp.json();
@@ -112,13 +215,13 @@ function atualizarPreviewPlano() {
     const modalidadeEl = document.getElementById('modalidade');
 
     if (!previewEl || !unidadeEl.value || !modalidadeEl.value || !planoEl.value) {
-        if(previewEl) previewEl.hidden = true;
+        if (previewEl) previewEl.hidden = true;
         return;
     }
 
     const plano = CATALOGO.respostaAPI?.[unidadeEl.value]?.modalidades?.[modalidadeEl.value]?.planos?.find(p => p.id === planoEl.value);
     if (!plano) {
-        if(previewEl) previewEl.hidden = true;
+        if (previewEl) previewEl.hidden = true;
         return;
     }
 
@@ -130,7 +233,7 @@ function atualizarPreviewPlano() {
 /* ===================== REDIRECIONAMENTO ===================== */
 async function redirecionarParaPagamento(dados) {
     const botao = document.querySelector('#form-matricula-aluno button[type="submit"]');
-    
+
     if (botao) {
         botao.disabled = true;
         botao.style.pointerEvents = 'none';
@@ -144,17 +247,20 @@ async function redirecionarParaPagamento(dados) {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                tipo:       CONFIG.tipo, // Envia 'matricula-aluno' para a API
+                tipo:       CONFIG.tipo,
                 unidade:    dados.unidade,
                 modalidade: dados.modalidade,
                 planoId:    dados.planoId,
                 pagamento:  dados.pagamento,
                 nome:       dados.nome,
                 celular:    dados.celular,
-                // NOVOS DADOS ENVIADOS PARA O MERCADO PAGO
+                // DADOS ENVIADOS PARA O MERCADO PAGO
                 data_nascimento: dados.nascimento,
-                cep:        dados.cep,
-                numero_casa: dados.numero_casa
+                cep:         dados.cep,
+                numero_casa: dados.numero_casa,
+                rua:         dados.rua,
+                bairro:      dados.bairro,
+                cidade:      dados.cidade
             })
         });
 
@@ -222,9 +328,12 @@ async function iniciarFormulario() {
     // Máscaras
     const celularEl = document.getElementById('celular');
     if (celularEl) celularEl.addEventListener('input', e => e.target.value = formatarTelefone(e.target.value));
-    
+
     const cepEl = document.getElementById('cep');
     if (cepEl) cepEl.addEventListener('input', e => e.target.value = formatarCEP(e.target.value));
+
+    // Busca automática de CEP + busca reversa por rua
+    configurarBuscaCEP();
 
     const unidadeEl = document.getElementById('unidade');
     const modalidadeEl = document.getElementById('modalidade');
@@ -244,20 +353,23 @@ async function iniciarFormulario() {
         e.preventDefault();
 
         const fd = new FormData(e.target);
-        const nome = (fd.get('nome') || '').trim();
-        const nascimento = fd.get('nascimento');
-        const celular = (fd.get('celular') || '').trim();
-        const cep = (fd.get('cep') || '').trim();
+        const nome        = (fd.get('nome') || '').trim();
+        const nascimento  = fd.get('nascimento');
+        const celular     = (fd.get('celular') || '').trim();
+        const cep         = (fd.get('cep') || '').trim();
         const numero_casa = (fd.get('numero_casa') || '').trim();
-        const unidade = fd.get('unidade');
-        const modalidade = fd.get('modalidade');
-        const planoId = fd.get('plano');
-        const pagamento = fd.get('pagamento');
+        const rua         = (fd.get('rua') || '').trim();
+        const bairro      = (fd.get('bairro') || '').trim();
+        const cidade      = (fd.get('cidade') || '').trim();
+        const unidade     = fd.get('unidade');
+        const modalidade  = fd.get('modalidade');
+        const planoId     = fd.get('plano');
+        const pagamento   = fd.get('pagamento');
 
         const erroNasc = validarNascimento(nascimento);
         if (erroNasc) return alert(erroNasc);
 
-        if (!nome || !celular || !cep || !numero_casa || !planoId || !pagamento) {
+        if (!nome || !celular || !cep || !numero_casa || !rua || !bairro || !cidade || !planoId || !pagamento) {
             return alert('Preencha todos os campos obrigatórios (*).');
         }
         if (celular.replace(/\D/g, '').length < 10) {
@@ -271,7 +383,7 @@ async function iniciarFormulario() {
         if (!planoObj) return alert('Plano selecionado inválido.');
 
         const dados = {
-            nome, nascimento, celular, cep, numero_casa,
+            nome, nascimento, celular, cep, numero_casa, rua, bairro, cidade,
             unidade, modalidade,
             planoId: planoObj.id,
             planoTitulo: planoObj.texto,
@@ -316,12 +428,19 @@ function tratarRetornoMercadoPago(status) {
     if (resumoEl && status !== 'failure') {
         resumoEl.style.display = 'block';
         const dataFmt = dados.nascimento.split('-').reverse().join('/');
+        const enderecoCompleto = [
+            dados.rua && `${dados.rua}, ${dados.numero_casa || 'S/N'}`,
+            dados.bairro,
+            dados.cidade,
+            dados.cep && `CEP ${dados.cep}`
+        ].filter(Boolean).join(' — ') || 'Não informado';
+
         resumoEl.innerHTML = `
             <h4 style="color: var(--cor-secundaria); margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 10px;"><i class="fa-solid fa-receipt"></i> Resumo do Pedido</h4>
             <p style="color: #ccc; margin-bottom: 8px;"><strong>Nome:</strong> ${dados.nome}</p>
             <p style="color: #ccc; margin-bottom: 8px;"><strong>Nascimento:</strong> ${dataFmt}</p>
             <p style="color: #ccc; margin-bottom: 8px;"><strong>Celular:</strong> ${dados.celular}</p>
-            <p style="color: #ccc; margin-bottom: 8px;"><strong>Endereço:</strong> CEP ${dados.cep}, Nº ${dados.numero_casa}</p>
+            <p style="color: #ccc; margin-bottom: 8px;"><strong>Endereço:</strong> ${enderecoCompleto}</p>
             <p style="color: #ccc; margin-bottom: 8px;"><strong>Unidade:</strong> ${dados.unidade}</p>
             <p style="color: #ccc; margin-bottom: 8px;"><strong>Plano:</strong> ${dados.planoTitulo}</p>
             <p style="color: #ccc; margin-bottom: 8px;"><strong>Pagamento:</strong> ${dados.pagamento}</p>
@@ -348,11 +467,18 @@ function tratarRetornoMercadoPago(status) {
 
     tituloEl.innerHTML = `<i class="${icone}"></i> ${titulo}`;
 
+    const enderecoMsg = [
+        dados.rua && `${dados.rua}, ${dados.numero_casa || 'S/N'}`,
+        dados.bairro,
+        dados.cidade,
+        dados.cep && `CEP ${dados.cep}`
+    ].filter(Boolean).join(' — ');
+
     const msg = `*NOVA MATRÍCULA — Muskel Fit*\n\n` +
         `*Nome:* ${dados.nome}\n` +
         `*Nascimento:* ${dados.nascimento.split('-').reverse().join('/')}\n` +
         `*Celular:* ${dados.celular}\n` +
-        `*Endereço:* CEP ${dados.cep}, Nº ${dados.numero_casa}\n` +
+        `*Endereço:* ${enderecoMsg}\n` +
         `*Unidade:* ${dados.unidade}\n` +
         `*Modalidade:* ${dados.modalidade}\n` +
         `*Plano:* ${dados.planoTitulo}\n` +
