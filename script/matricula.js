@@ -24,15 +24,18 @@ function definirCarregando(carregando) {
     botao.innerHTML = carregando ? 'Aguarde...' : botao.dataset.textoOriginal;
 }
 
-/* ===================== CHECAGEM DE NOME ===================== */
+/* ===================== CHECAGEM DE NOME (MÁGICA) ===================== */
 function configurarChecagemNome() {
     const nomeEl = document.getElementById('nome');
+    const celularEl = document.getElementById('celular');
     const msgEl = document.getElementById('status-nome-msg');
+    
     if (!nomeEl || !msgEl) return;
 
-    nomeEl.addEventListener('input', (e) => {
+    const fazerChecagem = () => {
         clearTimeout(timeoutChecagem);
-        const nome = e.target.value.trim();
+        const nome = nomeEl.value.trim();
+        const celular = celularEl ? celularEl.value.trim() : '';
 
         if (nome.length < 3) {
             msgEl.textContent = '';
@@ -48,14 +51,29 @@ function configurarChecagemNome() {
                 const res = await fetch('/api/checar-matricula', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ nome })
+                    body: JSON.stringify({ nome, celular })
                 });
                 const data = await res.json();
 
                 if (data.existe) {
-                    msgEl.textContent = '✅ Usuário encontrado! Pronto para pagar.';
-                    msgEl.style.color = '#22c55e'; // Verde
-                    nomeJaExiste = true;
+                    if (data.match_aproximado && data.nome_sugerido) {
+                        // SUGESTÃO DO NOME
+                        msgEl.innerHTML = `⚠️ Encontramos um cadastro com este telefone: <strong>${data.nome_sugerido}</strong>.<br>
+                        <a href="#" id="btn-aceitar-sugestao" style="color: #ffd60a; text-decoration: underline; margin-top: 5px; display: inline-block;">Clique aqui para usar este nome</a>`;
+                        msgEl.style.color = '#ef4444';
+                        nomeJaExiste = false;
+
+                        // Ação do botão de corrigir
+                        document.getElementById('btn-aceitar-sugestao').addEventListener('click', (e) => {
+                            e.preventDefault();
+                            nomeEl.value = data.nome_sugerido;
+                            fazerChecagem(); // Roda novamente, agora vai achar exato
+                        });
+                    } else {
+                        msgEl.textContent = '✅ Usuário encontrado! Pronto para pagar.';
+                        msgEl.style.color = '#22c55e'; // Verde
+                        nomeJaExiste = true;
+                    }
                 } else {
                     msgEl.textContent = '⚠️ Usuário não encontrado. Faça a matrícula de aluno novo primeiro.';
                     msgEl.style.color = '#ef4444'; // Vermelho
@@ -65,8 +83,11 @@ function configurarChecagemNome() {
                 msgEl.textContent = '';
                 nomeJaExiste = false;
             }
-        }, 600); // Espera 600ms
-    });
+        }, 800);
+    };
+
+    nomeEl.addEventListener('input', fazerChecagem);
+    if (celularEl) celularEl.addEventListener('blur', fazerChecagem);
 }
 
 /* ===================== DEPENDENTES (PLANOS FAMÍLIA) ===================== */
@@ -352,7 +373,7 @@ async function iniciarFormulario() {
     }
 
     preencherUnidades();
-    configurarChecagemNome(); // ATIVA A CHECAGEM AQUI
+    configurarChecagemNome();
 
     ['telefone', 'celular'].forEach(id => {
         const el = document.getElementById(id);
@@ -394,7 +415,7 @@ async function iniciarFormulario() {
         e.preventDefault();
 
         if (!nomeJaExiste) {
-            return alert('Aluno não encontrado no sistema. Você precisa realizar a matrícula de aluno novo antes de pagar a mensalidade.');
+            return alert('Aluno não encontrado no sistema. Você precisa realizar a matrícula de aluno novo antes de pagar a mensalidade, ou usar o nome sugerido.');
         }
 
         const fd = new FormData(e.target);
