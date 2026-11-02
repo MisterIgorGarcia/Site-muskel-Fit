@@ -60,7 +60,7 @@
                 <input type="tel" id="celular" name="celular" placeholder="(12) 99999-9999" required autocomplete="tel">
             </div>
 
-            <!-- ===================== ENDEREÇO ===================== -->
+            <!-- ENDEREÇO -->
             <div class="campo">
                 <label for="cep">CEP *</label>
                 <input type="text" id="cep" name="cep" placeholder="Ex: 12700-000"
@@ -126,6 +126,18 @@
                     <option value="">Selecione a unidade primeiro...</option>
                 </select>
             </div>
+        </div>
+
+        <!-- Bloco DINÂMICO: Dependentes (aparece somente em planos família) -->
+        <div class="form-bloco" id="bloco-dependentes" hidden>
+            <h3 class="form-bloco-titulo">
+                <i class="fa-solid fa-users"></i> Dependentes do plano família
+            </h3>
+            <p style="color:#999; font-size:0.9rem; margin: 0 0 15px 0;">
+                Preencha os dados dos dependentes incluídos no seu plano família.
+                Eles compartilham o mesmo endereço do titular.
+            </p>
+            <div id="lista-dependentes"></div>
         </div>
 
         <!-- Bloco 3: Pagamento -->

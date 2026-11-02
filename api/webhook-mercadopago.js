@@ -9,6 +9,23 @@ const supabase = createClient(
     process.env.SUPABASE_SECRET_KEY
 );
 
+// Reconstrói o array de dependentes a partir dos campos do metadata
+function reconstruirDependentes(meta) {
+    const qtd = Number(meta.dependentes_qtd) || 0;
+    const dependentes = [];
+    for (let i = 1; i <= qtd && i <= 4; i++) {
+        const raw = meta[`dependente_${i}`];
+        if (!raw) continue;
+        try {
+            const d = JSON.parse(raw);
+            if (d && d.nome) dependentes.push(d);
+        } catch (e) {
+            console.error(`[webhook] Erro ao parsear dependente_${i}:`, e);
+        }
+    }
+    return dependentes;
+}
+
 export default async function handler(req, res) {
     if (req.method !== 'POST') return res.status(405).json({ erro: 'Método não permitido' });
 
@@ -50,12 +67,14 @@ export default async function handler(req, res) {
             const celularAluno = meta.celular_aluno || 'Não informado';
             const dataNascAluno = meta.data_nascimento_aluno || null;
 
+            // Dependentes (planos família)
+            const dependentes = reconstruirDependentes(meta);
+
             // =========================================================
             // 1. SALVAR NO BANCO DE DADOS
             // =========================================================
             const precoNumerico = Number(payment.transaction_amount) || 0;
 
-            // Dados básicos (existem em todas as tabelas)
             const dadosBasicos = {
                 nome: nomeAluno,
                 celular: celularAluno,
@@ -66,18 +85,18 @@ export default async function handler(req, res) {
                 pagamento: metodoPagamento
             };
 
-            // Lógica de salvamento baseada no tipo de pagamento
             if (meta.tipo === 'matricula-aluno') {
-                // A) Salva na tabela de Alunos Matriculados (COM endereço e data de nascimento)
+                // A) Cadastro completo em alunos_matriculados (com endereço + dependentes)
                 const dadosAluno = {
                     ...dadosBasicos,
                     tipo: 'matricula-aluno',
                     data_nascimento: dataNascAluno,
                     cep: meta.cep_aluno,
                     numero_casa: meta.numero_casa_aluno,
-                    rua: meta.rua_aluno,           // ← NOVO
-                    bairro: meta.bairro_aluno,     // ← NOVO
-                    cidade: meta.cidade_aluno      // ← NOVO
+                    rua: meta.rua_aluno,
+                    bairro: meta.bairro_aluno,
+                    cidade: meta.cidade_aluno,
+                    dependentes: dependentes
                 };
 
                 const { error: errAluno } = await supabase
@@ -86,10 +105,11 @@ export default async function handler(req, res) {
 
                 if (errAluno) console.error("🚨 Erro ao salvar aluno matriculado:", errAluno);
 
-                // B) Salva TAMBÉM na tabela de Matrículas (SEM endereço, SEM data de nascimento)
+                // B) Mensalidade enxuta em matriculas (sem endereço, sem nascimento, com dependentes)
                 const dadosMensalidade = {
                     ...dadosBasicos,
-                    tipo: 'matricula' // Salva como matrícula padrão para aparecer na tabela do painel
+                    tipo: 'matricula',
+                    dependentes: dependentes
                 };
 
                 const { error: errMat } = await supabase
@@ -99,10 +119,10 @@ export default async function handler(req, res) {
                 if (errMat) console.error("🚨 Erro ao salvar na tabela matriculas geral:", errMat);
 
             } else if (meta.tipo === 'matricula') {
-                // Salva na tabela de mensalidades normal
                 const dadosMatricula = {
                     ...dadosBasicos,
-                    tipo: meta.tipo
+                    tipo: meta.tipo,
+                    dependentes: dependentes
                 };
 
                 const { error } = await supabase
@@ -112,11 +132,11 @@ export default async function handler(req, res) {
                 if (error) console.error("🚨 Erro ao salvar matrícula:", error);
 
             } else {
-                // Salva na tabela de prematriculas (Padrão)
                 const dadosPre = {
                     ...dadosBasicos,
                     tipo: 'pre-matricula',
-                    data_nascimento: dataNascAluno
+                    data_nascimento: dataNascAluno,
+                    dependentes: dependentes
                 };
 
                 const { error } = await supabase
@@ -132,7 +152,6 @@ export default async function handler(req, res) {
             // 2. ENVIAR O E-MAIL (Template HTML Premium)
             // ==========================================
 
-            // Monta as linhas extras do e-mail se for aluno novo
             let linhaEnderecoHTML = '';
             if (meta.tipo === 'matricula-aluno') {
                 const enderecoCompleto = [
@@ -146,6 +165,16 @@ export default async function handler(req, res) {
                     <tr>
                         <td style="padding: 10px 0; color: #999999; font-size: 14px; border-bottom: 1px solid #222222;">Endereço:</td>
                         <td style="padding: 10px 0; color: #ffffff; font-size: 14px; text-align: right; border-bottom: 1px solid #222222;">${enderecoCompleto}</td>
+                    </tr>
+                `;
+            }
+
+            let linhaDependentesHTML = '';
+            if (dependentes.length > 0) {
+                linhaDependentesHTML = `
+                    <tr>
+                        <td style="padding: 10px 0; color: #999999; font-size: 14px; border-bottom: 1px solid #222222;">Dependentes:</td>
+                        <td style="padding: 10px 0; color: #ffffff; font-size: 14px; text-align: right; border-bottom: 1px solid #222222;">${dependentes.map(d => d.nome).join(', ')}</td>
                     </tr>
                 `;
             }
@@ -179,6 +208,7 @@ export default async function handler(req, res) {
                                 <td style="padding: 10px 0; color: #ffffff; font-size: 14px; text-align: right; border-bottom: 1px solid #222222;">${celularAluno}</td>
                             </tr>
                             ${linhaEnderecoHTML}
+                            ${linhaDependentesHTML}
                             <tr>
                                 <td style="padding: 10px 0; color: #999999; font-size: 14px; border-bottom: 1px solid #222222;">Tipo de Registro:</td>
                                 <td style="padding: 10px 0; color: #ffffff; font-size: 14px; text-align: right; border-bottom: 1px solid #222222;"><strong>${tipoLabel}</strong></td>

@@ -1,7 +1,7 @@
 /* ===================== CONFIGURAÇÃO ===================== */
 const CONFIG = {
     whatsapp: '5512991859267',
-    tipo: 'matricula-aluno' // <-- Novo tipo para direcionar ao banco correto
+    tipo: 'matricula-aluno'
 };
 
 let CATALOGO = null;
@@ -32,6 +32,93 @@ function validarNascimento(dataStr) {
     return null;
 }
 
+/* ===================== DEPENDENTES (PLANOS FAMÍLIA) ===================== */
+// Retorna quantos dependentes o plano exige
+// familia-2 => 1, familia-3 => 2, familia-4 => 3, familia-5 => 4
+function getQuantidadeDependentes(planoId) {
+    if (!planoId) return 0;
+    const match = String(planoId).match(/^familia-(\d+)$/);
+    if (!match) return 0;
+    const n = parseInt(match[1], 10);
+    if (isNaN(n) || n < 2 || n > 10) return 0;
+    return n - 1;
+}
+
+// Renderiza os blocos de dependentes (nome + nascimento + celular)
+function renderizarDependentes(qtd) {
+    const bloco = document.getElementById('bloco-dependentes');
+    const lista = document.getElementById('lista-dependentes');
+    if (!bloco || !lista) return;
+
+    if (qtd <= 0) {
+        bloco.hidden = true;
+        lista.innerHTML = '';
+        return;
+    }
+
+    bloco.hidden = false;
+    let html = '';
+    for (let i = 1; i <= qtd; i++) {
+        html += `
+            <div class="dependente-box" style="border:1px solid #333; border-radius:8px; padding:15px; margin-bottom:15px; background:rgba(255,255,255,0.02);">
+                <p style="color:var(--cor-secundaria,#ffd60a); font-weight:bold; margin:0 0 12px 0;">
+                    <i class="fa-solid fa-user"></i> Dependente ${i}
+                </p>
+
+                <div class="campo">
+                    <label for="dep-${i}-nome">Nome completo *</label>
+                    <input type="text" id="dep-${i}-nome" name="dep_${i}_nome" required autocomplete="off">
+                </div>
+
+                <div class="campo">
+                    <label for="dep-${i}-nascimento">Data de nascimento *</label>
+                    <input type="date" id="dep-${i}-nascimento" name="dep_${i}_nascimento" required>
+                </div>
+
+                <div class="campo">
+                    <label for="dep-${i}-celular">Celular (WhatsApp) *</label>
+                    <input type="tel" id="dep-${i}-celular" name="dep_${i}_celular"
+                           placeholder="(12) 99999-9999" required autocomplete="off">
+                </div>
+            </div>
+        `;
+    }
+    lista.innerHTML = html;
+
+    // Aplica máscara de telefone em cada dependente
+    for (let i = 1; i <= qtd; i++) {
+        const el = document.getElementById(`dep-${i}-celular`);
+        if (el) el.addEventListener('input', e => e.target.value = formatarTelefone(e.target.value));
+    }
+}
+
+// Coleta e valida os dependentes do form. Retorna array ou lança alerta.
+function coletarDependentes(fd, qtd) {
+    const dependentes = [];
+    for (let i = 1; i <= qtd; i++) {
+        const nome        = (fd.get(`dep_${i}_nome`) || '').trim();
+        const nascimento  = fd.get(`dep_${i}_nascimento`) || '';
+        const celular     = (fd.get(`dep_${i}_celular`) || '').trim();
+
+        if (!nome || !nascimento || !celular) {
+            alert(`Preencha todos os campos do dependente ${i}.`);
+            return null;
+        }
+        const erroNasc = validarNascimento(nascimento);
+        if (erroNasc) {
+            alert(`Dependente ${i}: ${erroNasc}`);
+            return null;
+        }
+        if (celular.replace(/\D/g, '').length < 10) {
+            alert(`Dependente ${i}: celular inválido.`);
+            return null;
+        }
+
+        dependentes.push({ nome, celular, data_nascimento: nascimento });
+    }
+    return dependentes;
+}
+
 window.addEventListener('pageshow', (event) => {
     if (event.persisted) {
         if (contadorInterval) clearInterval(contadorInterval);
@@ -43,6 +130,9 @@ window.addEventListener('pageshow', (event) => {
             botao.style.padding = '14px 30px';
             botao.innerHTML = `<i class="fa-solid fa-lock"></i> Ir para o pagamento`;
         }
+        // Re-renderiza dependentes se o plano voltou selecionado
+        const planoEl = document.getElementById('plano');
+        if (planoEl) renderizarDependentes(getQuantidadeDependentes(planoEl.value));
     }
 });
 
@@ -59,18 +149,11 @@ function configurarBuscaCEP() {
     const cepEl = document.getElementById('cep');
     if (!cepEl) return;
 
-    // Ao sair do campo, busca o CEP
     cepEl.addEventListener('blur', async (e) => {
         const cep = e.target.value.replace(/\D/g, '');
 
-        if (cep.length === 0) {
-            limparCamposEndereco();
-            return;
-        }
-        if (cep.length !== 8) {
-            alert('CEP incompleto. Digite os 8 dígitos (ex: 12700-000).');
-            return;
-        }
+        if (cep.length === 0) { limparCamposEndereco(); return; }
+        if (cep.length !== 8) { alert('CEP incompleto. Digite os 8 dígitos (ex: 12700-000).'); return; }
         if (cep === ultimoCepBuscado) return;
         ultimoCepBuscado = cep;
 
@@ -82,7 +165,6 @@ function configurarBuscaCEP() {
                 alert('CEP não encontrado. Confira e tente novamente, ou preencha o endereço manualmente.');
                 return;
             }
-
             document.getElementById('rua').value    = data.logradouro || '';
             document.getElementById('bairro').value = data.bairro     || '';
             document.getElementById('cidade').value = `${data.localidade} - ${data.uf}`;
@@ -93,10 +175,7 @@ function configurarBuscaCEP() {
         }
     });
 
-    // Qualquer alteração no CEP reseta o cache de "última busca"
-    cepEl.addEventListener('input', () => {
-        ultimoCepBuscado = '';
-    });
+    cepEl.addEventListener('input', () => { ultimoCepBuscado = ''; });
 }
 
 async function buscarEnderecoPorRua() {
@@ -105,10 +184,7 @@ async function buscarEnderecoPorRua() {
     if (!ruaInput || !btnBusca) return;
 
     const rua = ruaInput.value.trim();
-    if (rua.length < 3) {
-        alert('Digite pelo menos 3 letras do nome da rua para buscar.');
-        return;
-    }
+    if (rua.length < 3) { alert('Digite pelo menos 3 letras do nome da rua para buscar.'); return; }
 
     const iconeOriginal = btnBusca.innerHTML;
     btnBusca.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
@@ -132,9 +208,7 @@ async function buscarEnderecoPorRua() {
             return;
         }
 
-        // Pega o primeiro resultado (mesmo comportamento do projeto de referência)
         const data = resultados[0];
-
         document.getElementById('cep').value    = data.cep;
         document.getElementById('rua').value    = data.logradouro;
         document.getElementById('bairro').value = data.bairro;
@@ -188,10 +262,12 @@ function preencherModalidadesDaUnidade(nomeUnidade) {
     if (!unidade) {
         preencherSelect(modalEl, [], 'Selecione a unidade primeiro...', m => m, m => m);
         modalEl.disabled = true;
+        renderizarDependentes(0);
         return;
     }
     preencherSelect(modalEl, Object.keys(unidade.modalidades), 'Selecione a modalidade...', m => m, m => m);
     modalEl.disabled = false;
+    renderizarDependentes(0);
 }
 
 function preencherPlanosDaModalidade(nomeUnidade, nomeModalidade) {
@@ -201,10 +277,12 @@ function preencherPlanosDaModalidade(nomeUnidade, nomeModalidade) {
     if (!unidade || !nomeModalidade || !unidade.modalidades[nomeModalidade]) {
         preencherSelect(planoEl, [], 'Selecione a modalidade primeiro...', p => p.id, p => p.texto);
         planoEl.disabled = true;
+        renderizarDependentes(0);
         return;
     }
     preencherSelect(planoEl, unidade.modalidades[nomeModalidade].planos, 'Selecione um plano...', p => p.id, p => p.texto);
     planoEl.disabled = false;
+    renderizarDependentes(0);
 }
 
 /* ===================== PREVIEW DO PLANO ===================== */
@@ -220,10 +298,7 @@ function atualizarPreviewPlano() {
     }
 
     const plano = CATALOGO.respostaAPI?.[unidadeEl.value]?.modalidades?.[modalidadeEl.value]?.planos?.find(p => p.id === planoEl.value);
-    if (!plano) {
-        if (previewEl) previewEl.hidden = true;
-        return;
-    }
+    if (!plano) { if (previewEl) previewEl.hidden = true; return; }
 
     document.getElementById('preview-nome').textContent = plano.texto;
     document.getElementById('preview-valor').textContent = `R$ ${Number(plano.preco).toFixed(2).replace('.', ',')}`;
@@ -254,13 +329,13 @@ async function redirecionarParaPagamento(dados) {
                 pagamento:  dados.pagamento,
                 nome:       dados.nome,
                 celular:    dados.celular,
-                // DADOS ENVIADOS PARA O MERCADO PAGO
                 data_nascimento: dados.nascimento,
                 cep:         dados.cep,
                 numero_casa: dados.numero_casa,
                 rua:         dados.rua,
                 bairro:      dados.bairro,
-                cidade:      dados.cidade
+                cidade:      dados.cidade,
+                dependentes: dados.dependentes || []
             })
         });
 
@@ -325,14 +400,12 @@ async function iniciarFormulario() {
 
     preencherUnidades();
 
-    // Máscaras
     const celularEl = document.getElementById('celular');
     if (celularEl) celularEl.addEventListener('input', e => e.target.value = formatarTelefone(e.target.value));
 
     const cepEl = document.getElementById('cep');
     if (cepEl) cepEl.addEventListener('input', e => e.target.value = formatarCEP(e.target.value));
 
-    // Busca automática de CEP + busca reversa por rua
     configurarBuscaCEP();
 
     const unidadeEl = document.getElementById('unidade');
@@ -347,7 +420,10 @@ async function iniciarFormulario() {
         preencherPlanosDaModalidade(unidadeEl.value, modalidadeEl.value);
         atualizarPreviewPlano();
     });
-    planoEl.addEventListener('change', atualizarPreviewPlano);
+    planoEl.addEventListener('change', () => {
+        atualizarPreviewPlano();
+        renderizarDependentes(getQuantidadeDependentes(planoEl.value));
+    });
 
     form.addEventListener('submit', (e) => {
         e.preventDefault();
@@ -372,15 +448,16 @@ async function iniciarFormulario() {
         if (!nome || !celular || !cep || !numero_casa || !rua || !bairro || !cidade || !planoId || !pagamento) {
             return alert('Preencha todos os campos obrigatórios (*).');
         }
-        if (celular.replace(/\D/g, '').length < 10) {
-            return alert('Celular inválido.');
-        }
-        if (cep.replace(/\D/g, '').length < 8) {
-            return alert('CEP inválido.');
-        }
+        if (celular.replace(/\D/g, '').length < 10) return alert('Celular inválido.');
+        if (cep.replace(/\D/g, '').length < 8) return alert('CEP inválido.');
 
         const planoObj = CATALOGO.respostaAPI[unidade]?.modalidades[modalidade]?.planos.find(p => p.id === planoId);
         if (!planoObj) return alert('Plano selecionado inválido.');
+
+        // Coleta dependentes (se plano família)
+        const qtdDeps = getQuantidadeDependentes(planoId);
+        const dependentes = qtdDeps > 0 ? coletarDependentes(fd, qtdDeps) : [];
+        if (dependentes === null) return; // erro já alertado
 
         const dados = {
             nome, nascimento, celular, cep, numero_casa, rua, bairro, cidade,
@@ -388,7 +465,8 @@ async function iniciarFormulario() {
             planoId: planoObj.id,
             planoTitulo: planoObj.texto,
             preco: planoObj.preco,
-            pagamento
+            pagamento,
+            dependentes
         };
 
         redirecionarParaPagamento(dados);
@@ -423,7 +501,8 @@ function tratarRetornoMercadoPago(status) {
     const dados = JSON.parse(dadosSalvosRaw);
     formEl.style.display = 'none';
 
-    // Resumo do Pedido
+    const dependentes = Array.isArray(dados.dependentes) ? dados.dependentes : [];
+
     const resumoEl = document.getElementById('resumo-pedido');
     if (resumoEl && status !== 'failure') {
         resumoEl.style.display = 'block';
@@ -435,12 +514,17 @@ function tratarRetornoMercadoPago(status) {
             dados.cep && `CEP ${dados.cep}`
         ].filter(Boolean).join(' — ') || 'Não informado';
 
+        const dependentesHTML = dependentes.length > 0
+            ? `<p style="color:#ccc; margin-bottom:8px;"><strong>Dependentes:</strong> ${dependentes.map(d => d.nome).join(', ')}</p>`
+            : '';
+
         resumoEl.innerHTML = `
             <h4 style="color: var(--cor-secundaria); margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 10px;"><i class="fa-solid fa-receipt"></i> Resumo do Pedido</h4>
             <p style="color: #ccc; margin-bottom: 8px;"><strong>Nome:</strong> ${dados.nome}</p>
             <p style="color: #ccc; margin-bottom: 8px;"><strong>Nascimento:</strong> ${dataFmt}</p>
             <p style="color: #ccc; margin-bottom: 8px;"><strong>Celular:</strong> ${dados.celular}</p>
             <p style="color: #ccc; margin-bottom: 8px;"><strong>Endereço:</strong> ${enderecoCompleto}</p>
+            ${dependentesHTML}
             <p style="color: #ccc; margin-bottom: 8px;"><strong>Unidade:</strong> ${dados.unidade}</p>
             <p style="color: #ccc; margin-bottom: 8px;"><strong>Plano:</strong> ${dados.planoTitulo}</p>
             <p style="color: #ccc; margin-bottom: 8px;"><strong>Pagamento:</strong> ${dados.pagamento}</p>
@@ -474,11 +558,16 @@ function tratarRetornoMercadoPago(status) {
         dados.cep && `CEP ${dados.cep}`
     ].filter(Boolean).join(' — ');
 
+    const dependentesMsg = dependentes.length > 0
+        ? `*Dependentes:*\n` + dependentes.map(d => `  - ${d.nome} — ${d.celular} — Nasc. ${d.data_nascimento.split('-').reverse().join('/')}`).join('\n') + '\n'
+        : '';
+
     const msg = `*NOVA MATRÍCULA — Muskel Fit*\n\n` +
         `*Nome:* ${dados.nome}\n` +
         `*Nascimento:* ${dados.nascimento.split('-').reverse().join('/')}\n` +
         `*Celular:* ${dados.celular}\n` +
         `*Endereço:* ${enderecoMsg}\n` +
+        dependentesMsg +
         `*Unidade:* ${dados.unidade}\n` +
         `*Modalidade:* ${dados.modalidade}\n` +
         `*Plano:* ${dados.planoTitulo}\n` +
