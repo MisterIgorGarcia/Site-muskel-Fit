@@ -46,18 +46,6 @@ export default async function handler(req, res) {
             const modalidade = meta.modalidade || 'Não informada';
             const plano = meta.plano || 'Não informado';
             
-            // DEFINE O TIPO E A TABELA DE DESTINO
-            let tipoLabel = 'Pré-Matrícula';
-            let tabelaDestino = 'prematriculas';
-            
-            if (meta.tipo === 'matricula') {
-                tipoLabel = 'Matrícula (Mensalidade)';
-                tabelaDestino = 'matriculas';
-            } else if (meta.tipo === 'matricula-aluno') {
-                tipoLabel = 'Nova Matrícula (Aluno)';
-                tabelaDestino = 'alunos_matriculados';
-            }
-            
             const nomeAluno = meta.nome_aluno || 'Aluno(a)';
             const celularAluno = meta.celular_aluno || 'Não informado';
             const dataNascAluno = meta.data_nascimento_aluno || null;
@@ -67,39 +55,75 @@ export default async function handler(req, res) {
             // =========================================================
             const precoNumerico = Number(payment.transaction_amount) || 0;
 
-            const dadosParaSalvar = {
+            // Dados básicos (existem em todas as tabelas)
+            const dadosBasicos = {
                 nome: nomeAluno,
                 celular: celularAluno,
                 unidade: unidade,
                 modalidade: modalidade,
                 plano: plano,
                 preco: precoNumerico,
-                pagamento: metodoPagamento,
-                tipo: meta.tipo
+                pagamento: metodoPagamento
             };
 
-            // Adiciona campos específicos dependendo da tabela
-            if (tabelaDestino === 'prematriculas' || tabelaDestino === 'alunos_matriculados') {
-                dadosParaSalvar.data_nascimento = dataNascAluno;
+            // Lógica de salvamento baseada no tipo de pagamento
+            if (meta.tipo === 'matricula-aluno') {
+                // A) Salva na tabela de Alunos Matriculados (com endereço)
+                const dadosAluno = {
+                    ...dadosBasicos,
+                    tipo: 'matricula-aluno',
+                    data_nascimento: dataNascAluno,
+                    cep: meta.cep_aluno,
+                    numero_casa: meta.numero_casa_aluno
+                };
+                
+                const { error: errAluno } = await supabase
+                    .from('alunos_matriculados')
+                    .upsert(dadosAluno, { onConflict: 'nome,celular' });
+                    
+                if (errAluno) console.error("🚨 Erro ao salvar aluno matriculado:", errAluno);
+
+                // B) Salva TAMBÉM na tabela de Matrículas para aparecer no Admin
+                const dadosMensalidade = {
+                    ...dadosBasicos,
+                    tipo: 'matricula' // Salva como matrícula padrão para aparecer na tabela do painel
+                };
+                
+                const { error: errMat } = await supabase
+                    .from('matriculas')
+                    .upsert(dadosMensalidade, { onConflict: 'nome,celular' });
+                    
+                if (errMat) console.error("🚨 Erro ao salvar na tabela matriculas geral:", errMat);
+
+            } else if (meta.tipo === 'matricula') {
+                // Salva na tabela de mensalidades normal
+                const dadosMatricula = {
+                    ...dadosBasicos,
+                    tipo: meta.tipo
+                };
+                
+                const { error } = await supabase
+                    .from('matriculas')
+                    .upsert(dadosMatricula, { onConflict: 'nome,celular' });
+                    
+                if (error) console.error("🚨 Erro ao salvar matrícula:", error);
+
+            } else {
+                // Salva na tabela de prematriculas (Padrão)
+                const dadosPre = {
+                    ...dadosBasicos,
+                    tipo: 'pre-matricula',
+                    data_nascimento: dataNascAluno
+                };
+                
+                const { error } = await supabase
+                    .from('prematriculas')
+                    .upsert(dadosPre, { onConflict: 'nome,celular' });
+                    
+                if (error) console.error("🚨 Erro ao salvar prematrícula:", error);
             }
             
-            // NOVO: Se for a tabela de alunos_matriculados, adiciona CEP e Número
-            if (tabelaDestino === 'alunos_matriculados') {
-                dadosParaSalvar.cep = meta.cep_aluno;
-                dadosParaSalvar.numero_casa = meta.numero_casa_aluno;
-            }
-
-            console.log("Tentando salvar no banco (" + tabelaDestino + "):", dadosParaSalvar);
-
-            const { error: dbError } = await supabase
-                .from(tabelaDestino)
-                .upsert(dadosParaSalvar, { onConflict: 'nome,celular' });
-
-            if (dbError) {
-                console.error("🚨 ERRO AO SALVAR NO BANCO:", dbError);
-            } else {
-                console.log("✅ Registro salvo no banco com sucesso!");
-            }
+            console.log("✅ Processo de gravação no banco finalizado!");
 
             // ==========================================
             // 2. ENVIAR O E-MAIL (Template HTML Premium)
@@ -107,7 +131,7 @@ export default async function handler(req, res) {
             
             // Monta as linhas extras do e-mail se for aluno novo
             let linhaEnderecoHTML = '';
-            if (tabelaDestino === 'alunos_matriculados') {
+            if (meta.tipo === 'matricula-aluno') {
                 linhaEnderecoHTML = `
                     <tr>
                         <td style="padding: 10px 0; color: #999999; font-size: 14px; border-bottom: 1px solid #222222;">Endereço:</td>
@@ -115,6 +139,10 @@ export default async function handler(req, res) {
                     </tr>
                 `;
             }
+
+            let tipoLabel = 'Pré-Matrícula';
+            if (meta.tipo === 'matricula') tipoLabel = 'Matrícula (Mensalidade)';
+            if (meta.tipo === 'matricula-aluno') tipoLabel = 'Nova Matrícula (Aluno)';
 
             const htmlRecibo = `
             <div style="background-color: #f4f4f4; padding: 20px; font-family: Arial, Helvetica, sans-serif;">
