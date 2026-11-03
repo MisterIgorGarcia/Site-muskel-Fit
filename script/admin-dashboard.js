@@ -38,7 +38,7 @@ async function carregarDados(manual = false) {
 
     const btnAtualizar = document.getElementById('btn-atualizar');
     if (btnAtualizar && manual) {
-    btnAtualizar.innerHTML = '<span style="display: flex; align-items: center; justify-content: center; gap: 8px;"><i class="fa-solid fa-spinner fa-spin"></i> Buscando...</span>';
+        btnAtualizar.innerHTML = '<span style="display: flex; align-items: center; justify-content: center; gap: 8px;"><i class="fa-solid fa-spinner fa-spin"></i> Buscando...</span>';
     }
 
     try {
