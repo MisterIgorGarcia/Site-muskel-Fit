@@ -13,7 +13,17 @@
 @keyframes flutuar { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } } 
 .hero h2 { font-size: 2.5rem; margin-bottom: 20px; } 
 .hero p { font-size: 1.2rem; margin-bottom: 15px; color: #cccccc; } 
-.hero-botoes { display: flex; flex-wrap: wrap; gap: 15px; margin-top: 20px; }
+
+/* CONTAINER DOS BOTÕES AJUSTADO */
+.hero-botoes { 
+    display: flex; 
+    flex-direction: column; /* Empilha os botões */
+    align-items: center; 
+    gap: 15px; 
+    width: 100%; 
+    max-width: 520px; /* Largura padrão igual para todos */
+    margin: 20px auto 0; 
+}
 
 /* ===================== SEÇÃO MAPA ===================== */ 
 #localizacao { display: flex; align-items: flex-start; justify-content: center; gap: 40px; padding: 80px 20px; background-color: var(--cor-primaria); text-align: left; max-width: 1100px; margin: 0 auto; flex-wrap: wrap; } 
@@ -349,7 +359,7 @@
     .hero h2 { font-size: 2rem; } 
     .hero p { font-size: 1rem; } 
     .hero-botoes { justify-content: center; } 
-    .hero-botoes .btn-amarelo { flex: 1 1 100%; } 
+    /* Removido o flex: 1 1 100% dos btn-amarelo no mobile, pois agora todos usam width 100% do container */
     .secao { padding: 40px 20px; } 
     .secao h2 { font-size: 1.6rem; } 
     .card-sobre-grupo { gap: 20px; } 

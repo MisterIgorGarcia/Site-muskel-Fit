@@ -179,26 +179,36 @@ img, iframe {
     background-color: var(--cor-secundaria);
     color: var(--cor-primaria); 
     border: none;
-    padding: 14px 30px;
+    padding: 14px 50px; /* Padding lateral aumentado para o ícone */
     font-weight: bold;
     font-size: 1rem;
     border-radius: 6px;
     cursor: pointer;
     transition: transform 0.2s, background-color 0.2s;
-    display: inline-flex;
+    display: flex; /* Alterado para flex para controlar o centro */
     align-items: center;
     justify-content: center;
     gap: 8px;
     text-align: center;
     text-decoration: none;
     font-family: inherit;
-    line-height: 1; 
+    line-height: 1.2; /* Melhora quebra de linha se houver */
     box-sizing: border-box; 
+    position: relative; /* Necessário para o ícone absoluto */
+    width: 100%; /* Largura total */
 }
 
 .btn-amarelo:hover {
     background-color: #ffe066;
     transform: scale(1.05);
+}
+
+.btn-amarelo i {
+    position: absolute;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1.2rem;
 }
 
 .btn-voltar-header {
@@ -231,23 +241,32 @@ img, iframe {
     background-size: 200% 200%;
     color: var(--cor-primaria);
     border: 2px solid #c0c0c0;
-    padding: 14px 30px;
+    padding: 14px 50px;
     font-weight: bold;
     font-size: 1rem;
     border-radius: 6px;
     cursor: pointer;
     transition: transform 0.2s, background-position 0.4s, box-shadow 0.3s;
-    display: inline-flex;
+    display: flex;
     align-items: center;
     justify-content: center;
     gap: 8px;
     text-align: center;
     text-decoration: none;
     font-family: inherit;
-    line-height: 1;
+    line-height: 1.2;
     box-sizing: border-box;
     box-shadow: 0 0 20px rgba(255, 214, 10, 0.4), 0 0 40px rgba(255, 214, 10, 0.2);
     animation: brilho 2s ease-in-out infinite;
+    width: 100%;
+}
+
+.btn-amarelo-premium i {
+    position: absolute;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1.2rem;
 }
 
 .btn-amarelo-premium::before {
@@ -271,7 +290,7 @@ img, iframe {
 }
 
 /* --- Selo Lateral --- */
-.btn-com-selo-lateral { position: relative; display: inline-block; max-width: 100%; }
+.btn-com-selo-lateral { position: relative; display: block; width: 100%; max-width: 100%; }
 
 .selo-lateral {
     position: absolute;
