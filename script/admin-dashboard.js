@@ -38,7 +38,7 @@ async function carregarDados(manual = false) {
 
     const btnAtualizar = document.getElementById('btn-atualizar');
     if (btnAtualizar && manual) {
-        btnAtualizar.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Buscando...';
+    btnAtualizar.innerHTML = '<span style="display: flex; align-items: center; justify-content: center; gap: 8px;"><i class="fa-solid fa-spinner fa-spin"></i> Buscando...</span>';
     }
 
     try {
@@ -58,8 +58,8 @@ async function carregarDados(manual = false) {
         if (manual) alert('Erro ao carregar os dados do banco.');
     } finally {
         carregando = false;
-        if (btnAtualizar && manual) {
-            btnAtualizar.innerHTML = '<i class="fa-solid fa-rotate-right"></i> Atualizar';
+       if (btnAtualizar && manual) {
+            btnAtualizar.innerHTML = '<span style="display: flex; align-items: center; justify-content: center; gap: 8px;"><i class="fa-solid fa-rotate-right"></i> Atualizar</span>';
         }
     }
 }
