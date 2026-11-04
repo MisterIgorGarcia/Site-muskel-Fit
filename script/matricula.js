@@ -44,7 +44,7 @@ function configurarChecagemNome() {
         }
 
         msgEl.textContent = 'Verificando...';
-        msgEl.style.color = '#ffd60a';
+        msgEl.style.color = '#ffd60a'; // Amarelo
 
         timeoutChecagem = setTimeout(async () => {
             try {
@@ -57,24 +57,27 @@ function configurarChecagemNome() {
 
                 if (data.existe) {
                     if (data.match_aproximado && data.nome_sugerido) {
+                        // SUGESTÃO DO NOME (Caiu no plano B)
                         msgEl.innerHTML = `⚠️ Encontramos um cadastro com este telefone: <strong>${data.nome_sugerido}</strong>.<br>
                         <a href="#" id="btn-aceitar-sugestao" style="color: #ffd60a; text-decoration: underline; margin-top: 5px; display: inline-block;">Clique aqui para usar este nome</a>`;
                         msgEl.style.color = '#fdfdfb';
                         nomeJaExiste = false;
 
+                        // Ação do botão de corrigir
                         document.getElementById('btn-aceitar-sugestao').addEventListener('click', (e) => {
                             e.preventDefault();
                             nomeEl.value = data.nome_sugerido;
-                            fazerChecagem();
+                            fazerChecagem(); // Roda novamente, agora vai achar exato
                         });
                     } else {
+                        // ACHOU EXATO (Aceitou maiúsculas/minúsculas diferentes)
                         msgEl.textContent = '✅ Usuário encontrado! Pronto para pagar.';
-                        msgEl.style.color = '#22c55e';
+                        msgEl.style.color = '#22c55e'; // Verde
                         nomeJaExiste = true;
                     }
                 } else {
                     msgEl.textContent = '⚠️ Usuário não encontrado. Faça a matrícula de aluno novo primeiro.';
-                    msgEl.style.color = '#ef4444';
+                    msgEl.style.color = '#ef4444'; // Vermelho
                     nomeJaExiste = false;
                 }
             } catch (error) {
@@ -87,7 +90,7 @@ function configurarChecagemNome() {
     nomeEl.addEventListener('input', fazerChecagem);
     if (celularEl) {
         celularEl.addEventListener('blur', fazerChecagem);
-        celularEl.addEventListener('input', fazerChecagem);
+        celularEl.addEventListener('input', fazerChecagem); // Busca enquanto digita
     }
 }
 
